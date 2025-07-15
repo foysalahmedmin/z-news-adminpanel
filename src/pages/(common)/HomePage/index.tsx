@@ -1,12 +1,15 @@
+import { ENV } from "@/config";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:3000");
+const socket = io(ENV.base_url || "http://localhost:3000");
 
 const HomePage = () => {
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<string[]>([]);
+
+  console.log(ENV.base_url || "http://localhost:3000");
 
   // Receive message.
   useEffect(() => {

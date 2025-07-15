@@ -1,24 +1,20 @@
-import type { User } from "./model";
+import type { TUser } from "./user.type";
 
-export interface Response {
+export type Response<T = unknown> = {
   success?: boolean;
   message?: string;
   status?: number;
-  data?: unknown;
-  [key: string]: unknown;
-}
+  data?: T;
+  meta?: {
+    total?: number;
+    page?: number;
+    limit?: number;
+  };
+};
 
-export interface AuthResponse extends Response {
+export type AuthResponse = Omit<Response, "data"> & {
   data?: {
     token?: string;
-    info?: User;
+    info?: TUser;
   };
-}
-
-export interface UserResponse extends Response {
-  data?: User;
-}
-
-export interface UsersResponse extends Response {
-  data?: User[];
-}
+};

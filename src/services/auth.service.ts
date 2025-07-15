@@ -1,16 +1,16 @@
 import api from "@/lib/api";
 import type { AuthResponse } from "@/types/response.type";
 
-interface SignInPayload {
+type SignInPayload = {
   email: string;
   password: string;
-}
+};
 
-interface SignUpPayload {
+type SignUpPayload = {
   name: string;
   email: string;
   password: string;
-}
+};
 
 export async function signIn(payload: SignInPayload): Promise<AuthResponse> {
   const response = await api.post("/api/auth/signin", payload, {

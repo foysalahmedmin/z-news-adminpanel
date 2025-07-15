@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/config";
-import { UserState } from "@/redux/slices/user-slice";
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import type { UserState } from "@/types/state.type";
+import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
 
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -17,7 +18,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   }
 
   if (user?.accessToken) {
-    config.headers.Authorization = `Bearer ${user.token}`;
+    config.headers.Authorization = `${user.token}`;
   } else {
     config.headers.Authorization = "";
   }
