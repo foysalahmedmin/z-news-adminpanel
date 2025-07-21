@@ -1,8 +1,8 @@
-import type { UserState } from "@/types/state.type";
+import type { TUserState } from "@/types/state.type";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-const getInitialUser = (): UserState => {
+const getInitialUser = (): TUserState => {
   try {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : { isAuthenticated: false };
@@ -12,15 +12,15 @@ const getInitialUser = (): UserState => {
   }
 };
 
-const initialState: UserState = getInitialUser();
+const initialState: TUserState = getInitialUser();
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<UserState>) => {
+    setUser: (state, action: PayloadAction<TUserState>) => {
       const user = action.payload;
-      if (user?.accessToken) {
+      if (user?.token) {
         localStorage.setItem(
           "user",
           JSON.stringify({ ...user, isAuthenticated: true }),

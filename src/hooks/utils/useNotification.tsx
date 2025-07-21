@@ -3,7 +3,7 @@ import {
   updateNotificationRecipientBySelf,
 } from "@/services/notification-recipient.service";
 import type { TNotificationRecipient } from "@/types/notification-recipient";
-import type { UserState } from "@/types/state.type";
+import type { TUserState } from "@/types/state.type";
 import { useCallback, useEffect, useState } from "react";
 import type { Socket } from "socket.io-client";
 import { io } from "socket.io-client";
@@ -19,8 +19,8 @@ export const useNotifications = () => {
   // Initialize socket connection
   useEffect(() => {
     const userString = localStorage.getItem("user");
-    const user: UserState | null = userString
-      ? (JSON.parse(userString) as UserState)
+    const user: TUserState | null = userString
+      ? (JSON.parse(userString) as TUserState)
       : null;
 
     if (!user?.token) return;
