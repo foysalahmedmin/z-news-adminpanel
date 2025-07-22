@@ -1,4 +1,5 @@
 import Header from "@/components/partials/Header";
+import Settings from "@/components/partials/Setting";
 import Sidebar from "@/components/partials/Sidebar";
 import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
@@ -25,39 +26,42 @@ const CommonLayout = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <div className="relative z-50 lg:z-0">
-        <div
-          className={cn(
-            "invisible fixed inset-0 bg-black/25 opacity-0 transition-[opacity,transform] duration-500 lg:-z-50",
-            {
-              "visible z-50 opacity-100 lg:invisible lg:-z-50 lg:opacity-0":
-                isOpen,
-            },
-          )}
-        />
-        <aside
-          className={cn(
-            "bg-card group text-card-foreground z-50 h-screen overflow-x-hidden overflow-y-auto transition-[width] duration-500",
-            "absolute w-screen max-w-80 translate-x-0 lg:relative lg:w-80 lg:border-r",
-            {
-              "lg:w-16 lg:hover:w-80": setting.sidebar === "compact",
-              "-translate-x-full lg:translate-x-0": !isOpen,
-            },
-          )}
-        >
-          <Sidebar toggler={toggler} />
-        </aside>
+    <>
+      <div className="flex h-screen w-screen overflow-hidden">
+        <div className="relative z-30 lg:z-0">
+          <div
+            className={cn(
+              "invisible fixed inset-0 bg-black/25 opacity-0 transition-[opacity,transform] duration-500 lg:-z-30",
+              {
+                "visible z-30 opacity-100 lg:invisible lg:-z-30 lg:opacity-0":
+                  isOpen,
+              },
+            )}
+          />
+          <aside
+            className={cn(
+              "bg-card group text-card-foreground z-30 h-screen overflow-x-hidden overflow-y-auto transition-[width,transform] duration-500",
+              "absolute w-screen max-w-80 translate-x-0 lg:relative lg:w-80 lg:border-r",
+              {
+                "lg:w-16 lg:hover:w-80": setting.sidebar === "compact",
+                "-translate-x-full lg:translate-x-0": !isOpen,
+              },
+            )}
+          >
+            <Sidebar toggler={toggler} />
+          </aside>
+        </div>
+        <div className="relative z-0 flex h-screen flex-1 flex-col overflow-x-hidden overflow-y-auto">
+          <header className="bg-card text-card-foreground sticky top-0 h-16 w-full border-b px-4 lg:px-6">
+            <Header isOpen={isOpen} toggler={toggler} />
+          </header>
+          <main className="flex-1 px-4 py-6 lg:px-6">
+            <Outlet />
+          </main>
+        </div>
       </div>
-      <div className="relative z-0 flex h-screen flex-1 flex-col overflow-x-hidden overflow-y-auto">
-        <header className="bg-card text-card-foreground sticky top-0 h-16 w-full border-b px-4 lg:px-6">
-          <Header isOpen={isOpen} toggler={toggler} />
-        </header>
-        <main className="flex-1 px-4 py-6 lg:px-6">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+      <Settings />
+    </>
   );
 };
 

@@ -22,7 +22,7 @@ const dropdownVariants = cva("relative", {
   },
 });
 
-const dropdownContentVariants = cva("absolute z-50 shadow-lg", {
+const dropdownContentVariants = cva("absolute z-30 shadow-lg", {
   variants: {
     variant: {
       default: "border border-gray-200 bg-card rounded-lg p-1",
