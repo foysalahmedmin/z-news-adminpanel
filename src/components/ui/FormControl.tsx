@@ -34,7 +34,7 @@ const formControlVariants = cva(
       },
       size: {
         default: "h-10 px-4 text-sm file:text-sm",
-        sm: "h-8 px-3 text-xs file:text-xs",
+        sm: "h-8 px-4 text-xs file:text-xs",
         md: "h-10 px-4 text-sm file:text-sm",
         lg: "h-12 px-6 text-base file:text-base",
         none: "",

@@ -4,7 +4,7 @@ type DebounceFunction<T extends (...args: unknown[]) => void> = T & {
 
 const debounce = <T extends (...args: unknown[]) => void>(
   func: T,
-  delay: number
+  delay: number,
 ): DebounceFunction<T> => {
   let timeoutId: ReturnType<typeof setTimeout>;
 

@@ -13,7 +13,7 @@ import type { ButtonProps } from "./Button";
 import { Button } from "./Button";
 
 const drawerVariants = cva(
-  "fixed inset-0 z-[1000] invisible opacity-0 transition-all duration-300 ease-in-out",
+  "drawer fixed inset-0 z-[1000] invisible opacity-0 transition-all duration-300 ease-in-out",
   {
     variants: {
       variant: {
@@ -28,7 +28,7 @@ const drawerVariants = cva(
 );
 
 const drawerBackdropVariants = cva(
-  "fixed inset-0 z-[100] bg-black/25 transition-opacity duration-300",
+  "drawer-backdrop fixed inset-0 z-[100] bg-black/25 transition-opacity duration-300",
   {
     variants: {
       variant: {
@@ -54,7 +54,7 @@ const drawerBackdropVariants = cva(
 );
 
 const drawerContentVariants = cva(
-  "fixed z-[1000] h-full overflow-y-auto bg-card border border-gray-200 shadow-xl transition-transform duration-300",
+  "drawer-content fixed z-[1000] h-full overflow-y-auto bg-card border border-gray-200 shadow-xl transition-transform duration-300",
   {
     variants: {
       variant: {

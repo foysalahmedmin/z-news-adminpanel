@@ -140,7 +140,7 @@ const DropdownItem: React.FC<ComponentProps<"button">> = ({
   return (
     <button
       className={cn(
-        "w-full rounded-md px-3 py-2 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "w-full rounded-md px-4 py-2 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       disabled={disabled}
@@ -169,7 +169,7 @@ const DropdownLabel: React.FC<ComponentProps<"div">> = ({
 }) => (
   <div
     className={cn(
-      "text-muted-foreground px-3 py-2 text-xs font-medium tracking-wider uppercase",
+      "text-muted-foreground px-4 py-2 text-xs font-medium tracking-wider uppercase",
       className,
     )}
     {...props}
