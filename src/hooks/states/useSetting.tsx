@@ -53,7 +53,7 @@ const useSetting = () => {
   };
 
   const toggleSidebar = () => {
-    setSidebar(setting.sidebar === "full" ? "compact" : "full");
+    setSidebar(setting.sidebar === "expanded" ? "compact" : "expanded");
   };
 
   return {

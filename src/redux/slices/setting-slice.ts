@@ -6,8 +6,8 @@ const defaultSetting: TSettingState = {
   theme: "system",
   direction: "ltr",
   language: "en",
-  sidebar: "full",
-  header: "full",
+  sidebar: "expanded",
+  header: "expanded",
   layout: "vertical",
 };
 

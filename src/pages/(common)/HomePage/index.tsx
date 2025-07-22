@@ -35,7 +35,7 @@ const HomePage = () => {
     <main className="">
       <button onClick={() => toast.success("Hello")}></button>
       <section>
-        <div className="p-4">
+        <div>
           <h2>Chat</h2>
           <div className="mb-2">
             {messages.map((msg, i) => (

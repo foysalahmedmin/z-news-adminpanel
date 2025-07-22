@@ -10,7 +10,7 @@ export type TSettingState = {
   theme?: "light" | "dark" | "system" | "semi-dark";
   direction?: "ltr" | "rtl";
   language?: "en" | "bn";
-  sidebar?: "full" | "compact";
-  header?: "full" | "compact";
+  sidebar?: "expanded" | "compact";
+  header?: "expanded" | "compact";
   layout?: "vertical" | "horizontal";
 };
