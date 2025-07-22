@@ -21,8 +21,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-accent text-accent-foreground hover:bg-foreground hover:text-background",
+        default: "bg-accent text-accent-foreground hover:bg-accent/75",
         gradient:
           "bg-gradient-to-r from-primary to-secondary text-white border-transparent",
         outline:

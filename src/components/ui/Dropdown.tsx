@@ -25,7 +25,7 @@ const dropdownVariants = cva("relative", {
 const dropdownContentVariants = cva("absolute z-50 shadow-lg", {
   variants: {
     variant: {
-      default: "border border-gray-200 bg-white rounded-lg p-1",
+      default: "border border-gray-200 bg-card rounded-lg p-1",
       none: "",
     },
     side: {
@@ -169,7 +169,7 @@ const DropdownLabel: React.FC<ComponentProps<"div">> = ({
 }) => (
   <div
     className={cn(
-      "px-3 py-2 text-xs font-medium tracking-wider text-gray-500 uppercase",
+      "text-muted-foreground px-3 py-2 text-xs font-medium tracking-wider uppercase",
       className,
     )}
     {...props}

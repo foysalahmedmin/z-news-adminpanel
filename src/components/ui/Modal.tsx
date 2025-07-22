@@ -53,7 +53,7 @@ const modalContentVariants = cva(
     variants: {
       variant: {
         default:
-          "border border-gray-200 max-h-full overflow-y-auto bg-white rounded-lg shadow-xl",
+          "border border-gray-200 max-h-full overflow-y-auto bg-card rounded-lg shadow-xl",
         none: "",
       },
       size: {
@@ -122,13 +122,13 @@ const ModalRoot: React.FC<ModalProps> = ({
   ...props
 }) => {
   const overlayState = useOverlayState(isOpenProp, setIsOpenProp);
-  const Comp = asPortal ? PortalWrapper : Fragment;
 
+  const Comp = asPortal ? PortalWrapper : Fragment;
   return (
     <ModalContext.Provider value={{ ...overlayState, variant, size, side }}>
       <Comp>
         <div
-          className={cn(modalVariants({ variant, className }), {
+          className={cn(modalBackdropVariants({ variant, className }), {
             [cn("visible opacity-100", activeClassName)]: overlayState.isOpen,
           })}
           {...props}

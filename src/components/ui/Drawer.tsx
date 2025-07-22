@@ -54,7 +54,7 @@ const drawerBackdropVariants = cva(
 );
 
 const drawerContentVariants = cva(
-  "fixed z-[1000] h-full overflow-y-auto bg-white border border-gray-200 shadow-xl transition-transform duration-300",
+  "fixed z-[1000] h-full overflow-y-auto bg-card border border-gray-200 shadow-xl transition-transform duration-300",
   {
     variants: {
       variant: {
@@ -127,6 +127,7 @@ const DrawerRoot: React.FC<DrawerProps> = ({
   ...props
 }) => {
   const overlayState = useOverlayState(isOpenProp, setIsOpenProp);
+
   const Comp = asPortal ? PortalWrapper : Fragment;
 
   return (

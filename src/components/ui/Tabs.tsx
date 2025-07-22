@@ -171,24 +171,20 @@ const TabsTrigger = ({
         // Base styles
         "relative cursor-pointer px-4 py-2 text-sm font-medium",
         "transition-all duration-200 ease-in-out",
-        "hover:text-primary focus:ring-primary/20 focus:ring-2 focus:outline-none",
+        "hover:text-primary",
         "before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-full",
         "before:bg-primary before:scale-x-0 before:transform before:transition-transform before:duration-200",
 
         // Inactive state
-        "text-gray-600 dark:text-gray-400",
+        "text-muted-foreground dark:text-muted-foreground",
 
         // Active state
-        isActive && [
-          "text-primary dark:text-primary",
-          "before:scale-x-100",
-          activeClassName,
-        ],
+        isActive && ["text-primary", "before:scale-x-100", activeClassName],
 
         // Disabled state
         disabled && [
           "cursor-not-allowed opacity-50",
-          "hover:text-gray-600 dark:hover:text-gray-400",
+          "hover:text-muted-foreground dark:hover:text-muted-foreground",
         ],
 
         // Loading state

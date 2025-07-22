@@ -1,22 +1,22 @@
-import Loading from "@/components/partials/Loading";
 import useUser from "@/hooks/states/useUser";
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
-interface PrivateRouteProps {
+type PrivateRouteProps = {
+  roles?: string[];
   children: ReactNode;
-}
+};
 
-const AuthWrapper: React.FC<PrivateRouteProps> = ({ children }) => {
-  const { user, isLoading } = useUser();
+const AuthWrapper: React.FC<PrivateRouteProps> = ({ roles = [], children }) => {
+  const { user } = useUser();
   const location = useLocation();
 
-  if (isLoading) {
-    return <Loading />;
+  if (!user?.isAuthenticated) {
+    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
   }
 
-  if (!user?.isAuthenticated) {
-    return <Navigate to="/auth/sign-in" state={{ from: location }} replace />;
+  if (roles.length > 0 && !roles.includes(user.role ?? "")) {
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

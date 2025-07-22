@@ -29,7 +29,7 @@ const formControlVariants = cva(
           "border border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-500",
         ghost:
           "bg-transparent border border-transparent focus:border-gray-300 focus:ring-0",
-        link: "border-0 bg-transparent underline text-blue-600 hover:text-blue-800 focus:outline-none",
+        link: "border-0 bg-transparent underline text-primary hover:text-blue-800 focus:outline-none",
         none: "",
       },
       size: {
