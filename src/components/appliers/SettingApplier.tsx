@@ -19,7 +19,7 @@ const SettingApplier = () => {
   useEffect(() => {
     const root = document.documentElement;
 
-    const applyTheme = (mode: "light" | "dark") => {
+    const applyTheme = (mode: "light" | "dark" | "semi-dark") => {
       root.classList.remove("light", "dark");
       root.classList.add(mode);
     };
@@ -36,7 +36,7 @@ const SettingApplier = () => {
 
       return () => media.removeEventListener("change", listener);
     } else {
-      if (theme === "light" || theme === "dark") {
+      if (theme === "light" || theme === "dark" || theme === "semi-dark") {
         applyTheme(theme);
       }
     }

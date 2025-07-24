@@ -1,5 +1,6 @@
 import useSetting from "@/hooks/states/useSetting";
-import React from "react";
+import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
 
 // ----------------- Theme Options -----------------
 
@@ -9,6 +10,7 @@ export const ThemeOptionSystem = () => {
     <ThemeOptionLayout
       isActive={setting.theme === "system"}
       label="System"
+      theme="system"
       onClick={() => setTheme("system")}
     />
   );
@@ -20,6 +22,7 @@ export const ThemeOptionLight = () => {
     <ThemeOptionLayout
       isActive={setting.theme === "light"}
       label="Light"
+      theme="light"
       onClick={() => setTheme("light")}
     />
   );
@@ -31,7 +34,7 @@ export const ThemeOptionDark = () => {
     <ThemeOptionLayout
       isActive={setting.theme === "dark"}
       label="Dark"
-      dark
+      theme="dark"
       onClick={() => setTheme("dark")}
     />
   );
@@ -43,7 +46,7 @@ export const ThemeOptionSemiDark = () => {
     <ThemeOptionLayout
       isActive={setting.theme === "semi-dark"}
       label="Semi Dark"
-      semiDark
+      theme="semi-dark"
       onClick={() => setTheme("semi-dark")}
     />
   );
@@ -54,66 +57,68 @@ type ThemeOptionLayoutProps = {
   isActive: boolean;
   label: string;
   onClick: () => void;
-  dark?: boolean;
-  semiDark?: boolean;
+  theme: "system" | "light" | "dark" | "semi-dark";
 };
 
 const ThemeOptionLayout: React.FC<ThemeOptionLayoutProps> = ({
   isActive,
   label,
   onClick,
-  dark = false,
-  semiDark = false,
+  theme,
 }) => {
-  const sidebarBg = dark
-    ? "bg-gray-800"
-    : semiDark
-      ? "bg-gray-800"
-      : "bg-gray-100";
-  const mainBg = dark ? "bg-gray-900" : "bg-white";
-  const borderColor = isActive
-    ? "border-blue-500 text-blue-600"
-    : "border-gray-300";
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    if (theme !== "system") return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const applySystemTheme = () => {
+      setSystemTheme(media.matches ? "dark" : "light");
+    };
+
+    applySystemTheme();
+    media.addEventListener("change", applySystemTheme);
+    return () => media.removeEventListener("change", applySystemTheme);
+  }, [theme]);
+
+  const appliedTheme = theme === "system" ? systemTheme : theme;
 
   return (
     <label
-      className={`aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all ${borderColor}`}
+      className={cn(
+        "aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all",
+        {
+          "border-primary text-primary": isActive,
+        },
+      )}
       onClick={onClick}
     >
-      <div className="h-full w-full">
-        <div
-          className={`h-full overflow-hidden rounded border shadow-sm ${dark ? "border-gray-700 bg-gray-900" : "bg-white"}`}
-        >
+      <div className={appliedTheme}>
+        <div className="bg-background text-foreground h-full overflow-hidden rounded shadow-sm">
           <div className="flex h-full gap-1">
-            <div className={`flex w-1/3 flex-col gap-1 ${sidebarBg} p-1`}>
-              <div
-                className={`h-3 border-b ${dark ? "border-gray-600 bg-gray-700" : "bg-gray-200"} p-1`}
-              >
-                <div
-                  className={`mx-auto h-full w-3/4 rounded ${dark ? "bg-gray-500" : "bg-gray-400"}`}
-                />
-              </div>
-              <div className="space-y-1">
-                <div
-                  className={`mx-auto h-2 w-3/4 rounded ${dark ? "bg-gray-500" : "bg-gray-400"}`}
-                />
-                <div
-                  className={`mx-auto h-2 w-3/4 rounded ${dark ? "bg-gray-500" : "bg-gray-400"}`}
-                />
-                <div
-                  className={`mx-auto h-2 w-3/4 rounded ${dark ? "bg-gray-500" : "bg-gray-400"}`}
-                />
-              </div>
-            </div>
             <div
-              className={`flex flex-1 flex-col justify-between ${mainBg} p-1`}
+              className={cn("bg-card flex h-full w-1/3 flex-col gap-1 p-1", {
+                dark: appliedTheme === "semi-dark",
+              })}
             >
-              <div
-                className={`h-3 rounded ${dark ? "bg-gray-700" : "bg-gray-200"}`}
-              />
-              <div
-                className={`h-3 rounded ${dark ? "bg-gray-700" : "bg-gray-200"}`}
-              />
+              <div className="bg-muted-foreground/25 h-3 rounded p-1">
+                <div className="bg-muted mx-auto h-full w-3/4 rounded" />
+              </div>
+              <div className="flex flex-1 flex-col justify-center gap-1 overflow-hidden">
+                {Array(4)
+                  .fill(null)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-muted mx-auto h-1 w-3/4 rounded"
+                    />
+                  ))}
+              </div>
+              <div className="h-3" />
+            </div>
+            <div className="flex flex-1 flex-col justify-between p-1">
+              <div className="bg-muted-foreground/25 h-3 rounded" />
+              <div className="bg-muted-foreground/25 h-3 rounded" />
             </div>
           </div>
         </div>
@@ -166,12 +171,15 @@ const DirectionOption: React.FC<DirectionOptionProps> = ({
 }) => {
   return (
     <label
-      className={`aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all ${
-        isActive ? "border-blue-500 text-blue-600" : "border-gray-300"
-      }`}
+      className={cn(
+        `aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all`,
+        {
+          "border-primary text-primary": isActive,
+        },
+      )}
       onClick={onClick}
     >
-      <div className="flex h-full w-full items-center justify-center rounded bg-gray-50">
+      <div className="text-foreground bg-muted flex h-full w-full items-center justify-center rounded">
         <div className="text-2xl">{icon}</div>
       </div>
       <h5 className="mt-2 text-center text-xs font-medium uppercase">
@@ -189,8 +197,8 @@ const SidebarExpanded = () => {
     <SidebarOption
       isActive={setting.sidebar === "expanded"}
       label="Expanded"
-      leftWidth="w-1/2"
-      rightWidth="w-1/2"
+      leftWidth="w-1/4"
+      rightWidth="w-3/4"
       onClick={() => setSidebar("expanded")}
     />
   );
@@ -202,8 +210,8 @@ const SidebarCompact = () => {
     <SidebarOption
       isActive={setting.sidebar === "compact"}
       label="Compact"
-      leftWidth="w-1/4"
-      rightWidth="w-3/4"
+      leftWidth="w-1/8"
+      rightWidth="w-7/8"
       onClick={() => setSidebar("compact")}
     />
   );
@@ -226,14 +234,17 @@ const SidebarOption: React.FC<SidebarOptionProps> = ({
 }) => {
   return (
     <label
-      className={`aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all ${
-        isActive ? "border-blue-500 text-blue-600" : "border-gray-300"
-      }`}
+      className={cn(
+        `aspect-video cursor-pointer rounded-lg border-2 p-2 transition-all`,
+        {
+          "border-primary text-primary": isActive,
+        },
+      )}
       onClick={onClick}
     >
-      <div className="flex h-full w-full rounded bg-gray-50">
-        <div className={`${leftWidth} rounded-l bg-gray-300`}></div>
-        <div className={`${rightWidth} rounded-r bg-gray-200`}></div>
+      <div className="bg-background flex h-full w-full rounded">
+        <div className={`${leftWidth} bg-muted-foreground/10 rounded-l`}></div>
+        <div className={`${rightWidth} rounded-r`}></div>
       </div>
       <h5 className="mt-2 text-center text-xs font-medium uppercase">
         {label}
