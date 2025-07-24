@@ -8,6 +8,9 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import React, { memo } from "react";
+import Notification from "./Notification";
+import Profile from "./Profile";
+import Search from "./Search";
 
 interface HeaderProps {
   className?: string;
@@ -78,9 +81,16 @@ const Header: React.FC<HeaderProps> = memo(
           </button>
         </div>
 
-        {/* Header Content - Add your header items here */}
         <div className="flex items-center gap-4">
-          {/* Placeholder for header content */}
+          <div>
+            <Search />
+          </div>
+          <div>
+            <Notification />
+          </div>
+          <div>
+            <Profile />
+          </div>
         </div>
       </header>
     );
