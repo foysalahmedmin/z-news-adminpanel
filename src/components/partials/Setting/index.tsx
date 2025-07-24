@@ -11,8 +11,8 @@ import { SettingOption } from "./Options";
 type SettingName = "theme" | "direction" | "sidebar";
 
 const Settings = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { setting } = useSetting();
+  const [isOpen, setIsOpen] = useState(false);
   const settingOptions: SettingName[] = ["theme", "direction", "sidebar"];
 
   return (
@@ -22,7 +22,6 @@ const Settings = () => {
         "left-6": setting.direction === "rtl",
       })}
     >
-      {/* Trigger button */}
       <Button
         onClick={() => setIsOpen(true)}
         shape="icon"
@@ -32,7 +31,6 @@ const Settings = () => {
         <SettingsIcon className="group-hover/button:animate-spin" />
       </Button>
 
-      {/* Drawer component */}
       <Drawer isOpen={isOpen} setIsOpen={setIsOpen} asPortal side="right">
         <Drawer.Backdrop />
         <Drawer.Content
