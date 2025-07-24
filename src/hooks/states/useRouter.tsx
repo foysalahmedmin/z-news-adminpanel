@@ -1,13 +1,14 @@
 // src/router/Router.ts
+import { items } from "@/assets/data/route-menu-items";
+import { RouteMenu } from "@/builder/RouteMenu";
 import RootLayout from "@/layouts/RootLayout";
 import ErrorPage from "@/pages/(partial)/ErrorPage";
-import type { RootState } from "@/redux/store";
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { createBrowserRouter } from "react-router";
 
 const useAppRouter = () => {
-  const routes = useSelector((state: RootState) => state.route_menu.routes);
+  const routeMenu = new RouteMenu(items);
+  const { routes } = routeMenu.getRoutes();
 
   const router = useMemo(
     () =>

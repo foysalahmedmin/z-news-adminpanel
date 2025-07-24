@@ -1,12 +1,14 @@
 import { RouterProvider } from "react-router";
 import { Slide, ToastContainer } from "react-toastify";
+import RouteMenuApplier from "./components/appliers/RouteMenuApplier";
 import SettingApplier from "./components/appliers/SettingApplier";
-import { router } from "./routes";
+import useAppRouter from "./hooks/states/useRouter";
 
 const App = () => {
+  const router = useAppRouter();
   return (
     <>
-      <RouterProvider router={router} />
+      <RouteMenuApplier />
       <SettingApplier />
       <ToastContainer
         position="top-center"
@@ -22,6 +24,7 @@ const App = () => {
         theme="light"
         transition={Slide}
       />
+      <RouterProvider router={router} />
     </>
   );
 };
