@@ -22,9 +22,9 @@ const Search: React.FC = () => {
             },
           )}
         >
-          <div className="outline-accent my-auto flex h-10 w-full items-center gap-2 border px-2 focus-within:outline">
+          <div className="outline-accent my-auto flex h-10 w-full items-center gap-2 rounded-md border px-2 focus-within:outline">
             <input
-              className="h-full flex-1 outline-none"
+              className="h-full flex-1 px-2 outline-none"
               type="search"
               name="search"
               placeholder="Search"
@@ -35,9 +35,9 @@ const Search: React.FC = () => {
       </div>
 
       {/* Desktop Search */}
-      <div className="outline-accent my-auto hidden h-10 w-80 items-center gap-2 border px-2 focus-within:outline md:flex">
+      <div className="outline-accent my-auto hidden h-10 w-80 items-center gap-2 rounded-md border px-2 focus-within:outline md:flex">
         <input
-          className="h-full flex-1 outline-none"
+          className="h-full flex-1 px-2 outline-none"
           type="search"
           name="search"
           placeholder="Search"

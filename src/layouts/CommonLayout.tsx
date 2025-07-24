@@ -32,7 +32,7 @@ const CommonLayout = () => {
       <div className="relative z-50 lg:z-0">
         <aside
           className={cn(
-            "group/sidebar bg-card text-card-foreground fixed top-0 left-0 h-full border-r shadow-lg",
+            "group/sidebar bg-card text-card-foreground fixed top-0 bottom-0 h-full border-r shadow-lg",
             "transform transition-transform duration-300 ease-in-out",
             "w-full max-w-80 lg:relative lg:translate-x-0 lg:shadow-none",
             // Desktop compact behavior
@@ -42,7 +42,19 @@ const CommonLayout = () => {
               "lg:hover:shadow-xl": isCompact,
             },
             // Mobile behavior
-            isMobileOpen ? "translate-x-0" : "-translate-x-full",
+            {
+              "translate-x-0": isMobileOpen,
+              [setting.direction === "rtl"
+                ? "translate-x-full"
+                : "-translate-x-full"]: !isMobileOpen,
+            },
+            {
+              "left-0": setting.direction === "ltr",
+              "right-0": setting.direction === "rtl",
+            },
+            {
+              dark: setting.theme === "semi-dark",
+            },
           )}
         >
           <Sidebar onClose={closeMobile} />

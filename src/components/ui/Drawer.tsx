@@ -54,12 +54,12 @@ const drawerBackdropVariants = cva(
 );
 
 const drawerContentVariants = cva(
-  "drawer-content fixed z-[1000] h-full overflow-y-auto bg-card border border-gray-200 shadow-xl transition-transform duration-300",
+  "drawer-content fixed z-[1000] h-full overflow-y-auto bg-card transition-transform duration-300",
   {
     variants: {
       variant: {
         default: "",
-        none: "border-0 shadow-none",
+        none: "",
       },
       size: {
         default: "w-[85vw] sm:w-64 md:w-80 lg:w-[26rem]",

@@ -1,12 +1,7 @@
+import { Button } from "@/components/ui/Button";
 import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
-import {
-  AlignLeft,
-  AlignRight,
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { AlignLeft, AlignRight, Menu, MoveLeft, MoveRight } from "lucide-react";
 import React, { memo } from "react";
 import Notification from "./Notification";
 import Profile from "./Profile";
@@ -26,59 +21,55 @@ const Header: React.FC<HeaderProps> = memo(
 
     const getDesktopIcon = () => {
       if (isCompact) {
-        return isRtl ? (
-          <PanelLeftClose size={20} />
-        ) : (
-          <PanelLeftOpen size={20} />
-        );
+        return isRtl ? <MoveLeft /> : <MoveRight />;
       }
-      return isRtl ? <AlignRight size={20} /> : <AlignLeft size={20} />;
+      return isRtl ? (
+        <AlignRight className="size-6" />
+      ) : (
+        <AlignLeft className="size-6" />
+      );
     };
 
     const getMobileIcon = () => {
       if (isMobileOpen) {
-        return <Menu size={20} />;
+        return <Menu className="size-6" />;
       }
-      return <Menu size={20} />;
+      return <Menu className="size-6" />;
     };
 
     return (
       <header
         className={cn(
-          "sticky top-0 z-30 flex items-center justify-between",
-          "bg-card h-16 lg:px-6",
+          "sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6",
+          "bg-card h-16",
           "border-border border-b",
           className,
         )}
       >
         <div className="flex items-center gap-4">
           {/* Desktop Sidebar Toggle */}
-          <button
+          <Button
             onClick={toggleSidebar}
-            className={cn(
-              "hidden h-9 w-9 items-center justify-center rounded-lg lg:flex",
-              "hover:bg-muted/80 transition-all duration-200 active:scale-95",
-              "text-muted-foreground hover:text-foreground",
-              "focus:ring-primary/20 focus:ring-2 focus:outline-none",
-            )}
             aria-label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+            shape="icon"
+            size="none"
+            variant="none"
+            className="hidden lg:inline-flex"
           >
             {getDesktopIcon()}
-          </button>
+          </Button>
 
           {/* Mobile Menu Toggle */}
-          <button
+          <Button
             onClick={onToggleMobile}
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-lg lg:hidden",
-              "hover:bg-muted/80 transition-all duration-200 active:scale-95",
-              "text-muted-foreground hover:text-foreground",
-              "focus:ring-primary/20 focus:ring-2 focus:outline-none",
-            )}
+            shape="icon"
+            size="none"
+            variant="none"
+            className="lg:hidden"
             aria-label={isMobileOpen ? "Close menu" : "Open menu"}
           >
             {getMobileIcon()}
-          </button>
+          </Button>
         </div>
 
         <div className="flex items-center gap-4">

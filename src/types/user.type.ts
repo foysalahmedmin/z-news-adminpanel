@@ -1,6 +1,7 @@
 export type TUser = {
   _id: string;
   name: string;
+  image?: string;
   email: string;
   role?: string;
   [key: string]: unknown;

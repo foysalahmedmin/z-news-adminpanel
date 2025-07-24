@@ -17,8 +17,7 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
       {/* Header */}
       <header
         className={cn(
-          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm",
-          "transition-all duration-500 lg:px-6",
+          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm lg:px-6",
           {
             "lg:justify-between lg:px-4 lg:group-hover/sidebar:px-6": isCompact,
           },

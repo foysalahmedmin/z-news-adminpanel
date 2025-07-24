@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import useSetting from "@/hooks/states/useSetting";
+import { cn } from "@/lib/utils";
 import { Settings as SettingsIcon } from "lucide-react";
 import { useState } from "react";
 import { SettingOption } from "./Options";
@@ -15,7 +16,12 @@ const Settings = () => {
   const settingOptions: SettingName[] = ["theme", "direction", "sidebar"];
 
   return (
-    <div className="fixed right-6 bottom-6 z-50">
+    <div
+      className={cn("fixed bottom-6 z-50", {
+        "right-6": setting.direction === "ltr",
+        "left-6": setting.direction === "rtl",
+      })}
+    >
       {/* Trigger button */}
       <Button
         onClick={() => setIsOpen(true)}
@@ -29,19 +35,29 @@ const Settings = () => {
       {/* Drawer component */}
       <Drawer isOpen={isOpen} setIsOpen={setIsOpen} asPortal side="right">
         <Drawer.Backdrop />
-        <Drawer.Content className="w-80 max-w-[90vw]" side={"right"}>
+        <Drawer.Content
+          className="flex h-screen w-80 max-w-[90vw] flex-col"
+          side={setting.direction == "rtl" ? "left" : "right"}
+        >
           <Drawer.Header className="h-16 border-b">
             <Drawer.Title className="uppercase">Settings</Drawer.Title>
             <Drawer.Close className="size-8 rounded-full" />
           </Drawer.Header>
 
-          <Drawer.Body>
-            <div className="mb-4 rounded bg-gray-100 p-4 text-sm text-gray-600">
-              <strong>Current Settings:</strong>
-              <br />
-              Theme: {setting.theme},<br />
-              Direction: {setting.direction},<br />
-              Sidebar: {setting.sidebar}
+          <Drawer.Body className="flex-1 overflow-y-auto">
+            <div className="bg-muted text-muted-foreground mb-4 flex flex-wrap items-center gap-2 rounded p-4 text-left text-sm">
+              <div className="flex items-center gap-1">
+                <span className="capitalize">Theme:</span>
+                <strong className="capitalize">{setting.theme};</strong>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="capitalize">Direction:</span>
+                <strong className="uppercase">{setting.direction};</strong>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="capitalize">Sidebar:</span>
+                <strong className="capitalize">{setting.sidebar};</strong>
+              </div>
             </div>
 
             <div className="space-y-4">
