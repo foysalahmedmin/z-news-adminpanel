@@ -12,7 +12,7 @@ const initialState: TRouteMenuState = {
 };
 
 const routeSlice = createSlice({
-  name: "route",
+  name: "route_menu",
   initialState,
   reducers: {
     setRoutes(state, action: PayloadAction<TRouteMenuState["routes"]>) {

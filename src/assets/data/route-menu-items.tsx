@@ -4,7 +4,7 @@ import CommonLayout from "@/layouts/CommonLayout";
 import UserLayout from "@/layouts/UserLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
-import HomePage from "@/pages/(common)/HomePage";
+import Dashboard from "@/pages/(common)/Dashboard";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { IItem } from "@/types/route-menu.type";
@@ -13,20 +13,24 @@ export const items: IItem[] = [
   {
     path: "",
     element: <CommonLayout />,
+    type: "layout",
     children: [
       {
         index: true,
-        element: <HomePage />,
+        label: "Dashboard",
+        element: <Dashboard />,
       },
     ],
   },
   {
+    invisible: true,
     path: "user",
     element: (
       <AuthWrapper>
         <UserLayout />
       </AuthWrapper>
     ),
+    type: "layout",
     children: [
       {
         path: "profile",
@@ -39,8 +43,8 @@ export const items: IItem[] = [
     ],
   },
   {
-    path: "auth",
     invisible: true,
+    path: "auth",
     element: <AuthLayout />,
     children: [
       {

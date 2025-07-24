@@ -149,26 +149,44 @@ class RouteProcessor extends BaseProcessor<IProcessedRoute> {
       return [];
     }
 
-    const routeEntry: IProcessedRoute = {
+    const baseRoute = {
       ...(typeof path !== "undefined" && { path }),
       ...(element && { element }),
       ...(loader && { loader }),
       ...(action && { action }),
-      ...(index && { index }),
     };
 
+    // If index route (no children allowed)
+    if (index) {
+      return [
+        {
+          ...baseRoute,
+          index: true,
+        } satisfies IProcessedRoute,
+      ];
+    }
+
+    // If layout route with children
     if (children?.length && type === "layout") {
       return [
         {
-          ...routeEntry,
+          ...baseRoute,
           children: this.process(children, config),
-        },
+        } satisfies IProcessedRoute,
       ];
-    } else if (children?.length) {
-      return this.process(children, config);
-    } else {
-      return [routeEntry];
     }
+
+    // If regular nested children (not layout)
+    if (children?.length) {
+      return this.process(children, config);
+    }
+
+    // Regular route without index and children
+    return [
+      {
+        ...baseRoute,
+      } satisfies IProcessedRoute,
+    ];
   }
 }
 

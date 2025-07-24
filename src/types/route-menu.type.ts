@@ -12,7 +12,7 @@ export interface IItem {
   readonly label?: string;
   readonly icon?: React.ReactElement | string;
   readonly path?: string;
-  readonly index?: boolean;
+  readonly index?: true;
   readonly type?: TRouteType;
   readonly status?: TRouteStatus;
   readonly asItem?: boolean;
@@ -31,14 +31,27 @@ export interface IItem {
   readonly meta?: IRouteMeta;
 }
 
-export interface IProcessedRoute {
+export interface IProcessedWithIndexRoute {
   path?: string;
   element?: React.ReactElement;
   loader?: () => Promise<unknown> | unknown;
   action?: () => Promise<unknown> | unknown;
-  index?: boolean;
+  index?: true;
+  children?: undefined;
+}
+
+export interface IProcessedWithoutIndexRoute {
+  path?: string;
+  element?: React.ReactElement;
+  loader?: () => Promise<unknown> | unknown;
+  action?: () => Promise<unknown> | unknown;
+  index?: false;
   children?: IProcessedRoute[];
 }
+
+export type IProcessedRoute =
+  | IProcessedWithIndexRoute
+  | IProcessedWithoutIndexRoute;
 
 export interface IProcessedMenu {
   label: string;
