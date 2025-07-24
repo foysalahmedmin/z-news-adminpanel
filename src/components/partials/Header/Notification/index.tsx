@@ -9,9 +9,9 @@ const Notification: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="flex h-full items-center">
-      <button onClick={() => setIsOpen(true)} className="relative">
+      <button onClick={() => setIsOpen(true)} className="relative pr-1">
         <BellIcon className="size-6 cursor-pointer" />
-        <span className="bg-accent text-accent-foreground absolute -top-1 -right-1 inline-flex h-4 min-w-4 transform items-center justify-center rounded-full text-xs">
+        <span className="bg-accent text-accent-foreground absolute -top-1 right-0 inline-flex h-4 min-w-4 transform items-center justify-center rounded-full text-xs">
           0
         </span>
       </button>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useClickOutside } from "@/hooks/ui/useClickOutside";
 import type { OverlayState } from "@/hooks/ui/useOverlayState";
 import useOverlayState from "@/hooks/ui/useOverlayState";
 import { cn } from "@/lib/utils";
@@ -77,7 +78,6 @@ const DropdownRoot: React.FC<DropdownProps> = ({
   isOpen: isOpenProp,
   setIsOpen: setIsOpenProp,
   children,
-  asPortal = false,
   ...props
 }) => {
   const overlayState = useOverlayState(isOpenProp, setIsOpenProp);
@@ -105,10 +105,19 @@ const DropdownContent: React.FC<DropdownContentProps> = ({
   children,
   ...props
 }) => {
-  const { isOpen, variant: contextVariant, side: contextSide } = useDropdown();
+  const {
+    isOpen,
+    variant: contextVariant,
+    side: contextSide,
+    onClose,
+  } = useDropdown();
 
+  const ref = useClickOutside<HTMLDivElement>(() => {
+    if (isOpen) onClose();
+  });
   return (
     <div
+      ref={ref}
       className={cn(
         dropdownContentVariants({
           variant: variant ?? contextVariant,
