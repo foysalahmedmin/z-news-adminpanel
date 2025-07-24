@@ -1,68 +1,10 @@
-import type React from "react";
-
-// ----------------------------
-// Types & Interfaces
-// ----------------------------
-
-export type RouteType = "layout" | "page" | "redirect" | "external";
-export type RouteStatus = "active" | "inactive" | "deprecated" | "beta";
-
-export interface IRouteMeta {
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  author?: string;
-}
-
-export interface IItem {
-  readonly label: string;
-  readonly icon: React.ReactElement | string;
-  readonly path: string;
-  readonly index?: boolean;
-  readonly type?: RouteType;
-  readonly status?: RouteStatus;
-  readonly asItem: boolean;
-  readonly asItemAlone: boolean;
-  readonly element?: React.ReactElement;
-  readonly loader?: () => Promise<unknown> | unknown;
-  readonly action?: () => Promise<unknown> | unknown;
-  readonly base?: string;
-  readonly bases?: readonly string[];
-  readonly children?: readonly IItem[];
-  readonly roles?: readonly string[];
-  readonly categories?: readonly string[];
-  readonly visible?: boolean;
-  readonly invisible?: boolean;
-  readonly hidden?: boolean;
-  readonly meta?: IRouteMeta;
-}
-
-export interface IProcessedRoute {
-  path?: string;
-  element?: React.ReactElement;
-  loader?: () => Promise<unknown> | unknown;
-  action?: () => Promise<unknown> | unknown;
-  index?: boolean;
-  children?: IProcessedRoute[];
-}
-
-export interface IProcessedMenu {
-  path?: string;
-  label?: string;
-  icon?: React.ReactElement | string;
-  base?: string;
-  type?: RouteType;
-  status?: RouteStatus;
-  roles?: readonly string[];
-  categories?: readonly string[];
-  children?: IProcessedMenu[];
-}
-
-export interface INavigationConfig {
-  readonly role?: string;
-  readonly category?: string;
-  readonly initialPath?: string;
-}
+import type {
+  IBreadcrumb,
+  IItem,
+  INavigationConfig,
+  IProcessedMenu,
+  IProcessedRoute,
+} from "@/types/route-menu.type";
 
 // ----------------------------
 // Abstract Classes & Interfaces
@@ -254,16 +196,17 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
     }
 
     const elements: IProcessedMenu = {
+      label: label || path || "",
+
       ...(PathUtils.buildFullPath(config.initialPath, path) && {
         path: PathUtils.buildFullPath(config.initialPath, path),
       }),
-      ...(label && { label }),
       ...(icon && { icon }),
       ...(base && { base }),
       ...(type && { type }),
       ...(status && { status }),
-      ...(roles && { roles }),
-      ...(categories && { categories }),
+      ...(roles && { roles: [...roles] }),
+      ...(categories && { categories: [...categories] }),
     };
 
     const nextConfig = {
@@ -327,7 +270,8 @@ export class RouteMenu {
 
   public getMenus(config: INavigationConfig = {}): {
     menus: IProcessedMenu[];
-    indexPathMap: Record<string, number[]>;
+    indexes: Record<string, number[]>;
+    breadcrumbs: Record<string, IBreadcrumb[]>;
   } {
     const menuConfig = {
       initialPath: "/",
@@ -335,26 +279,41 @@ export class RouteMenu {
     };
     const menus = this.menuProcessor.process(this.items, menuConfig);
 
-    const indexPathMap: Record<string, number[]> = {};
+    const indexes: Record<string, number[]> = {};
+    const breadcrumbs: Record<string, IBreadcrumb[]> = {};
 
     const processIndexPathMap = (
       items: readonly IProcessedMenu[],
-      trail: number[] = [],
+      indexTrail: number[] = [],
+      breadcrumbTrail: IBreadcrumb[] = [],
     ) => {
       items.forEach((item, idx) => {
-        const currentTrail = [...trail, idx];
+        const currentIndexTrail = [...indexTrail, idx];
+        const breadcrumbItem: IBreadcrumb = {
+          index: idx,
+          label: item?.label,
+          ...(item?.path && { path: item?.path }),
+        };
+        const currentBreadcrumbTrail = [...breadcrumbTrail, breadcrumbItem];
+
         if (item.path) {
-          indexPathMap[item.path] = currentTrail;
+          indexes[item.path] = currentIndexTrail;
+          breadcrumbs[item.path] = currentBreadcrumbTrail;
         }
+
         if (item.children?.length) {
-          processIndexPathMap(item.children, currentTrail);
+          processIndexPathMap(
+            item.children,
+            currentIndexTrail,
+            currentBreadcrumbTrail,
+          );
         }
       });
     };
 
     processIndexPathMap(menus);
 
-    return { menus, indexPathMap };
+    return { menus, indexes, breadcrumbs };
   }
 
   public getItems(): readonly IItem[] {
@@ -423,10 +382,12 @@ export class RouteMenu {
     const errors: string[] = [];
     const paths = new Set<string>();
 
-    const validateItem = (route: IItem, parentPath: string = ""): void => {
-      const fullPath = PathUtils.join([parentPath, route.path]);
+    const validateItem = (route: IItem, parentPath = ""): void => {
+      const fullPath = route.path
+        ? PathUtils.join([parentPath, route.path])
+        : parentPath;
 
-      if (paths.has(fullPath) && fullPath) {
+      if (fullPath && paths.has(fullPath)) {
         errors.push(`Duplicate path found: ${fullPath}`);
       }
 
@@ -434,11 +395,14 @@ export class RouteMenu {
         paths.add(fullPath);
       }
 
-      if (!route.label) {
+      // Check label only if it's not an index route
+      const isIndexRoute = route.index === true;
+
+      if (!isIndexRoute && !route.label) {
         errors.push(`Route with path "${fullPath}" is missing a label`);
       }
 
-      if (route.children) {
+      if (route.children?.length) {
         route.children.forEach((child) => validateItem(child, fullPath));
       }
     };
