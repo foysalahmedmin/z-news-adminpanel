@@ -58,6 +58,7 @@ export const items: IItem[] = [
     ],
   },
   {
+    invisible: true,
     path: "*",
     element: <NotFoundPage />,
   },
