@@ -3,6 +3,7 @@ import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import React, { memo } from "react";
+import MenuItem from "./MenuItem";
 
 interface SidebarProps {
   className?: string;
@@ -21,9 +22,9 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
       {/* Header */}
       <header
         className={cn(
-          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm lg:px-6",
+          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm",
           {
-            "lg:justify-between lg:px-4 lg:group-hover/sidebar:px-6": isCompact,
+            "lg:justify-between": isCompact,
           },
         )}
       >
@@ -71,18 +72,14 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
         className={cn(
           "flex-1 overflow-x-hidden overflow-y-auto",
           "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted",
-          "px-4 py-4 lg:px-6",
-          {
-            "lg:px-2 lg:group-hover:px-6": isCompact,
-          },
+          "px-4 py-6",
         )}
       >
         {/* Add your navigation items here */}
         <div className="space-y-2">
-          {/* Navigation placeholder - replace with actual navigation */}
-          <div className="bg-muted/30 h-4 animate-pulse rounded" />
-          <div className="bg-muted/20 h-4 animate-pulse rounded" />
-          <div className="bg-muted/25 h-4 animate-pulse rounded" />
+          {menus.map((menu, i) => (
+            <MenuItem key={i} index={i} item={menu} />
+          ))}
         </div>
       </nav>
     </div>

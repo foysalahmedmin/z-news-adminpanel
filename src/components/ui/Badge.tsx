@@ -13,4 +13,4 @@ const Badge: React.FC<ComponentProps<"span">> = ({ className }) => {
   );
 };
 
-export default Badge;
+export { Badge };

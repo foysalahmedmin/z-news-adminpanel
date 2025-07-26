@@ -1,24 +1,44 @@
 import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
 import {
+  setActiveBreadcrumb,
+  setActiveIndex,
   setBreadcrumbs,
   setIndexes,
   setMenus,
 } from "@/redux/slices/menu-slice";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router";
 
 const MenuApplier = () => {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const { indexes, breadcrumbs } = useSelector(
+    (state: RootState) => state.menu,
+  );
+
+  const menusData = useMemo(() => {
+    const routeMenu = new RouteMenu(items);
+    return routeMenu.getMenus();
+  }, []);
 
   useEffect(() => {
-    const routeMenu = new RouteMenu(items);
-    const { menus, indexes, breadcrumbs } = routeMenu.getMenus();
+    if (!indexes || Object.keys(indexes).length === 0) {
+      const { menus, indexes, breadcrumbs } = menusData;
+      dispatch(setMenus(menus));
+      dispatch(setIndexes(indexes));
+      dispatch(setBreadcrumbs(breadcrumbs));
+    }
+  }, [dispatch, menusData, indexes]);
 
-    dispatch(setMenus(menus));
-    dispatch(setIndexes(indexes));
-    dispatch(setBreadcrumbs(breadcrumbs));
-  }, [dispatch]);
+  useEffect(() => {
+    if (pathname && indexes) {
+      dispatch(setActiveIndex(indexes[pathname]));
+      dispatch(setActiveBreadcrumb(breadcrumbs[pathname]));
+    }
+  }, [pathname, indexes, breadcrumbs, dispatch]);
 
   return null;
 };

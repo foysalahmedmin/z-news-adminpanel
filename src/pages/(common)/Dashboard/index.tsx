@@ -1,7 +1,10 @@
+import AdminDashboard from "@/components/(common)/dashboard-page/AdminDashboard";
+
 const Dashboard = () => {
   return (
     <main className="">
-      <div className="w-60"></div>
+      <div></div>
+      <AdminDashboard />
     </main>
   );
 };

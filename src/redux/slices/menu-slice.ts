@@ -8,6 +8,8 @@ const initialState: TRouteMenuState = {
   menus: [],
   indexes: {},
   breadcrumbs: {},
+  activeIndex: [],
+  activeBreadcrumb: [],
 };
 
 const routeSlice = createSlice({
@@ -26,8 +28,26 @@ const routeSlice = createSlice({
     ) {
       state.breadcrumbs = action.payload;
     },
+    setActiveIndex(
+      state,
+      action: PayloadAction<TRouteMenuState["activeIndex"]>,
+    ) {
+      state.activeIndex = action.payload;
+    },
+    setActiveBreadcrumb(
+      state,
+      action: PayloadAction<TRouteMenuState["activeBreadcrumb"]>,
+    ) {
+      state.activeBreadcrumb = action.payload;
+    },
   },
 });
 
-export const { setMenus, setIndexes, setBreadcrumbs } = routeSlice.actions;
+export const {
+  setMenus,
+  setIndexes,
+  setBreadcrumbs,
+  setActiveIndex,
+  setActiveBreadcrumb,
+} = routeSlice.actions;
 export default routeSlice.reducer;

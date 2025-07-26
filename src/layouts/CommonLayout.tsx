@@ -70,7 +70,7 @@ const CommonLayout = () => {
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6 lg:px-6">
+          <div className="px-4 py-6 lg:px-6">
             <Suspense fallback={<Loader />}>
               <Outlet />
             </Suspense>

@@ -20,4 +20,6 @@ export type TRouteMenuState = {
   menus: IProcessedMenu[];
   indexes: Record<string, number[]>;
   breadcrumbs: Record<string, IBreadcrumb[]>;
+  activeIndex?: number[];
+  activeBreadcrumb?: IBreadcrumb[];
 };
