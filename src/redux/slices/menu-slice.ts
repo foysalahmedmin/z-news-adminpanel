@@ -6,18 +6,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: TRouteMenuState = {
   menus: [],
-  routes: [],
   indexes: {},
   breadcrumbs: {},
 };
 
 const routeSlice = createSlice({
-  name: "route_menu",
+  name: "menu",
   initialState,
   reducers: {
-    setRoutes(state, action: PayloadAction<TRouteMenuState["routes"]>) {
-      state.routes = action.payload;
-    },
     setMenus(state, action: PayloadAction<TRouteMenuState["menus"]>) {
       state.menus = action.payload;
     },
@@ -33,6 +29,5 @@ const routeSlice = createSlice({
   },
 });
 
-export const { setMenus, setRoutes, setIndexes, setBreadcrumbs } =
-  routeSlice.actions;
+export const { setMenus, setIndexes, setBreadcrumbs } = routeSlice.actions;
 export default routeSlice.reducer;
