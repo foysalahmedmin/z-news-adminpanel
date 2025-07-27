@@ -27,7 +27,7 @@ const Notification: React.FC = () => {
           </Drawer.Header>
 
           <Drawer.Body className="flex-1 overflow-y-auto">
-            <div className="bg-muted text-muted-foreground mb-4 flex flex-wrap items-center gap-2 rounded p-4 text-left text-sm"></div>
+            <div className="bg-muted text-muted-foreground mb-4 flex flex-wrap items-center gap-2 rounded p-4 text-start text-sm"></div>
 
             <div className="space-y-4"></div>
           </Drawer.Body>

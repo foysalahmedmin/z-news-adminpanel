@@ -119,5 +119,4 @@
 /* Utility Styles */
 @layer utilities {
   @import "./assets/styles/utilities/loading.css";
-  @import "./assets/styles/utilities/sidebar.css";
 }

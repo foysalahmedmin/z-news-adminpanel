@@ -16,12 +16,7 @@ const Settings = () => {
   const settingOptions: SettingName[] = ["theme", "direction", "sidebar"];
 
   return (
-    <div
-      className={cn("fixed bottom-6 z-50", {
-        "right-6": setting.direction === "ltr",
-        "left-6": setting.direction === "rtl",
-      })}
-    >
+    <div className={cn("fixed end-6 bottom-6 z-50")}>
       <Button
         onClick={() => setIsOpen(true)}
         shape="icon"

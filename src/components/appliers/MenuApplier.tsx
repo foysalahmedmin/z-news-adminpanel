@@ -6,6 +6,7 @@ import {
   setBreadcrumbs,
   setIndexes,
   setMenus,
+  setOpenIndexPath,
 } from "@/redux/slices/menu-slice";
 import type { RootState } from "@/redux/store";
 import { useEffect, useMemo } from "react";
@@ -36,6 +37,7 @@ const MenuApplier = () => {
   useEffect(() => {
     if (pathname && indexes) {
       dispatch(setActiveIndexPath(indexes[pathname]));
+      dispatch(setOpenIndexPath(indexes[pathname]));
       dispatch(setActiveBreadcrumb(breadcrumbs[pathname]));
     }
   }, [pathname, indexes, breadcrumbs, dispatch]);

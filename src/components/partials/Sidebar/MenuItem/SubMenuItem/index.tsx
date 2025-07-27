@@ -31,7 +31,7 @@ const Comp: React.FC<{
           {children}
         </NavLink>
       ) : (
-        <div className={cn("", className)} onClick={onClick} {...props}>
+        <div className={cn("", className)} {...props}>
           {children}
         </div>
       )}
@@ -65,12 +65,20 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
     }
   };
 
+  const handler = () => {
+    if (hasChildren) {
+      handleToggle();
+    } else {
+      if (!isOpen) setOpenIndexPath(indexPath);
+    }
+  };
+
   if (menuType === "title") {
     return (
       <>
         <div
           className={cn(
-            "text-muted-foreground/75 flex items-center px-2 py-1 text-sm font-semibold uppercase lg:px-3",
+            "text-muted-foreground/75 flex items-center px-2 text-sm font-semibold uppercase lg:px-3",
           )}
         >
           <span className={cn("")}>{label}</span>
@@ -84,11 +92,20 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
       {/* Menu Item */}
       <Comp
         path={path}
-        onClick={handleToggle}
-        className={cn("relative flex items-center px-2 py-2 lg:px-3", {
-          "bg-accent/15": isActive,
+        onClick={handler}
+        className={cn("relative flex items-center px-2 lg:px-3", {
+          "text-accent": isActive,
         })}
       >
+        <div
+          className={cn(
+            "bg-accent absolute start-0 top-0 bottom-0 w-[1px] rounded-md opacity-0 duration-300",
+            {
+              "opacity-100": isOpen,
+            },
+          )}
+        />
+        {/* Label */}
         <div
           className={cn(
             "relative flex flex-1 items-center justify-between gap-2 tracking-wide",
@@ -136,7 +153,7 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
         >
           <div
             className={cn(
-              "invisible min-h-0 origin-top scale-y-0 overflow-hidden pl-2 opacity-0 transition-transform duration-300 ease-in-out lg:pl-3",
+              "invisible my-2 min-h-0 origin-top scale-y-0 space-y-2 overflow-hidden border-l pl-2 opacity-0 transition-transform duration-300 ease-in-out lg:pl-3",
               {
                 "visible min-h-fit origin-top scale-y-100 opacity-100 delay-100":
                   isOpen,
@@ -147,7 +164,7 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
               <SubMenuItem
                 key={`${index}`}
                 item={child}
-                indexPath={[index]}
+                indexPath={[...indexPath, index]}
                 depth={1}
               />
             ))}

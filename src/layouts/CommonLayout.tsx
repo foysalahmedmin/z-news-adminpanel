@@ -5,7 +5,7 @@ import Sidebar from "@/components/partials/Sidebar";
 import useSetting from "@/hooks/states/useSetting";
 import { useSidebar } from "@/hooks/ui/useSidebar";
 import { cn } from "@/lib/utils";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { Outlet } from "react-router";
 
 const CommonLayout = () => {
@@ -13,7 +13,6 @@ const CommonLayout = () => {
   const { isMobileOpen, toggleMobile, closeMobile } = useSidebar();
 
   const isCompact = setting.sidebar === "compact";
-  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
 
   return (
     <div className="bg-background flex h-screen w-screen overflow-hidden">
@@ -32,26 +31,20 @@ const CommonLayout = () => {
       {/* Sidebar Container */}
       <div className="relative z-50 lg:z-0">
         <aside
-          onMouseEnter={() => setIsSidebarHovered(true)}
-          onMouseLeave={() => setIsSidebarHovered(false)}
-          data-compact={isCompact}
-          data-hover={isSidebarHovered}
           className={cn(
-            "group/sidebar sidebar bg-card text-card-foreground fixed top-0 bottom-0 h-full border-r shadow-lg",
+            "group/sidebar bg-card text-card-foreground fixed start-0 top-0 bottom-0 h-full border-r shadow-lg",
             "transform transition-transform duration-300 ease-in-out",
             "w-full max-w-80 lg:relative lg:translate-x-0 lg:shadow-none",
             // Desktop compact behavior
             "lg:w-80 lg:transition-[width] lg:duration-300",
+            {
+              "lg:w-20 lg:hover:w-80": isCompact,
+              "lg:hover:shadow-xl": isCompact,
+            },
             // Mobile behavior
             {
+              "translate-x-full rtl:-translate-x-full": !isMobileOpen,
               "translate-x-0": isMobileOpen,
-              [setting.direction === "rtl"
-                ? "translate-x-full"
-                : "-translate-x-full"]: !isMobileOpen,
-            },
-            {
-              "left-0": setting.direction === "ltr",
-              "right-0": setting.direction === "rtl",
             },
             {
               dark: setting.theme === "semi-dark",

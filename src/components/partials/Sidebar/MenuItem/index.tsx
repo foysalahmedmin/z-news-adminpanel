@@ -24,12 +24,7 @@ const Comp: React.FC<{
   return (
     <>
       {path ? (
-        <NavLink
-          to={path}
-          className={cn("", className)}
-          onClick={onClick}
-          {...props}
-        >
+        <NavLink to={path} className={cn("", className)} {...props}>
           {children}
         </NavLink>
       ) : (
@@ -59,6 +54,14 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
       setOpenIndexPath([]);
     } else {
       setOpenIndexPath([index]);
+    }
+  };
+
+  const handler = () => {
+    if (hasChildren) {
+      handleToggle();
+    } else {
+      if (!isOpen) setOpenIndexPath([index]);
     }
   };
 
@@ -96,14 +99,23 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
       {/* Menu Item */}
       <Comp
         path={path}
-        onClick={handleToggle}
+        onClick={handler}
         className={cn(
           "relative flex items-center gap-2 px-2 py-2 lg:gap-3 lg:px-3",
           {
-            "bg-accent/15": isActive,
+            "bg-accent/5": isActive,
           },
         )}
       >
+        <div
+          className={cn(
+            "bg-accent absolute start-0 top-0 bottom-0 w-1 rounded-e-full opacity-0 duration-300",
+            {
+              "opacity-100": isOpen,
+            },
+          )}
+        />
+        {/* Icon */}
         <div className="flex flex-shrink-0 items-center justify-center">
           <div className="flex size-6 items-center justify-center">
             {item.icon && (
@@ -111,13 +123,15 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
             )}
           </div>
         </div>
+
+        {/* Content */}
         <div
           className={cn(
             "relative flex flex-1 items-center justify-between tracking-wide",
             "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
           )}
         >
-          {/* Content */}
+          {/* Label */}
           <div className="flex flex-1 cursor-pointer items-center gap-2">
             <span className="flex-1">{label}</span>
             <div className="flex gap-0.5">
@@ -150,27 +164,38 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
       {hasChildren && (
         <div
           className={cn(
-            "relative grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out",
-            {
+            "relative grid overflow-hidden pl-2 transition-[grid-template-rows] duration-300 ease-in-out lg:pl-3",
+            "grid-rows-[0fr]",
+            isCompact && {
+              "lg:grid-rows-[0fr] lg:group-hover/sidebar:grid-rows-[1fr]":
+                isOpen,
+              "lg:grid-rows-[0fr]": !isOpen,
+            },
+            !isCompact && {
               "grid-rows-[1fr]": isOpen,
-              "lg:hidden lg:group-hover/sidebar:block": isCompact,
             },
           )}
         >
           <div
             className={cn(
-              "invisible min-h-0 origin-top scale-y-0 overflow-hidden pl-2 opacity-0 transition-transform duration-300 ease-in-out lg:pl-3",
-              {
-                "visible min-h-fit origin-top scale-y-100 opacity-100 delay-100":
+              "my-2 min-h-0 space-y-2 overflow-hidden border-s",
+              "origin-top transition-all duration-300 ease-in-out",
+              "invisible scale-y-0 opacity-0",
+              isCompact && {
+                "lg:group-hover/sidebar:visible lg:group-hover/sidebar:min-h-fit lg:group-hover/sidebar:scale-y-100 lg:group-hover/sidebar:opacity-100 lg:group-hover/sidebar:delay-100":
                   isOpen,
+                "lg:invisible lg:scale-y-0 lg:opacity-0": !isOpen,
+              },
+              !isCompact && {
+                "visible min-h-fit scale-y-100 opacity-100 delay-100": isOpen,
               },
             )}
           >
-            {children.map((child, index) => (
+            {children.map((child, i) => (
               <SubMenuItem
-                key={`${index}`}
+                key={`submenu-${index}-${i}`}
                 item={child}
-                indexPath={[index]}
+                indexPath={[index, i]}
                 depth={1}
               />
             ))}
