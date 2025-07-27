@@ -1,0 +1,5 @@
+@media (min-width: 1024px) {
+  .sidebar[data-compact="true"][data-hover="false"] {
+    @apply w-20;
+  }
+}

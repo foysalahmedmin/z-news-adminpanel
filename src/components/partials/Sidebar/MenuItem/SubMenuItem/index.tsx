@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/Badge";
 import useMenu from "@/hooks/states/useMenu";
 import { cn } from "@/lib/utils";
 import type { IProcessedMenu } from "@/types/route-menu.type";
@@ -12,18 +13,39 @@ type Props = {
   depth: number;
 };
 
-const SubMenuItem: React.FC<Props> = ({
-  indexPath = [],
-  item,
-  className = "",
-  depth = 1,
-}) => {
+const Comp: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  path?: string;
+  onClick?: () => void;
+}> = ({ children, className, path, onClick, ...props }) => {
+  return (
+    <>
+      {path ? (
+        <NavLink
+          to={path}
+          className={cn("", className)}
+          onClick={onClick}
+          {...props}
+        >
+          {children}
+        </NavLink>
+      ) : (
+        <div className={cn("", className)} onClick={onClick} {...props}>
+          {children}
+        </div>
+      )}
+    </>
+  );
+};
+
+const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
   const {
     activeIndexPath = [],
     openIndexPath = [],
     setOpenIndexPath,
   } = useMenu();
-  const { label, path, children } = item;
+  const { menuType, label, path, badges, children } = item;
 
   // Check if current item is active
   const isActive =
@@ -43,75 +65,93 @@ const SubMenuItem: React.FC<Props> = ({
     }
   };
 
-  const paddingLeft = `${depth + 1}rem`;
+  if (menuType === "title") {
+    return (
+      <>
+        <div
+          className={cn(
+            "text-muted-foreground/75 flex items-center px-2 py-1 text-sm font-semibold uppercase lg:px-3",
+          )}
+        >
+          <span className={cn("")}>{label}</span>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div>
       {/* Menu Item */}
-      <div
-        className={cn(
-          "relative flex items-center justify-between pr-8",
-          className,
-        )}
-        style={{ paddingLeft }}
+      <Comp
+        path={path}
+        onClick={handleToggle}
+        className={cn("relative flex items-center px-2 py-2 lg:px-3", {
+          "bg-accent/15": isActive,
+        })}
       >
-        {/* Content */}
-        {path ? (
-          <NavLink
-            to={path}
-            className={({ isActive: isRouteActive }) =>
-              cn("flex flex-1 items-center gap-2 hover:underline", {
-                "text-primary font-medium": isRouteActive || isOpen,
-              })
-            }
-          >
+        <div
+          className={cn(
+            "relative flex flex-1 items-center justify-between gap-2 tracking-wide",
+            "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
+          )}
+        >
+          {/* Content */}
+          <div className="flex flex-1 cursor-pointer items-center gap-2">
             <span className="flex-1">{label}</span>
-            <span>{/* Badge placeholder */}</span>
-          </NavLink>
-        ) : (
-          <div
-            className={cn("flex flex-1 cursor-pointer items-center gap-2", {
-              "text-primary font-medium": isOpen,
-            })}
-            onClick={hasChildren ? handleToggle : undefined}
-          >
-            <span className="flex-1">{label}</span>
-            <span>{/* Badge placeholder */}</span>
+            <div className="flex gap-0.5">
+              {badges?.map((badge) => <Badge key={badge}>{badge}</Badge>)}
+            </div>
           </div>
-        )}
 
-        {/* Chevron */}
-        {hasChildren && (
-          <button
-            onClick={handleToggle}
-            className="absolute top-0 right-0 bottom-0 flex items-center px-2"
-            aria-label={isOpen ? "Collapse" : "Expand"}
-          >
-            <ChevronRight
-              size={16}
-              className={cn("transition-transform duration-200", {
-                "rotate-90": isOpen,
-              })}
-            />
-          </button>
-        )}
-      </div>
+          {/* Chevron */}
+          {hasChildren && (
+            <button
+              onClick={(e) => {
+                e.preventDefault(); // Prevent link navigation
+                e.stopPropagation(); // Prevent bubbling to the Link
+                handleToggle();
+              }}
+              className="absolute top-0 right-0 bottom-0 flex items-center"
+              aria-label={isOpen ? "Collapse" : "Expand"}
+            >
+              <ChevronRight
+                className={cn("size-4 transition-transform duration-300", {
+                  "rotate-90": isOpen,
+                })}
+              />
+            </button>
+          )}
+        </div>
+      </Comp>
 
       {/* Children */}
       {hasChildren && (
         <div
-          className={cn("transition-all duration-200", {
-            hidden: !isOpen,
-          })}
+          className={cn(
+            "relative grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out",
+            {
+              "grid-rows-[1fr]": isOpen,
+            },
+          )}
         >
-          {children.map((child, index) => (
-            <SubMenuItem
-              key={`${indexPath.join("-")}-${index}`}
-              item={child}
-              indexPath={[...indexPath, index]}
-              depth={depth + 1}
-            />
-          ))}
+          <div
+            className={cn(
+              "invisible min-h-0 origin-top scale-y-0 overflow-hidden pl-2 opacity-0 transition-transform duration-300 ease-in-out lg:pl-3",
+              {
+                "visible min-h-fit origin-top scale-y-100 opacity-100 delay-100":
+                  isOpen,
+              },
+            )}
+          >
+            {children.map((child, index) => (
+              <SubMenuItem
+                key={`${index}`}
+                item={child}
+                indexPath={[index]}
+                depth={1}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

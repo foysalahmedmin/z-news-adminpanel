@@ -42,10 +42,6 @@ const CommonLayout = () => {
             "w-full max-w-80 lg:relative lg:translate-x-0 lg:shadow-none",
             // Desktop compact behavior
             "lg:w-80 lg:transition-[width] lg:duration-300",
-            {
-              "lg:w-20 lg:hover:w-80": isCompact,
-              "lg:hover:shadow-xl": isCompact,
-            },
             // Mobile behavior
             {
               "translate-x-0": isMobileOpen,

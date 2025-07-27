@@ -31,9 +31,20 @@ export const items: IItem[] = [
       },
       {
         icon: "blocks",
-        path: "categories",
+        // path: "categories",
         label: "Categories",
-        element: <Dashboard />,
+        children: [
+          {
+            path: "categories",
+            label: "Categories",
+            element: <Dashboard />,
+          },
+          {
+            path: "tags",
+            label: "Tags",
+            element: <Dashboard />,
+          },
+        ],
       },
       {
         icon: "newspaper",

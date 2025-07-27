@@ -4,7 +4,7 @@ import useMenu from "@/hooks/states/useMenu";
 import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
 import type { IProcessedMenu } from "@/types/route-menu.type";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Dot } from "lucide-react";
 import React from "react";
 import { NavLink } from "react-router";
 import SubMenuItem from "./SubMenuItem";
@@ -41,7 +41,7 @@ const Comp: React.FC<{
   );
 };
 
-const MenuItem: React.FC<Props> = ({ index, item, className }) => {
+const MenuItem: React.FC<Props> = ({ index, item }) => {
   const { setting } = useSetting();
   const isCompact = setting.sidebar === "compact";
 
@@ -67,10 +67,25 @@ const MenuItem: React.FC<Props> = ({ index, item, className }) => {
       <>
         <div
           className={cn(
-            "text-muted-foreground flex h-8 items-center font-semibold uppercase",
+            "text-muted-foreground flex items-center px-2 py-2 font-semibold uppercase lg:px-3",
           )}
         >
-          <span className={cn("")}>{label}</span>
+          {isCompact ? (
+            <>
+              <span
+                className={cn(
+                  "hidden lg:block lg:w-full lg:group-hover/sidebar:hidden",
+                )}
+              >
+                <Dot className="size-6" />
+              </span>
+              <span className={cn("lg:hidden lg:group-hover/sidebar:block")}>
+                {label}
+              </span>
+            </>
+          ) : (
+            <span className={cn("")}>{label}</span>
+          )}
         </div>
       </>
     );
@@ -82,32 +97,28 @@ const MenuItem: React.FC<Props> = ({ index, item, className }) => {
       <Comp
         path={path}
         onClick={handleToggle}
-        className={cn("relative flex items-center", {
-          "bg-accent/15": isActive,
-        })}
+        className={cn(
+          "relative flex items-center gap-2 px-2 py-2 lg:gap-3 lg:px-3",
+          {
+            "bg-accent/15": isActive,
+          },
+        )}
       >
         <div className="flex flex-shrink-0 items-center justify-center">
-          <div className="flex size-8 items-center justify-center">
-            {item.icon && <Icon name={item.icon} className="size-5" />}
+          <div className="flex size-6 items-center justify-center">
+            {item.icon && (
+              <Icon name={item.icon} strokeWidth={1.5} className="size-6" />
+            )}
           </div>
         </div>
         <div
           className={cn(
             "relative flex flex-1 items-center justify-between tracking-wide",
-            "overflow-hidden whitespace-nowrap transition-[width,opacity] duration-500",
-            {
-              "lg:invisible lg:w-0 lg:opacity-0 lg:group-hover/sidebar:visible lg:group-hover/sidebar:opacity-100":
-                isCompact,
-            },
-            className,
+            "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
           )}
         >
           {/* Content */}
-          <div
-            className={cn("flex flex-1 cursor-pointer items-center gap-2", {
-              "text-primary font-medium": isOpen,
-            })}
-          >
+          <div className="flex flex-1 cursor-pointer items-center gap-2">
             <span className="flex-1">{label}</span>
             <div className="flex gap-0.5">
               {badges?.map((badge) => <Badge key={badge}>{badge}</Badge>)}
@@ -122,12 +133,11 @@ const MenuItem: React.FC<Props> = ({ index, item, className }) => {
                 e.stopPropagation(); // Prevent bubbling to the Link
                 handleToggle();
               }}
-              className="absolute top-0 right-4 bottom-0 flex items-center px-2"
+              className="absolute top-0 right-0 bottom-0 flex items-center"
               aria-label={isOpen ? "Collapse" : "Expand"}
             >
               <ChevronRight
-                size={16}
-                className={cn("transition-transform duration-200", {
+                className={cn("size-4 transition-transform duration-300", {
                   "rotate-90": isOpen,
                 })}
               />
@@ -139,18 +149,32 @@ const MenuItem: React.FC<Props> = ({ index, item, className }) => {
       {/* Children */}
       {hasChildren && (
         <div
-          className={cn("transition-all duration-200", {
-            hidden: !isOpen,
-          })}
+          className={cn(
+            "relative grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out",
+            {
+              "grid-rows-[1fr]": isOpen,
+              "lg:hidden lg:group-hover/sidebar:block": isCompact,
+            },
+          )}
         >
-          {children.map((child, index) => (
-            <SubMenuItem
-              key={`${index}`}
-              item={child}
-              indexPath={[index]}
-              depth={1}
-            />
-          ))}
+          <div
+            className={cn(
+              "invisible min-h-0 origin-top scale-y-0 overflow-hidden pl-2 opacity-0 transition-transform duration-300 ease-in-out lg:pl-3",
+              {
+                "visible min-h-fit origin-top scale-y-100 opacity-100 delay-100":
+                  isOpen,
+              },
+            )}
+          >
+            {children.map((child, index) => (
+              <SubMenuItem
+                key={`${index}`}
+                item={child}
+                indexPath={[index]}
+                depth={1}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

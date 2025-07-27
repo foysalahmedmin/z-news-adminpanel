@@ -272,6 +272,11 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
       }
     }
 
+    if (children?.length) {
+      const nextConfig = this.createNextConfig(config, routeType, path);
+      return [{ ...elements, children: this.process(children!, nextConfig) }];
+    }
+
     // Non-layout routes with children always return the element
     return [elements];
   }

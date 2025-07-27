@@ -1,5 +1,4 @@
 import useMenu from "@/hooks/states/useMenu";
-import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import React, { memo } from "react";
@@ -12,10 +11,6 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
   const { menus } = useMenu();
-  const { setting } = useSetting();
-  const isCompact = setting.sidebar === "compact";
-
-  const [sidebarHovered, setSidebarHovered] = React.useState(false);
 
   console.log(menus);
 
@@ -29,13 +24,13 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
       >
         {/* Logo Section */}
         <div
-          className={cn("flex h-full min-w-0 items-center", {
-            "lg:mx-1": isCompact,
-          })}
+          className={cn(
+            "logo flex h-full min-w-0 items-center gap-4 px-2 lg:px-1",
+          )}
         >
-          <div className={cn("flex-shrink-0")}>
+          <div className={cn("logo-icon size-8 flex-shrink-0 lg:size-10")}>
             <img
-              className="size-8 rounded-md lg:size-10"
+              className="size-full rounded-md object-contain"
               src="/logo.png"
               alt="Z-News Logo"
               loading="lazy"
@@ -43,12 +38,8 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
           </div>
           <h1
             className={cn(
-              "text-foreground pl-2 text-lg font-bold tracking-wide",
-              "overflow-hidden whitespace-nowrap transition-[width,opacity] duration-500",
-              {
-                "lg:invisible lg:w-0 lg:pl-0 lg:opacity-0 lg:group-hover/sidebar:visible lg:group-hover/sidebar:w-auto lg:group-hover/sidebar:pl-2 lg:group-hover/sidebar:opacity-100":
-                  isCompact,
-              },
+              "text-foreground logo-text text-lg font-bold tracking-wide",
+              "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
             )}
           >
             Z-NEWS
