@@ -18,21 +18,28 @@ const SubMenuItem: React.FC<Props> = ({
   className = "",
   depth = 1,
 }) => {
-  const { activeIndex = [], setActiveIndex } = useMenu();
+  const {
+    activeIndexPath = [],
+    openIndexPath = [],
+    setOpenIndexPath,
+  } = useMenu();
   const { label, path, children } = item;
 
   // Check if current item is active
   const isActive =
-    activeIndex?.length > 0 &&
-    activeIndex.slice(0, indexPath.length).join("") === indexPath.join("");
+    activeIndexPath?.length > 0 &&
+    activeIndexPath.slice(0, indexPath.length).join("") === indexPath.join("");
+  const isOpen =
+    openIndexPath?.length > 0 &&
+    openIndexPath.slice(0, indexPath.length).join("") === indexPath.join("");
 
   const hasChildren = children && children.length > 0;
 
   const handleToggle = () => {
-    if (isActive) {
-      setActiveIndex(indexPath.slice(0, -1));
+    if (isOpen) {
+      setOpenIndexPath(indexPath.slice(0, -1));
     } else {
-      setActiveIndex(indexPath);
+      setOpenIndexPath(indexPath);
     }
   };
 
@@ -54,7 +61,7 @@ const SubMenuItem: React.FC<Props> = ({
             to={path}
             className={({ isActive: isRouteActive }) =>
               cn("flex flex-1 items-center gap-2 hover:underline", {
-                "text-primary font-medium": isRouteActive || isActive,
+                "text-primary font-medium": isRouteActive || isOpen,
               })
             }
           >
@@ -64,7 +71,7 @@ const SubMenuItem: React.FC<Props> = ({
         ) : (
           <div
             className={cn("flex flex-1 cursor-pointer items-center gap-2", {
-              "text-primary font-medium": isActive,
+              "text-primary font-medium": isOpen,
             })}
             onClick={hasChildren ? handleToggle : undefined}
           >
@@ -78,12 +85,12 @@ const SubMenuItem: React.FC<Props> = ({
           <button
             onClick={handleToggle}
             className="absolute top-0 right-0 bottom-0 flex items-center px-2"
-            aria-label={isActive ? "Collapse" : "Expand"}
+            aria-label={isOpen ? "Collapse" : "Expand"}
           >
             <ChevronRight
               size={16}
               className={cn("transition-transform duration-200", {
-                "rotate-90": isActive,
+                "rotate-90": isOpen,
               })}
             />
           </button>
@@ -94,7 +101,7 @@ const SubMenuItem: React.FC<Props> = ({
       {hasChildren && (
         <div
           className={cn("transition-all duration-200", {
-            hidden: !isActive,
+            hidden: !isOpen,
           })}
         >
           {children.map((child, index) => (

@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = memo(
       <header
         className={cn(
           "sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6",
-          "bg-card h-16",
+          "bg-card h-16 lg:h-20",
           "border-border border-b",
           className,
         )}

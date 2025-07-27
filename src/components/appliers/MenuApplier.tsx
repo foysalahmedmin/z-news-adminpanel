@@ -2,7 +2,7 @@ import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
 import {
   setActiveBreadcrumb,
-  setActiveIndex,
+  setActiveIndexPath,
   setBreadcrumbs,
   setIndexes,
   setMenus,
@@ -35,7 +35,7 @@ const MenuApplier = () => {
 
   useEffect(() => {
     if (pathname && indexes) {
-      dispatch(setActiveIndex(indexes[pathname]));
+      dispatch(setActiveIndexPath(indexes[pathname]));
       dispatch(setActiveBreadcrumb(breadcrumbs[pathname]));
     }
   }, [pathname, indexes, breadcrumbs, dispatch]);

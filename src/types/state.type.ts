@@ -16,10 +16,11 @@ export type TSettingState = {
   layout?: "vertical" | "horizontal";
 };
 
-export type TRouteMenuState = {
+export type TMenuState = {
   menus: IProcessedMenu[];
   indexes: Record<string, number[]>;
   breadcrumbs: Record<string, IBreadcrumb[]>;
-  activeIndex?: number[];
+  activeIndexPath?: number[];
+  openIndexPath?: number[];
   activeBreadcrumb?: IBreadcrumb[];
 };

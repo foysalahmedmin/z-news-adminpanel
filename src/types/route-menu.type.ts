@@ -1,34 +1,38 @@
+export type TItemStatus = "active" | "inactive" | "deprecated" | "beta";
 export type TRouteType = "layout" | "page" | "redirect" | "external";
-export type TRouteStatus = "active" | "inactive" | "deprecated" | "beta";
+export type TMenuType =
+  | "visible"
+  | "invisible"
+  | "title"
+  | "item"
+  | "item-without-path"
+  | "item-without-children";
 
-export interface IRouteMeta {
+export type TRouteMeta = {
   title?: string;
   description?: string;
   keywords?: string[];
   author?: string;
-}
+};
 
 export interface IItem {
   readonly label?: string;
-  readonly icon?: React.ReactElement | string;
+  readonly icon?: string;
   readonly path?: string;
   readonly index?: true;
-  readonly type?: TRouteType;
-  readonly status?: TRouteStatus;
-  readonly asItem?: boolean;
-  readonly asItemAlone?: boolean;
+  readonly status?: TItemStatus;
+  readonly routeType?: TRouteType;
+  readonly menuType?: TMenuType;
   readonly element?: React.ReactElement;
   readonly loader?: () => Promise<unknown> | unknown;
   readonly action?: () => Promise<unknown> | unknown;
-  readonly base?: string;
-  readonly bases?: readonly string[];
+  readonly badge?: string;
+  readonly badges?: readonly string[];
   readonly children?: readonly IItem[];
   readonly roles?: readonly string[];
   readonly categories?: readonly string[];
-  readonly visible?: boolean;
-  readonly invisible?: boolean;
   readonly hidden?: boolean;
-  readonly meta?: IRouteMeta;
+  readonly meta?: TRouteMeta;
 }
 
 export interface IProcessedWithIndexRoute {
@@ -56,10 +60,12 @@ export type IProcessedRoute =
 export interface IProcessedMenu {
   label: string;
   path?: string;
-  icon?: React.ReactElement | string;
-  base?: string;
-  type?: TRouteType;
-  status?: TRouteStatus;
+  icon?: string;
+  badge?: string;
+  badges?: string[];
+  routeType?: TRouteType;
+  menuType?: TMenuType;
+  status?: TItemStatus;
   roles?: string[];
   categories?: string[];
   children?: IProcessedMenu[];

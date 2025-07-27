@@ -1,15 +1,21 @@
-import { setActiveIndex as setActiveIndexSlice } from "@/redux/slices/menu-slice";
+import { setOpenIndexPath as setOpenIndexPathSlice } from "@/redux/slices/menu-slice";
 import type { RootState } from "@/redux/store";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const useMenu = () => {
   const dispatch = useDispatch();
-  const { menus, indexes, breadcrumbs, activeIndex, activeBreadcrumb } =
-    useSelector((state: RootState) => state.menu);
+  const {
+    menus,
+    indexes,
+    breadcrumbs,
+    activeIndexPath,
+    openIndexPath,
+    activeBreadcrumb,
+  } = useSelector((state: RootState) => state.menu);
 
-  const setActiveIndex = useCallback(
-    (payload: number[]) => dispatch(setActiveIndexSlice(payload)),
+  const setOpenIndexPath = useCallback(
+    (payload: number[]) => dispatch(setOpenIndexPathSlice(payload)),
     [dispatch],
   );
 
@@ -17,9 +23,10 @@ const useMenu = () => {
     menus,
     indexes,
     breadcrumbs,
-    activeIndex,
+    activeIndexPath,
+    openIndexPath,
     activeBreadcrumb,
-    setActiveIndex,
+    setOpenIndexPath,
   };
 };
 

@@ -15,6 +15,8 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
   const { setting } = useSetting();
   const isCompact = setting.sidebar === "compact";
 
+  const [sidebarHovered, setSidebarHovered] = React.useState(false);
+
   console.log(menus);
 
   return (
@@ -22,17 +24,18 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
       {/* Header */}
       <header
         className={cn(
-          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm",
-          {
-            "lg:justify-between": isCompact,
-          },
+          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm lg:h-20",
         )}
       >
         {/* Logo Section */}
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="flex-shrink-0">
+        <div
+          className={cn("flex h-full min-w-0 items-center", {
+            "lg:mx-1": isCompact,
+          })}
+        >
+          <div className={cn("flex-shrink-0")}>
             <img
-              className="h-8 w-8 rounded-md"
+              className="size-8 rounded-md lg:size-10"
               src="/logo.png"
               alt="Z-News Logo"
               loading="lazy"
@@ -40,10 +43,10 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
           </div>
           <h1
             className={cn(
-              "text-foreground text-lg font-bold tracking-wide",
-              "overflow-hidden whitespace-nowrap transition-all duration-500",
+              "text-foreground pl-2 text-lg font-bold tracking-wide",
+              "overflow-hidden whitespace-nowrap transition-[width,opacity] duration-500",
               {
-                "lg:w-0 lg:opacity-0 lg:group-hover/sidebar:w-auto lg:group-hover/sidebar:opacity-100":
+                "lg:invisible lg:w-0 lg:pl-0 lg:opacity-0 lg:group-hover/sidebar:visible lg:group-hover/sidebar:w-auto lg:group-hover/sidebar:pl-2 lg:group-hover/sidebar:opacity-100":
                   isCompact,
               },
             )}

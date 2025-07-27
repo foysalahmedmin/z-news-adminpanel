@@ -4,6 +4,7 @@ import type {
   INavigationConfig,
   IProcessedMenu,
   IProcessedRoute,
+  TRouteType,
 } from "@/types/route-menu.type";
 
 // ----------------------------
@@ -105,6 +106,20 @@ class ItemValidator {
     );
   }
 
+  static isValidMenu(menu: IItem): boolean {
+    const hasValidPath =
+      (menu.path || menu.path === "") && !menu.path.includes(":");
+    const hasChildren = Boolean(menu.children?.length);
+    const hasLabel = Boolean(menu.label);
+    const isParameterizedWithoutVisible =
+      !!menu.path?.includes(":") && !hasChildren && menu.menuType === "visible";
+
+    return (
+      (hasValidPath || hasChildren || hasLabel) &&
+      !isParameterizedWithoutVisible
+    );
+  }
+
   static shouldHideRoute(
     item: IItem,
     userRole?: string,
@@ -112,6 +127,7 @@ class ItemValidator {
   ): boolean {
     return (
       item.hidden ||
+      item.menuType === "title" ||
       !this.isValidRoute(item) ||
       !PermissionValidator.isItemAccessible(item, userRole, category)
     );
@@ -122,21 +138,10 @@ class ItemValidator {
     userRole?: string,
     category?: string,
   ): boolean {
-    const hasValidPath =
-      (item.path || item.path === "") && !item.path.includes(":");
-    const hasChildren = Boolean(item.children?.length);
-    const hasLabel = Boolean(item.label);
-    const isParameterizedWithoutVisible =
-      item.path?.includes(":") && !hasChildren && !item.visible;
-
-    const isInvalid =
-      item.hidden ||
-      item.invisible ||
-      (!hasValidPath && !hasChildren && !hasLabel) ||
-      isParameterizedWithoutVisible;
-
     return (
-      isInvalid ||
+      item.hidden ||
+      item.menuType === "invisible" ||
+      !this.isValidMenu(item) ||
       !PermissionValidator.isItemAccessible(item, userRole, category)
     );
   }
@@ -155,7 +160,7 @@ class RouteProcessor extends BaseProcessor<IProcessedRoute> {
       return [];
     }
 
-    const { path, element, children, loader, action, index, type } = item;
+    const { path, element, children, loader, action, index, routeType } = item;
 
     const baseRoute = {
       ...(typeof path !== "undefined" && { path }),
@@ -170,7 +175,7 @@ class RouteProcessor extends BaseProcessor<IProcessedRoute> {
     }
 
     // Layout route with children
-    if (children?.length && type === "layout") {
+    if (children?.length && routeType === "layout") {
       return [
         {
           ...baseRoute,
@@ -213,8 +218,19 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
     item: IItem,
     config: INavigationConfig,
   ): IProcessedMenu {
-    const { icon, label, path, index, base, roles, type, status, categories } =
-      item;
+    const {
+      icon,
+      label,
+      path,
+      index,
+      badge,
+      badges,
+      roles,
+      routeType,
+      menuType,
+      status,
+      categories,
+    } = item;
     const processedPath = PathUtils.buildFullPath(
       config.initialPath,
       path,
@@ -225,8 +241,10 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
       label: label || path || "",
       ...(processedPath && { path: processedPath }),
       ...(icon && { icon }),
-      ...(base && { base }),
-      ...(type && { type }),
+      ...(badge && { badge }),
+      ...(badges?.length && { badges: [...badges] }),
+      ...(routeType && { routeType }),
+      ...(menuType && { menuType }),
       ...(status && { status }),
       ...(roles?.length && { roles: [...roles] }),
       ...(categories?.length && { categories: [...categories] }),
@@ -238,19 +256,20 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
     elements: IProcessedMenu,
     config: INavigationConfig,
   ): IProcessedMenu[] {
-    const { children, type, path, asItem, asItemAlone } = item;
+    const { children, routeType, menuType, path } = item;
 
-    // Return just the element if asItemAlone is true
-    if (asItemAlone) {
+    if (menuType === "title" || menuType === "item-without-children") {
       return [elements];
     }
 
-    const nextConfig = this.createNextConfig(config, type, path);
+    if (routeType === "layout" && children?.length) {
+      const nextConfig = this.createNextConfig(config, routeType, path);
 
-    if (type === "layout") {
-      return asItem
-        ? [{ ...elements, children: this.process(children!, nextConfig) }]
-        : this.process(children!, nextConfig);
+      if (menuType === "item" || menuType === "item-without-path") {
+        return [{ ...elements, children: this.process(children!, nextConfig) }];
+      } else {
+        return this.process(children!, nextConfig);
+      }
     }
 
     // Non-layout routes with children always return the element
@@ -259,10 +278,10 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
 
   private createNextConfig(
     config: INavigationConfig,
-    type?: string,
+    routeType?: TRouteType,
     path?: string,
   ): INavigationConfig {
-    if (type !== "layout" || !path) {
+    if (routeType !== "layout" || !path) {
       return config;
     }
 

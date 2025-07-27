@@ -13,24 +13,73 @@ export const items: IItem[] = [
   {
     path: "",
     element: <CommonLayout />,
-    type: "layout",
+    routeType: "layout",
     children: [
       {
+        menuType: "title",
+        label: "Dashboard",
+      },
+      {
+        icon: "layout-template",
         index: true,
         label: "Dashboard",
+        element: <Dashboard />,
+      },
+      {
+        menuType: "title",
+        label: "Management",
+      },
+      {
+        icon: "blocks",
+        path: "categories",
+        label: "Categories",
+        element: <Dashboard />,
+      },
+      {
+        icon: "newspaper",
+        path: "news",
+        label: "News Article",
+        element: <Dashboard />,
+      },
+      {
+        icon: "message-square-quote",
+        path: "comments",
+        label: "Comments",
+        element: <Dashboard />,
+      },
+      {
+        icon: "smile",
+        path: "reactions",
+        label: "Reactions",
+        element: <Dashboard />,
+      },
+      {
+        icon: "users",
+        path: "users",
+        label: "Users",
+        element: <Dashboard />,
+      },
+      {
+        menuType: "title",
+        label: "Settings",
+      },
+      {
+        icon: "bell",
+        path: "notifications",
+        label: "Notifications",
         element: <Dashboard />,
       },
     ],
   },
   {
-    invisible: true,
+    menuType: "invisible",
     path: "user",
     element: (
       <AuthWrapper>
         <UserLayout />
       </AuthWrapper>
     ),
-    type: "layout",
+    routeType: "layout",
     children: [
       {
         path: "profile",
@@ -43,7 +92,7 @@ export const items: IItem[] = [
     ],
   },
   {
-    invisible: true,
+    menuType: "invisible",
     path: "auth",
     element: <AuthLayout />,
     children: [
@@ -58,7 +107,7 @@ export const items: IItem[] = [
     ],
   },
   {
-    invisible: true,
+    menuType: "invisible",
     path: "*",
     element: <NotFoundPage />,
   },
