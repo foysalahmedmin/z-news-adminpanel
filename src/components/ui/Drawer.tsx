@@ -300,6 +300,7 @@ const DrawerCloseTrigger: React.FC<ButtonProps> = ({
 
 // Drawer Compound Component
 const Drawer = Object.assign(DrawerRoot, {
+  Root: DrawerRoot,
   Backdrop: DrawerBackdrop,
   Content: DrawerContent,
   Header: DrawerHeader,

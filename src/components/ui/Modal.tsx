@@ -293,6 +293,7 @@ const ModalCloseTrigger: React.FC<ButtonProps> = ({
 
 // Modal Compound Component
 const Modal = Object.assign(ModalRoot, {
+  Root: ModalRoot,
   Backdrop: ModalBackdrop,
   Content: ModalContent,
   Header: ModalHeader,
