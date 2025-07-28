@@ -1,12 +1,12 @@
 import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
 import {
-  setActiveBreadcrumb,
-  setActiveIndexPath,
-  setBreadcrumbs,
-  setIndexes,
+  setActiveBreadcrumbs,
+  setActiveIndexes,
+  setBreadcrumbsMap,
+  setIndexesMap,
   setMenus,
-  setOpenIndexPath,
+  setOpenIndexes,
 } from "@/redux/slices/menu-slice";
 import type { RootState } from "@/redux/store";
 import { useEffect, useMemo } from "react";
@@ -16,7 +16,7 @@ import { useLocation } from "react-router";
 const MenuApplier = () => {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { indexes, breadcrumbs } = useSelector(
+  const { indexesMap, breadcrumbsMap } = useSelector(
     (state: RootState) => state.menu,
   );
 
@@ -26,21 +26,21 @@ const MenuApplier = () => {
   }, []);
 
   useEffect(() => {
-    if (!indexes || Object.keys(indexes).length === 0) {
-      const { menus, indexes, breadcrumbs } = menusData;
+    if (!indexesMap || Object.keys(indexesMap).length === 0) {
+      const { menus, indexesMap, breadcrumbsMap } = menusData;
       dispatch(setMenus(menus));
-      dispatch(setIndexes(indexes));
-      dispatch(setBreadcrumbs(breadcrumbs));
+      dispatch(setIndexesMap(indexesMap));
+      dispatch(setBreadcrumbsMap(breadcrumbsMap));
     }
-  }, [dispatch, menusData, indexes]);
+  }, [dispatch, menusData, indexesMap]);
 
   useEffect(() => {
-    if (pathname && indexes) {
-      dispatch(setActiveIndexPath(indexes[pathname]));
-      dispatch(setOpenIndexPath(indexes[pathname]));
-      dispatch(setActiveBreadcrumb(breadcrumbs[pathname]));
+    if (pathname && indexesMap) {
+      dispatch(setActiveIndexes(indexesMap[pathname]));
+      dispatch(setOpenIndexes(indexesMap[pathname]));
+      dispatch(setActiveBreadcrumbs(breadcrumbsMap[pathname]));
     }
-  }, [pathname, indexes, breadcrumbs, dispatch]);
+  }, [pathname, indexesMap, breadcrumbsMap, dispatch]);
 
   return null;
 };

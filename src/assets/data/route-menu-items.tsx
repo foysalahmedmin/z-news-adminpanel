@@ -7,9 +7,9 @@ import SignUpPage from "@/pages/(auth)/SignUpPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
-import type { IItem } from "@/types/route-menu.type";
+import type { TItem } from "@/types/route-menu.type";
 
-export const items: IItem[] = [
+export const items: TItem[] = [
   {
     path: "",
     element: <CommonLayout />,
@@ -17,31 +17,31 @@ export const items: IItem[] = [
     children: [
       {
         menuType: "title",
-        label: "Dashboard",
+        name: "Dashboard",
       },
       {
         icon: "layout-template",
         index: true,
-        label: "Dashboard",
+        name: "Dashboard",
         element: <Dashboard />,
       },
       {
         menuType: "title",
-        label: "Management",
+        name: "Management",
       },
       {
         icon: "blocks",
         // path: "categories",
-        label: "Categories",
+        name: "Categories",
         children: [
           {
             path: "categories",
-            label: "Categories",
+            name: "Categories",
             element: <Dashboard />,
           },
           {
             path: "tags",
-            label: "Tags",
+            name: "Tags",
             element: <Dashboard />,
           },
         ],
@@ -49,35 +49,35 @@ export const items: IItem[] = [
       {
         icon: "newspaper",
         path: "news",
-        label: "News Article",
+        name: "News Article",
         element: <Dashboard />,
       },
       {
         icon: "message-square-quote",
         path: "comments",
-        label: "Comments",
+        name: "Comments",
         element: <Dashboard />,
       },
       {
         icon: "smile",
         path: "reactions",
-        label: "Reactions",
+        name: "Reactions",
         element: <Dashboard />,
       },
       {
         icon: "users",
         path: "users",
-        label: "Users",
+        name: "Users",
         element: <Dashboard />,
       },
       {
         menuType: "title",
-        label: "Settings",
+        name: "Settings",
       },
       {
         icon: "bell",
         path: "notifications",
-        label: "Notifications",
+        name: "Notifications",
         element: <Dashboard />,
       },
     ],

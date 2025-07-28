@@ -6,11 +6,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: TMenuState = {
   menus: [],
-  indexes: {},
-  breadcrumbs: {},
-  activeIndexPath: [],
-  openIndexPath: [],
-  activeBreadcrumb: [],
+  indexesMap: {},
+  breadcrumbsMap: {},
+  activeIndexes: [],
+  openIndexes: [],
+  activeBreadcrumbs: [],
 };
 
 const routeSlice = createSlice({
@@ -20,39 +20,39 @@ const routeSlice = createSlice({
     setMenus(state, action: PayloadAction<TMenuState["menus"]>) {
       state.menus = action.payload;
     },
-    setIndexes(state, action: PayloadAction<TMenuState["indexes"]>) {
-      state.indexes = action.payload;
+    setIndexesMap(state, action: PayloadAction<TMenuState["indexesMap"]>) {
+      state.indexesMap = action.payload;
     },
-    setBreadcrumbs(state, action: PayloadAction<TMenuState["breadcrumbs"]>) {
-      state.breadcrumbs = action.payload;
-    },
-    setActiveIndexPath(
+    setBreadcrumbsMap(
       state,
-      action: PayloadAction<TMenuState["activeIndexPath"]>,
+      action: PayloadAction<TMenuState["breadcrumbsMap"]>,
     ) {
-      state.activeIndexPath = action.payload;
+      state.breadcrumbsMap = action.payload;
     },
-    setOpenIndexPath(
+    setActiveIndexes(
       state,
-      action: PayloadAction<TMenuState["openIndexPath"]>,
+      action: PayloadAction<TMenuState["activeIndexes"]>,
     ) {
-      state.openIndexPath = action.payload;
+      state.activeIndexes = action.payload;
     },
-    setActiveBreadcrumb(
+    setOpenIndexes(state, action: PayloadAction<TMenuState["openIndexes"]>) {
+      state.openIndexes = action.payload;
+    },
+    setActiveBreadcrumbs(
       state,
-      action: PayloadAction<TMenuState["activeBreadcrumb"]>,
+      action: PayloadAction<TMenuState["activeBreadcrumbs"]>,
     ) {
-      state.activeBreadcrumb = action.payload;
+      state.activeBreadcrumbs = action.payload;
     },
   },
 });
 
 export const {
   setMenus,
-  setIndexes,
-  setBreadcrumbs,
-  setActiveIndexPath,
-  setOpenIndexPath,
-  setActiveBreadcrumb,
+  setIndexesMap,
+  setBreadcrumbsMap,
+  setActiveIndexes,
+  setOpenIndexes,
+  setActiveBreadcrumbs,
 } = routeSlice.actions;
 export default routeSlice.reducer;

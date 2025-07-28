@@ -1,15 +1,15 @@
 import { Badge } from "@/components/ui/Badge";
 import useMenu from "@/hooks/states/useMenu";
 import { cn } from "@/lib/utils";
-import type { IProcessedMenu } from "@/types/route-menu.type";
+import type { TProcessedMenu } from "@/types/route-menu.type";
 import { ChevronRight } from "lucide-react";
 import React from "react";
 import { NavLink } from "react-router";
 
 type Props = {
   className?: string;
-  item: IProcessedMenu;
-  indexPath: number[];
+  item: TProcessedMenu;
+  indexes: number[];
   depth: number;
 };
 
@@ -39,29 +39,25 @@ const Comp: React.FC<{
   );
 };
 
-const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
-  const {
-    activeIndexPath = [],
-    openIndexPath = [],
-    setOpenIndexPath,
-  } = useMenu();
-  const { menuType, label, path, badges, children } = item;
+const SubMenuItem: React.FC<Props> = ({ indexes = [], item }) => {
+  const { activeIndexes = [], openIndexes = [], setOpenIndexes } = useMenu();
+  const { menuType, name: label, path, badges, children } = item;
 
   // Check if current item is active
   const isActive =
-    activeIndexPath?.length > 0 &&
-    activeIndexPath.slice(0, indexPath.length).join("") === indexPath.join("");
+    activeIndexes?.length > 0 &&
+    activeIndexes.slice(0, indexes.length).join("") === indexes.join("");
   const isOpen =
-    openIndexPath?.length > 0 &&
-    openIndexPath.slice(0, indexPath.length).join("") === indexPath.join("");
+    openIndexes?.length > 0 &&
+    openIndexes.slice(0, indexes.length).join("") === indexes.join("");
 
   const hasChildren = children && children.length > 0;
 
   const handleToggle = () => {
     if (isOpen) {
-      setOpenIndexPath(indexPath.slice(0, -1));
+      setOpenIndexes(indexes.slice(0, -1));
     } else {
-      setOpenIndexPath(indexPath);
+      setOpenIndexes(indexes);
     }
   };
 
@@ -69,7 +65,7 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
     if (hasChildren) {
       handleToggle();
     } else {
-      if (!isOpen) setOpenIndexPath(indexPath);
+      if (!isOpen) setOpenIndexes(indexes);
     }
   };
 
@@ -164,7 +160,7 @@ const SubMenuItem: React.FC<Props> = ({ indexPath = [], item }) => {
               <SubMenuItem
                 key={`${index}`}
                 item={child}
-                indexPath={[...indexPath, index]}
+                indexes={[...indexes, index]}
                 depth={1}
               />
             ))}

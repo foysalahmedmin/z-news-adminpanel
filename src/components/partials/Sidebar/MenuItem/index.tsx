@@ -3,7 +3,7 @@ import Icon from "@/components/ui/Icon";
 import useMenu from "@/hooks/states/useMenu";
 import useSetting from "@/hooks/states/useSetting";
 import { cn } from "@/lib/utils";
-import type { IProcessedMenu } from "@/types/route-menu.type";
+import type { TProcessedMenu } from "@/types/route-menu.type";
 import { ChevronRight, Dot } from "lucide-react";
 import React from "react";
 import { NavLink } from "react-router";
@@ -11,7 +11,7 @@ import SubMenuItem from "./SubMenuItem";
 
 type Props = {
   className?: string;
-  item: IProcessedMenu;
+  item: TProcessedMenu;
   index: number;
 };
 
@@ -40,20 +40,20 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
   const { setting } = useSetting();
   const isCompact = setting.sidebar === "compact";
 
-  const { activeIndexPath, openIndexPath, setOpenIndexPath } = useMenu();
-  const { menuType, label, path, badges, children } = item || {};
+  const { activeIndexes, openIndexes, setOpenIndexes } = useMenu();
+  const { menuType, name: label, path, badges, children } = item || {};
 
   // Check if current item is active
-  const isActive = index === activeIndexPath?.[0];
-  const isOpen = index === openIndexPath?.[0];
+  const isActive = index === activeIndexes?.[0];
+  const isOpen = index === openIndexes?.[0];
 
   const hasChildren = children && children.length > 0;
 
   const handleToggle = () => {
     if (isOpen) {
-      setOpenIndexPath([]);
+      setOpenIndexes([]);
     } else {
-      setOpenIndexPath([index]);
+      setOpenIndexes([index]);
     }
   };
 
@@ -61,7 +61,7 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
     if (hasChildren) {
       handleToggle();
     } else {
-      if (!isOpen) setOpenIndexPath([index]);
+      if (!isOpen) setOpenIndexes([index]);
     }
   };
 
@@ -195,7 +195,7 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
               <SubMenuItem
                 key={`submenu-${index}-${i}`}
                 item={child}
-                indexPath={[index, i]}
+                indexes={[index, i]}
                 depth={1}
               />
             ))}

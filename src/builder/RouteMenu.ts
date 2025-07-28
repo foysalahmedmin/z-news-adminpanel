@@ -1,9 +1,9 @@
 import type {
-  IBreadcrumb,
-  IItem,
-  INavigationConfig,
-  IProcessedMenu,
   IProcessedRoute,
+  TBreadcrumbs,
+  TItem,
+  TNavigationConfig,
+  TProcessedMenu,
   TRouteType,
 } from "@/types/route-menu.type";
 
@@ -15,14 +15,14 @@ abstract class BaseProcessor<T> {
   protected readonly userRole?: string;
   protected readonly category?: string;
 
-  constructor(config: INavigationConfig = {}) {
+  constructor(config: TNavigationConfig = {}) {
     this.userRole = config.role;
     this.category = config.category;
   }
 
-  protected abstract processItem(item: IItem, config: INavigationConfig): T[];
+  protected abstract processItem(item: TItem, config: TNavigationConfig): T[];
 
-  public process(items: readonly IItem[], config: INavigationConfig = {}): T[] {
+  public process(items: readonly TItem[], config: TNavigationConfig = {}): T[] {
     if (!items?.length) return [];
 
     const mergedConfig = {
@@ -86,7 +86,7 @@ class PermissionValidator {
   }
 
   static isItemAccessible(
-    item: IItem,
+    item: TItem,
     userRole?: string,
     category?: string,
   ): boolean {
@@ -98,7 +98,7 @@ class PermissionValidator {
 }
 
 class ItemValidator {
-  static isValidRoute(route: IItem): boolean {
+  static isValidRoute(route: TItem): boolean {
     return (
       typeof route.path !== "undefined" ||
       Boolean(route.element) ||
@@ -106,22 +106,21 @@ class ItemValidator {
     );
   }
 
-  static isValidMenu(menu: IItem): boolean {
+  static isValidMenu(menu: TItem): boolean {
     const hasValidPath =
       (menu.path || menu.path === "") && !menu.path.includes(":");
     const hasChildren = Boolean(menu.children?.length);
-    const hasLabel = Boolean(menu.label);
+    const hasName = Boolean(menu.name);
     const isParameterizedWithoutVisible =
       !!menu.path?.includes(":") && !hasChildren && menu.menuType === "visible";
 
     return (
-      (hasValidPath || hasChildren || hasLabel) &&
-      !isParameterizedWithoutVisible
+      (hasValidPath || hasChildren || hasName) && !isParameterizedWithoutVisible
     );
   }
 
   static shouldHideRoute(
-    item: IItem,
+    item: TItem,
     userRole?: string,
     category?: string,
   ): boolean {
@@ -134,7 +133,7 @@ class ItemValidator {
   }
 
   static shouldHideMenu(
-    item: IItem,
+    item: TItem,
     userRole?: string,
     category?: string,
   ): boolean {
@@ -153,8 +152,8 @@ class ItemValidator {
 
 class RouteProcessor extends BaseProcessor<IProcessedRoute> {
   protected processItem(
-    item: IItem,
-    config: INavigationConfig,
+    item: TItem,
+    config: TNavigationConfig,
   ): IProcessedRoute[] {
     if (ItemValidator.shouldHideRoute(item, config.role, config.category)) {
       return [];
@@ -194,11 +193,11 @@ class RouteProcessor extends BaseProcessor<IProcessedRoute> {
   }
 }
 
-class MenuProcessor extends BaseProcessor<IProcessedMenu> {
+class MenuProcessor extends BaseProcessor<TProcessedMenu> {
   protected processItem(
-    item: IItem,
-    config: INavigationConfig,
-  ): IProcessedMenu[] {
+    item: TItem,
+    config: TNavigationConfig,
+  ): TProcessedMenu[] {
     // Early exit for invalid items
     if (ItemValidator.shouldHideMenu(item, config.role, config.category)) {
       return [];
@@ -215,12 +214,13 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
   }
 
   private buildMenuElement(
-    item: IItem,
-    config: INavigationConfig,
-  ): IProcessedMenu {
+    item: TItem,
+    config: TNavigationConfig,
+  ): TProcessedMenu {
     const {
       icon,
-      label,
+      name,
+      description,
       path,
       index,
       badge,
@@ -238,7 +238,8 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
     );
 
     return {
-      label: label || path || "",
+      name: name || path || "",
+      ...(description && { description: description }),
       ...(processedPath && { path: processedPath }),
       ...(icon && { icon }),
       ...(badge && { badge }),
@@ -252,10 +253,10 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
   }
 
   private processItemWithChildren(
-    item: IItem,
-    elements: IProcessedMenu,
-    config: INavigationConfig,
-  ): IProcessedMenu[] {
+    item: TItem,
+    elements: TProcessedMenu,
+    config: TNavigationConfig,
+  ): TProcessedMenu[] {
     const { children, routeType, menuType, path } = item;
 
     if (menuType === "title" || menuType === "item-without-children") {
@@ -282,10 +283,10 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
   }
 
   private createNextConfig(
-    config: INavigationConfig,
+    config: TNavigationConfig,
     routeType?: TRouteType,
     path?: string,
-  ): INavigationConfig {
+  ): TNavigationConfig {
     if (routeType !== "layout" || !path) {
       return config;
     }
@@ -302,73 +303,70 @@ class MenuProcessor extends BaseProcessor<IProcessedMenu> {
 // ----------------------------
 
 export class RouteMenu {
-  private readonly items: readonly IItem[];
+  private readonly items: readonly TItem[];
   private readonly routeProcessor: RouteProcessor;
   private readonly menuProcessor: MenuProcessor;
 
-  constructor(items: readonly IItem[]) {
+  constructor(items: readonly TItem[]) {
     this.items = Object.freeze([...items]);
     this.routeProcessor = new RouteProcessor();
     this.menuProcessor = new MenuProcessor();
   }
 
-  public getRoutes(config: Pick<INavigationConfig, "role"> = {}): {
+  public getRoutes(config: Pick<TNavigationConfig, "role"> = {}): {
     routes: IProcessedRoute[];
   } {
     return { routes: this.routeProcessor.process(this.items, config) };
   }
 
-  public getMenus(config: INavigationConfig = {}): {
-    menus: IProcessedMenu[];
-    indexes: Record<string, number[]>;
-    breadcrumbs: Record<string, IBreadcrumb[]>;
+  public getMenus(config: TNavigationConfig = {}): {
+    menus: TProcessedMenu[];
+    indexesMap: Record<string, number[]>;
+    breadcrumbsMap: Record<string, TBreadcrumbs[]>;
   } {
     const menuConfig = { initialPath: "/", ...config };
     const menus = this.menuProcessor.process(this.items, menuConfig);
 
-    const indexes: Record<string, number[]> = {};
-    const breadcrumbs: Record<string, IBreadcrumb[]> = {};
+    const indexesMap: Record<string, number[]> = {};
+    const breadcrumbsMap: Record<string, TBreadcrumbs[]> = {};
 
-    const processIndexPathMap = (
-      items: readonly IProcessedMenu[],
+    const processMap = (
+      items: readonly TProcessedMenu[],
       indexTrail: number[] = [],
-      breadcrumbTrail: IBreadcrumb[] = [],
+      breadcrumbTrail: TBreadcrumbs[] = [],
     ): void => {
       items.forEach((item, idx) => {
         const currentIndexTrail = [...indexTrail, idx];
-        const breadcrumbItem: IBreadcrumb = {
+        const breadcrumbItem: TBreadcrumbs = {
           index: idx,
-          label: item.label,
+          name: item.name,
+          ...(item.description && { description: item.description }),
           ...(item.path && { path: item.path }),
         };
         const currentBreadcrumbTrail = [...breadcrumbTrail, breadcrumbItem];
 
         if (item.path) {
-          indexes[item.path] = currentIndexTrail;
-          breadcrumbs[item.path] = currentBreadcrumbTrail;
+          indexesMap[item.path] = currentIndexTrail;
+          breadcrumbsMap[item.path] = currentBreadcrumbTrail;
         }
 
         if (item.children?.length) {
-          processIndexPathMap(
-            item.children,
-            currentIndexTrail,
-            currentBreadcrumbTrail,
-          );
+          processMap(item.children, currentIndexTrail, currentBreadcrumbTrail);
         }
       });
     };
 
-    processIndexPathMap(menus);
-    return { menus, indexes, breadcrumbs };
+    processMap(menus);
+    return { menus, indexesMap, breadcrumbsMap };
   }
 
-  public getItems(): readonly IItem[] {
+  public getItems(): readonly TItem[] {
     return this.items;
   }
 
-  public getItemsByRole(role: string): IItem[] {
-    const filterByRole = (routes: readonly IItem[]): IItem[] => {
-      return routes.reduce<IItem[]>((acc, route) => {
+  public getItemsByRole(role: string): TItem[] {
+    const filterByRole = (routes: readonly TItem[]): TItem[] => {
+      return routes.reduce<TItem[]>((acc, route) => {
         if (PermissionValidator.checkRole(route.roles, role)) {
           const filteredChildren = route.children
             ? filterByRole(route.children)
@@ -385,9 +383,9 @@ export class RouteMenu {
     return filterByRole(this.items);
   }
 
-  public getItemsByCategory(category: string): IItem[] {
-    const filterByCategory = (routes: readonly IItem[]): IItem[] => {
-      return routes.reduce<IItem[]>((acc, route) => {
+  public getItemsByCategory(category: string): TItem[] {
+    const filterByCategory = (routes: readonly TItem[]): TItem[] => {
+      return routes.reduce<TItem[]>((acc, route) => {
         if (PermissionValidator.checkCategory(route.categories, category)) {
           const filteredChildren = route.children
             ? filterByCategory(route.children)
@@ -404,11 +402,11 @@ export class RouteMenu {
     return filterByCategory(this.items);
   }
 
-  public findItemByPath(path: string): IItem | undefined {
+  public findItemByPath(path: string): TItem | undefined {
     const findRoute = (
-      routes: readonly IItem[],
+      routes: readonly TItem[],
       targetPath: string,
-    ): IItem | undefined => {
+    ): TItem | undefined => {
       for (const route of routes) {
         if (route.path === targetPath) return route;
         if (route.children) {
@@ -426,7 +424,7 @@ export class RouteMenu {
     const errors: string[] = [];
     const paths = new Set<string>();
 
-    const validateItem = (route: IItem, parentPath = ""): void => {
+    const validateItem = (route: TItem, parentPath = ""): void => {
       const fullPath = route.path
         ? PathUtils.join([parentPath, route.path])
         : parentPath;
@@ -437,15 +435,15 @@ export class RouteMenu {
 
       if (fullPath) paths.add(fullPath);
 
-      // Check label only if it's not an index route
-      if (route.index !== true && !route.label) {
-        errors.push(`Route with path "${fullPath}" is missing a label`);
+      // Check Name only if it's not an index route
+      if (route.index !== true && !route.name) {
+        errors.push(`Route with path "${fullPath}" is missing a Name`);
       }
 
       route.children?.forEach((child) => validateItem(child, fullPath));
     };
 
-    this.items.forEach((route) => validateItem(route));
+    this.items.forEach((item) => validateItem(item));
 
     return { valid: errors.length === 0, errors };
   }

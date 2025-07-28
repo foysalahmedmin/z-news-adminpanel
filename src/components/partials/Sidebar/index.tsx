@@ -12,8 +12,6 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
   const { menus } = useMenu();
 
-  console.log(menus);
-
   return (
     <div className={cn("flex h-full flex-col", className)}>
       {/* Header */}

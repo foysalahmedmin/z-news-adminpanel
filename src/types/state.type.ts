@@ -1,4 +1,4 @@
-import type { IBreadcrumb, IProcessedMenu } from "./route-menu.type";
+import type { TBreadcrumbs, TProcessedMenu } from "./route-menu.type";
 import type { TUser } from "./user.type";
 
 export type TUserState = {
@@ -17,10 +17,10 @@ export type TSettingState = {
 };
 
 export type TMenuState = {
-  menus: IProcessedMenu[];
-  indexes: Record<string, number[]>;
-  breadcrumbs: Record<string, IBreadcrumb[]>;
-  activeIndexPath?: number[];
-  openIndexPath?: number[];
-  activeBreadcrumb?: IBreadcrumb[];
+  menus: TProcessedMenu[];
+  indexesMap: Record<string, number[]>;
+  breadcrumbsMap: Record<string, TBreadcrumbs[]>;
+  activeIndexes?: number[];
+  openIndexes?: number[];
+  activeBreadcrumbs?: TBreadcrumbs[];
 };

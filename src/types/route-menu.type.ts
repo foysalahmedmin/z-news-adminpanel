@@ -15,8 +15,9 @@ export type TRouteMeta = {
   author?: string;
 };
 
-export interface IItem {
-  readonly label?: string;
+export type TItem = {
+  readonly name?: string;
+  readonly description?: string;
   readonly icon?: string;
   readonly path?: string;
   readonly index?: true;
@@ -28,37 +29,38 @@ export interface IItem {
   readonly action?: () => Promise<unknown> | unknown;
   readonly badge?: string;
   readonly badges?: readonly string[];
-  readonly children?: readonly IItem[];
+  readonly children?: readonly TItem[];
   readonly roles?: readonly string[];
   readonly categories?: readonly string[];
   readonly hidden?: boolean;
   readonly meta?: TRouteMeta;
-}
+};
 
-export interface IProcessedWithIndexRoute {
+export type TProcessedWithIndexRoute = {
   path?: string;
   element?: React.ReactElement;
   loader?: () => Promise<unknown> | unknown;
   action?: () => Promise<unknown> | unknown;
   index?: true;
   children?: undefined;
-}
+};
 
-export interface IProcessedWithoutIndexRoute {
+export type TProcessedWithoutIndexRoute = {
   path?: string;
   element?: React.ReactElement;
   loader?: () => Promise<unknown> | unknown;
   action?: () => Promise<unknown> | unknown;
   index?: false;
   children?: IProcessedRoute[];
-}
+};
 
 export type IProcessedRoute =
-  | IProcessedWithIndexRoute
-  | IProcessedWithoutIndexRoute;
+  | TProcessedWithIndexRoute
+  | TProcessedWithoutIndexRoute;
 
-export interface IProcessedMenu {
-  label: string;
+export type TProcessedMenu = {
+  name: string;
+  description?: string;
   path?: string;
   icon?: string;
   badge?: string;
@@ -68,17 +70,18 @@ export interface IProcessedMenu {
   status?: TItemStatus;
   roles?: string[];
   categories?: string[];
-  children?: IProcessedMenu[];
-}
+  children?: TProcessedMenu[];
+};
 
-export interface INavigationConfig {
+export type TNavigationConfig = {
   readonly role?: string;
   readonly category?: string;
   readonly initialPath?: string;
-}
+};
 
-export interface IBreadcrumb {
+export type TBreadcrumbs = {
   index: number;
-  label: string;
+  name: string;
+  description?: string;
   path?: string;
-}
+};
