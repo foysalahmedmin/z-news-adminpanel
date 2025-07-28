@@ -82,12 +82,14 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
               >
                 <Dot className="size-6" />
               </span>
-              <span className={cn("lg:hidden lg:group-hover/sidebar:block")}>
+              <span
+                className={cn("text-sm lg:hidden lg:group-hover/sidebar:block")}
+              >
                 {label}
               </span>
             </>
           ) : (
-            <span className={cn("")}>{label}</span>
+            <span className={cn("text-sm")}>{label}</span>
           )}
         </div>
       </>
@@ -103,7 +105,7 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
         className={cn(
           "relative flex items-center gap-2 px-2 py-2 lg:gap-3 lg:px-3",
           {
-            "bg-accent/5": isActive,
+            "bg-accent/5": isActive || isOpen,
           },
         )}
       >
@@ -111,7 +113,7 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
           className={cn(
             "bg-accent absolute start-0 top-0 bottom-0 w-1 rounded-e-full opacity-0 duration-300",
             {
-              "opacity-100": isOpen,
+              "opacity-100": isActive,
             },
           )}
         />

@@ -1,46 +1,51 @@
 import type { TBreadcrumbs } from "@/components/ui/Breadcrumb";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import useMenu from "@/hooks/states/useMenu";
+import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-type AdminPageHeaderProps = {
-  title: string;
+type PageHeaderProps = {
+  className?: string;
+  name?: string;
   description?: string;
-  breadcrumbs: TBreadcrumbs;
-  actions?: ReactNode; // Buttons, filters, etc.
+  breadcrumbs?: TBreadcrumbs;
+  slot?: ReactNode;
 };
 
-export function AdminPageHeader({
-  title,
-  description,
+const PageHeader = ({
+  className,
+  name: nameProp,
+  description: descriptionProp,
   breadcrumbs,
-  actions,
-}: AdminPageHeaderProps) {
+  slot,
+}: PageHeaderProps) => {
   const { activeBreadcrumbs } = useMenu();
 
   const items = breadcrumbs || activeBreadcrumbs || [];
-  const label = items[items.length - 1]?.label || title;
+  const name = nameProp || items[items.length - 1]?.name || "";
+  const description =
+    descriptionProp || items[items.length - 1]?.description || "";
   return (
-    <header className="mb-6 flex flex-col gap-4 border-b pb-4">
-      {/* Breadcrumb */}
-      <Breadcrumb items={items} />
+    <header className={cn("flex flex-col gap-2", className)}>
+      {/* Breadcrumbs */}
+      {items?.length > 0 && <Breadcrumb items={items} />}
 
-      {/* Title & Actions */}
-      <div className="flex items-center justify-between">
+      {/* Name Description & Slot */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-foreground text-2xl font-semibold capitalize">
-            {label}
+            {name}
           </h1>
           {description && (
             <p className="text-muted-foreground mt-1 text-sm">{description}</p>
           )}
         </div>
 
-        {/* Right Side Actions */}
-        {actions && (
-          <div className="flex items-center space-x-2">{actions}</div>
-        )}
+        {/* Right Slot */}
+        {slot && <div className="flex items-center space-x-2">{slot}</div>}
       </div>
     </header>
   );
-}
+};
+
+export default PageHeader;

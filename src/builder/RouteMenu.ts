@@ -341,6 +341,7 @@ export class RouteMenu {
           index: idx,
           name: item.name,
           ...(item.description && { description: item.description }),
+          ...(item.icon && { icon: item.icon }),
           ...(item.path && { path: item.path }),
         };
         const currentBreadcrumbTrail = [...breadcrumbTrail, breadcrumbItem];

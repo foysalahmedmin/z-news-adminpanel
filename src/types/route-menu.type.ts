@@ -83,5 +83,6 @@ export type TBreadcrumbs = {
   index: number;
   name: string;
   description?: string;
+  icon?: string;
   path?: string;
 };

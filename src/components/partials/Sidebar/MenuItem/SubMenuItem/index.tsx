@@ -74,7 +74,7 @@ const SubMenuItem: React.FC<Props> = ({ indexes = [], item }) => {
       <>
         <div
           className={cn(
-            "text-muted-foreground/75 flex items-center px-2 text-sm font-semibold uppercase lg:px-3",
+            "text-muted-foreground/75 flex items-center px-2 text-xs font-semibold uppercase lg:px-3",
           )}
         >
           <span className={cn("")}>{label}</span>
@@ -90,21 +90,21 @@ const SubMenuItem: React.FC<Props> = ({ indexes = [], item }) => {
         path={path}
         onClick={handler}
         className={cn("relative flex items-center px-2 lg:px-3", {
-          "text-accent": isActive,
+          "text-accent": isActive || isOpen,
         })}
       >
         <div
           className={cn(
             "bg-accent absolute start-0 top-0 bottom-0 w-[1px] rounded-md opacity-0 duration-300",
             {
-              "opacity-100": isOpen,
+              "opacity-100": isActive,
             },
           )}
         />
         {/* Label */}
         <div
           className={cn(
-            "relative flex flex-1 items-center justify-between gap-2 tracking-wide",
+            "relative flex flex-1 items-center justify-between gap-2 text-sm tracking-wide",
             "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
           )}
         >
@@ -128,7 +128,7 @@ const SubMenuItem: React.FC<Props> = ({ indexes = [], item }) => {
               aria-label={isOpen ? "Collapse" : "Expand"}
             >
               <ChevronRight
-                className={cn("size-4 transition-transform duration-300", {
+                className={cn("size-3 transition-transform duration-300", {
                   "rotate-90": isOpen,
                 })}
               />
