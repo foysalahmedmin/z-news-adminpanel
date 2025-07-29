@@ -1,11 +1,13 @@
-import { ChartAreaInteractive } from "./ChartAreaInteractive";
-import { SectionCards } from "./SectionCards";
+import AdminCardsSection from "./AdminCardsSection";
+import ChartAreaInteractiveSection from "./ChartAreaInteractiveSection";
+import DataTableUserActivitiesSection from "./DataTableUserActivitiesSection";
 
 const AdminDashboard = () => {
   return (
     <div className="space-y-6">
-      <SectionCards />
-      <ChartAreaInteractive />
+      <AdminCardsSection />
+      <ChartAreaInteractiveSection />
+      <DataTableUserActivitiesSection />
     </div>
   );
 };

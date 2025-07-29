@@ -1,11 +1,11 @@
 import { useQueryState } from "@/hooks/ui/useQueryState";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Pagination } from "./Pagination";
 import { Table } from "./Table";
 
 // Types
-type TColumn<T> = {
+export type TColumn<T> = {
   name: string;
   field: keyof T;
   isSortable?: boolean;
@@ -17,22 +17,24 @@ type TColumn<T> = {
   ) => React.ReactNode | string | number | null | undefined;
 };
 
-type TDataTableProps<T> = {
+export type TDataTableProps<T> = {
   columns: TColumn<T>[];
   data: T[];
-  metadata?: { total?: number; page?: number; limit?: number };
   config?: {
     isSortProcessed?: boolean;
     isPaginationProcessed?: boolean;
+    isViewSort?: boolean;
+    isViewPagination?: boolean;
   };
-  query: {
+  state?: {
     sort?: string;
     page?: number;
     limit?: number;
+    total?: number;
+    onSortChange?: (sort: string) => void;
+    onPageChange?: (page: number) => void;
+    onLimitChange?: (limit: number) => void;
   };
-  setQuery: (
-    query: Partial<{ sort?: string; page?: number; limit?: number }>,
-  ) => void;
 };
 
 type CellContentProps<T> = {
@@ -46,34 +48,44 @@ type CellContentProps<T> = {
   rowIndex: number;
 };
 
-// Pagination Hook
+// FIXED Pagination Hook - Logic corrected!
 const usePagination = <T extends Record<string, unknown>>(
   data: T[],
   page: number,
   limit: number,
-  disabled?: boolean,
+  isPaginationProcessed: boolean = false,
 ) => {
   const paginatedData = useMemo(() => {
-    if (!disabled) {
+    if (isPaginationProcessed) {
       return data;
     }
+
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    return data.slice(startIndex, endIndex);
-  }, [data, page, limit, disabled]);
+    const slicedData = data.slice(startIndex, endIndex);
+
+    return slicedData;
+  }, [data, page, limit, isPaginationProcessed]);
+
   return paginatedData;
 };
 
-// Sorting Hook
+// FIXED Sorting Hook - Logic corrected!
 const useSorting = <T extends Record<string, unknown>>(
   data: T[],
   sort?: string,
-  disabled?: boolean,
+  isSortProcessed: boolean = false,
 ): T[] => {
   const sortedData = useMemo(() => {
-    if (disabled || !sort) {
+    if (isSortProcessed) {
       return data;
     }
+
+    if (!sort || sort === "") {
+      return data;
+    }
+
+    // Handle client-side sorting
     const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
     const isDescending = sort.startsWith("-");
 
@@ -84,34 +96,27 @@ const useSorting = <T extends Record<string, unknown>>(
       if (aValue === bValue) return 0;
 
       let comparison = 0;
+
+      // Handle different data types
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
       if (typeof aValue === "number" && typeof bValue === "number") {
-        comparison = aValue > bValue ? 1 : -1;
+        comparison = aValue - bValue;
       } else if (typeof aValue === "string" && typeof bValue === "string") {
         comparison = aValue.localeCompare(bValue);
+      } else if (aValue instanceof Date && bValue instanceof Date) {
+        comparison = aValue.getTime() - bValue.getTime();
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue));
       }
+
       return isDescending ? -comparison : comparison;
     });
-  }, [data, sort, disabled]);
+  }, [data, sort, isSortProcessed]);
 
   return sortedData;
-};
-
-const sortToggler = (
-  field: string,
-  sort?: string,
-  setSort?: (sort: string) => void,
-) => {
-  let newSort: string;
-
-  if (sort === field) {
-    newSort = `-${field}`;
-  } else if (sort === `-${field}`) {
-    newSort = "";
-  } else {
-    newSort = field;
-  }
-
-  setSort?.(newSort);
 };
 
 const getSortIcon = (field: string, sort?: string) => {
@@ -123,6 +128,7 @@ const getSortIcon = (field: string, sort?: string) => {
   return <ChevronsUpDown className="h-4 w-4" />;
 };
 
+// Cell Content Component
 export const CellContent = <T extends Record<string, unknown>>({
   value,
   formatter,
@@ -131,6 +137,8 @@ export const CellContent = <T extends Record<string, unknown>>({
 }: CellContentProps<T>) => {
   const renderValue = (val: unknown): React.ReactNode => {
     if (React.isValidElement(val)) return val;
+
+    if (val === null || val === undefined) return "";
 
     if (
       typeof val === "string" ||
@@ -151,7 +159,11 @@ export const CellContent = <T extends Record<string, unknown>>({
       return JSON.stringify(val);
     }
 
-    return null;
+    if (typeof val === "object") {
+      return JSON.stringify(val);
+    }
+
+    return String(val);
   };
 
   if (formatter) {
@@ -161,56 +173,108 @@ export const CellContent = <T extends Record<string, unknown>>({
   return <>{renderValue(value)}</>;
 };
 
-// Main DataTable Component
+// Fixed DataTable Component
 const DataTable = <T extends Record<string, unknown>>({
   columns: headers,
   data,
-  metadata = { total: 100 },
-  config = {},
-  query: queryProp = { sort: "", page: 1, limit: 12 },
-  setQuery: setQueryProp,
+  config,
+  state,
 }: TDataTableProps<T>) => {
-  const { isSortProcessed = false, isPaginationProcessed = false } = config;
-  const { query, onSortChange, onPageChange, onLimitChange } = useQueryState(
-    queryProp,
-    setQueryProp,
-  );
+  const {
+    isSortProcessed = false,
+    isPaginationProcessed = false,
+    isViewSort = true,
+    isViewPagination = true,
+  } = config || {};
 
-  const total = metadata.total || data.length;
-  const page = query.page || 1;
-  const limit = query.limit || metadata.total || 12;
+  const { sort, page, limit, onSortChange, onPageChange, onLimitChange } =
+    useQueryState({
+      sort: state?.sort,
+      page: state?.page,
+      limit: state?.limit,
+      onSortChange: state?.onSortChange,
+      onPageChange: state?.onPageChange,
+      onLimitChange: state?.onLimitChange,
+    });
 
-  const sortedData = useSorting(data, query.sort, !isSortProcessed);
+  // Calculate pagination values
+  const currentSort = sort || "";
+  const currentPage = page || 1;
+  const currentLimit = limit || 10;
+
+  // Determine total count based on processing type
+  const totalCount = useMemo(() => {
+    if (isPaginationProcessed && typeof state?.total === "number") {
+      return state?.total;
+    } else {
+      return data.length;
+    }
+  }, [isPaginationProcessed, state?.total, data.length]);
+
+  // Apply sorting first
+  const sortedData = useSorting(data, currentSort, isSortProcessed);
+
+  // Apply pagination
   const paginatedData = usePagination(
     sortedData,
-    page,
-    limit,
-    !isPaginationProcessed,
+    currentPage,
+    currentLimit,
+    isPaginationProcessed,
   );
 
-  const getFieldValue = (row: T, field: keyof T): T[keyof T] => row[field];
+  const getFieldValue = useCallback((row: T, field: keyof T): T[keyof T] => {
+    return row[field];
+  }, []);
+
+  // Sort handler
+  const handleSortClick = useCallback(
+    (field: string) => {
+      let newSort: string;
+
+      if (currentSort === field) {
+        newSort = `-${field}`;
+      } else if (currentSort === `-${field}`) {
+        newSort = "";
+      } else {
+        newSort = field;
+      }
+      onSortChange(newSort);
+    },
+    [currentSort, onSortChange],
+  );
+
+  // Page handler
+  const handlePageChange = useCallback(
+    (page: number) => {
+      onPageChange(page);
+    },
+    [onPageChange],
+  );
+
+  // Limit handler
+  const handleLimitChange = useCallback(
+    (limit: number) => {
+      onLimitChange(limit);
+    },
+    [onLimitChange],
+  );
 
   return (
-    <div className="w-full">
-      <div className="rounded-lg border">
-        <Table>
+    <div className="w-full space-y-4">
+      <div className="rounded-nd overflow-x-auto border px-4">
+        <Table className="w-full">
           <Table.Header>
             <Table.Row>
               {headers.map((header, index) => (
-                <Table.Head key={index}>
-                  {header.isSortable ? (
+                <Table.Head key={`header-${header.field as string}-${index}`}>
+                  {header.isSortable && isViewSort ? (
                     <button
-                      className="flex items-center space-x-1 transition-colors hover:text-gray-900"
-                      onClick={() =>
-                        sortToggler(
-                          header.field as string,
-                          query.sort,
-                          onSortChange,
-                        )
-                      }
+                      className="flex items-center space-x-1 text-left transition-colors hover:text-gray-900 dark:hover:text-gray-100"
+                      onClick={() => handleSortClick(header.field as string)}
+                      type="button"
                     >
                       <span>{header.name}</span>
-                      {getSortIcon(header.field as string, query.sort)}
+                      {getSortIcon(header.field as string, currentSort)}
                     </button>
                   ) : (
                     <span>{header.name}</span>
@@ -224,16 +288,16 @@ const DataTable = <T extends Record<string, unknown>>({
               <Table.Row>
                 <Table.Cell
                   colSpan={headers.length}
-                  className="py-8 text-center text-gray-500"
+                  className="py-8 text-center text-gray-500 dark:text-gray-400"
                 >
                   No data available
                 </Table.Cell>
               </Table.Row>
             ) : (
               paginatedData.map((row, rowIndex) => (
-                <Table.Row key={rowIndex}>
+                <Table.Row key={`row-${rowIndex}`}>
                   {headers.map((header, cellIndex) => (
-                    <Table.Cell key={cellIndex}>
+                    <Table.Cell key={`cell-${rowIndex}-${cellIndex}`}>
                       <CellContent
                         value={getFieldValue(row, header.field)}
                         formatter={header.formatter}
@@ -249,13 +313,15 @@ const DataTable = <T extends Record<string, unknown>>({
         </Table>
       </div>
 
-      <Pagination
-        total={total}
-        limit={limit}
-        page={page}
-        setLimit={onLimitChange}
-        setPage={onPageChange}
-      />
+      {isViewPagination && totalCount > 0 && (
+        <Pagination
+          total={totalCount}
+          limit={currentLimit}
+          page={currentPage}
+          setLimit={handleLimitChange}
+          setPage={handlePageChange}
+        />
+      )}
     </div>
   );
 };

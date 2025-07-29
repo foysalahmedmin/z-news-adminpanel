@@ -48,7 +48,7 @@ const Breadcrumb = ({ items }: TBreadcrumbProps) => {
       <div className="flex items-center space-x-1">
         <BreadcrumbItem
           path={firstItem.path}
-          className="bg-accent/5 text-foreground border-accent relative flex items-center gap-1 rounded-e-md border-l px-2 py-0.5 font-semibold transition-colors"
+          className="bg-accent/5 text-foreground border-accent relative flex items-center gap-1 rounded-e-md border-s px-2 py-0.5 font-semibold transition-colors"
         >
           {firstItem?.icon && (
             <Icon name={firstItem?.icon || ""} className="text-accent size-4" />

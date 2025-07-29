@@ -43,7 +43,7 @@ const CommonLayout = () => {
             },
             // Mobile behavior
             {
-              "translate-x-full rtl:-translate-x-full": !isMobileOpen,
+              "-translate-x-full rtl:translate-x-full": !isMobileOpen,
               "translate-x-0": isMobileOpen,
             },
             {

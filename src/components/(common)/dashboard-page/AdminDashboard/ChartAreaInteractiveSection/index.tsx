@@ -27,8 +27,7 @@ const chartConfig = {
     color: "var(--primary)",
   },
 } satisfies ChartConfig;
-
-export function ChartAreaInteractive() {
+const ChartAreaInteractiveSection = () => {
   const isMobile = useScreenSize().width < 1024;
   const [timeRange, setTimeRange] = React.useState("90d");
 
@@ -159,4 +158,6 @@ export function ChartAreaInteractive() {
       </Card.Content>
     </Card>
   );
-}
+};
+
+export default ChartAreaInteractiveSection;

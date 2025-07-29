@@ -3,7 +3,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 
-const cardData = [
+const data = [
   {
     title: "Total Revenue",
     value: "$1,250.00",
@@ -42,10 +42,10 @@ const cardData = [
   },
 ];
 
-export function SectionCards() {
+const AdminCardsSection = () => {
   return (
     <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {cardData.map(
+      {data.map(
         (
           { title, value, change, icon: Icon, iconType, footerMain, footerSub },
           index,
@@ -80,4 +80,6 @@ export function SectionCards() {
       )}
     </div>
   );
-}
+};
+
+export default AdminCardsSection;
