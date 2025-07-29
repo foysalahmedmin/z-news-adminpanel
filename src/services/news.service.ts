@@ -1,3 +1,4 @@
+import { FormDataConverterFactory } from "@/builder/ObjectFormData";
 import api from "@/lib/api";
 import type {
   TBulkNewsResponse,
@@ -5,7 +6,9 @@ import type {
   TNewsResponse,
   TUpdateNewsPayload,
 } from "@/types/news.type";
-import { objectToFormData } from "@/utils/objectToFormData";
+
+// Create converter instance
+const formDataConverter = FormDataConverterFactory.createObjectToFormData();
 
 // ========================= GET =========================
 export async function fetchSelfBulkNews(
@@ -36,9 +39,13 @@ export async function fetchNews(id: string): Promise<TNewsResponse> {
 export async function createNews(
   payload: TUpdateNewsPayload,
 ): Promise<TNewsResponse> {
-  const response = await api.post("/api/news", objectToFormData(payload), {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await api.post(
+    "/api/news",
+    formDataConverter.convert(payload),
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
   return response.data;
 }
 
@@ -80,7 +87,7 @@ export async function updateSelfNews(
 ): Promise<TNewsResponse> {
   const response = await api.patch(
     `/api/news/${id}/self`,
-    objectToFormData(payload),
+    formDataConverter.convert(payload),
     {
       headers: { "Content-Type": "multipart/form-data" },
     },
@@ -101,7 +108,7 @@ export async function updateNews(
 ): Promise<TNewsResponse> {
   const response = await api.patch(
     `/api/news/${id}`,
-    objectToFormData(payload),
+    formDataConverter.convert(payload),
     {
       headers: { "Content-Type": "multipart/form-data" },
     },
