@@ -28,9 +28,37 @@ export type TNews = {
   expired_at?: Date;
   is_edited?: boolean;
   edited_at?: Date;
-  is_deleted: boolean;
-  news_headline?: TNewsHeadline;
-  news_break?: TNewsBreak;
+  news_headline?: Partial<TNewsHeadline>;
+  news_break?: Partial<TNewsBreak>;
+};
+
+export type TUpdateNewsPayload = {
+  sequence?: number;
+  title?: string;
+  slug?: string;
+  summary?: string;
+  content: string;
+  thumbnail?: File | null;
+  images?: File[] | null;
+  tags?: string[];
+  category?: string;
+  status?: TStatus;
+  is_featured?: boolean;
+  is_premium?: boolean;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+  };
+  published_at?: string | Date;
+  expired_at?: string | Date;
+  news_headline?: Partial<TNewsHeadline>;
+  news_break?: Partial<TNewsBreak>;
+};
+
+export type TBulkUpdatePayload = {
+  ids: string[];
+  status?: TStatus;
 };
 
 export type TNewsResponse = Omit<Response, "data"> & {
