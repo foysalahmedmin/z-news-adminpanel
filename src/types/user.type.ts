@@ -1,10 +1,23 @@
+export type TRole =
+  | "super-admin"
+  | "admin"
+  | "editor"
+  | "author"
+  | "contributor"
+  | "subscriber"
+  | "user";
+
+export type TStatus = "in-progress" | "blocked";
+
 export type TUser = {
   _id: string;
   name: string;
-  image?: string;
   email: string;
-  role?: string;
-  [key: string]: unknown;
+  password?: string;
+  password_changed_at?: Date;
+  role: TRole;
+  status: TStatus;
+  is_verified?: boolean;
 };
 
 export type TUserResponse = Omit<Response, "data"> & {
