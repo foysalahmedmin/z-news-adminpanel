@@ -18,7 +18,7 @@ export async function fetchNotificationRecipientsBySelf(query?: {
     }
   });
 
-  const url = `/api/v1/notification-recipient/bulk/self?${params.toString()}`;
+  const url = `/api/notification-recipient/bulk/self?${params.toString()}`;
   const response = await api.get(url);
 
   return response.data;
@@ -27,7 +27,7 @@ export async function fetchNotificationRecipientsBySelf(query?: {
 export async function fetchNotificationRecipientBySelf(
   _id: string,
 ): Promise<TNotificationRecipientResponse> {
-  const url = `/api/v1/notification-recipient/one/${_id}/self`;
+  const url = `/api/notification-recipient/one/${_id}/self`;
   const response = await api.get(url);
 
   return response.data;
@@ -37,7 +37,7 @@ export async function updateNotificationRecipientBySelf(
   _id: string,
   payload: { is_read: boolean },
 ): Promise<TNotificationRecipientResponse> {
-  const url = `/api/v1/notification-recipient/one/${_id}/self`;
+  const url = `/api/notification-recipient/one/${_id}/self`;
   const response = await api.patch(url, payload);
 
   return response.data;

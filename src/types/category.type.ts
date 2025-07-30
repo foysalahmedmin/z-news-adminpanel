@@ -6,6 +6,7 @@ export type TCategory = {
   slug: string;
   sequence: number;
   status: TStatus;
+  children?: TCategory[];
 };
 
 export type TCategoryResponse = Omit<Response, "data"> & {

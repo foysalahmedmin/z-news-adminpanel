@@ -12,6 +12,13 @@ export async function fetchCategories(
   return response.data as TCategoriesResponse;
 }
 
+export async function fetchCategoriesTree(
+  query?: Record<string, any>,
+): Promise<TCategoriesResponse> {
+  const response = await api.get("/api/category/tree", { params: query });
+  return response.data as TCategoriesResponse;
+}
+
 // GET Single Category by ID (Admin)
 export async function fetchCategory(id: string): Promise<TCategoryResponse> {
   const response = await api.get(`/api/category/${id}`);
