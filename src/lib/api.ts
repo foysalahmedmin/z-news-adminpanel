@@ -4,7 +4,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import axios from "axios";
 
 const api: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL || "http://localhost:3000",
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -17,7 +17,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     console.error("Error parsing user token", error);
   }
 
-  if (user?.accessToken) {
+  if (user?.token) {
     config.headers.Authorization = `${user.token}`;
   } else {
     config.headers.Authorization = "";
