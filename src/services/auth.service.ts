@@ -18,9 +18,16 @@ export async function signIn(payload: SignInPayload): Promise<AuthResponse> {
 
 // POST - Sign Up
 export async function signUp(payload: SignUpPayload): Promise<AuthResponse> {
-  const response = await api.post("/api/auth/signup", payload, {
-    headers: { "Content-Type": "application/json" },
+  const formData = new FormData();
+  formData.append("name", payload.name);
+  formData.append("email", payload.email);
+  formData.append("password", payload.password);
+  if (payload.image) formData.append("image", payload.image);
+
+  const response = await api.post("/api/auth/signup", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
+
   return response.data as AuthResponse;
 }
 

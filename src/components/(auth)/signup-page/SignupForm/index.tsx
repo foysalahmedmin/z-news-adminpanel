@@ -1,26 +1,70 @@
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
+import useUser from "@/hooks/states/useUser";
+import { signUp } from "@/services/auth.service";
+import type { SignUpPayload } from "@/types/auth.type";
 import { Eye, EyeOff, Plus, User } from "lucide-react";
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const SignupForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const { setUser } = useUser();
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpPayload & { confirmPassword: string }>();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
+  const onSubmit = async (
+    data: SignUpPayload & { confirmPassword: string },
+  ) => {
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      const payload = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        image: imageFile || null,
+      };
+
+      const response = await signUp(payload);
+      if (response?.data?.token && response?.data?.info) {
+        setUser(response.data);
+        toast.success("Account created successfully!");
+        navigate("/");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Signup failed");
+    }
+  };
+
   return (
     <div>
-      <form className="p-6 md:p-8">
+      <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
           {/* Title */}
           <div className="flex flex-col items-center text-center">
@@ -67,8 +111,13 @@ const SignupForm: React.FC = () => {
               id="name"
               type="text"
               placeholder="Enter your name"
-              required
+              {...register("name", { required: "Name is required" })}
             />
+            {errors.name && (
+              <span className="text-sm text-red-500">
+                {errors.name.message}
+              </span>
+            )}
           </div>
 
           {/* Email */}
@@ -78,8 +127,13 @@ const SignupForm: React.FC = () => {
               id="email"
               type="email"
               placeholder="Enter your email"
-              required
+              {...register("email", { required: "Email is required" })}
             />
+            {errors.email && (
+              <span className="text-sm text-red-500">
+                {errors.email.message}
+              </span>
+            )}
           </div>
 
           {/* Password */}
@@ -90,7 +144,7 @@ const SignupForm: React.FC = () => {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                required
+                {...register("password", { required: "Password is required" })}
                 className="pr-10"
               />
               <button
@@ -105,6 +159,11 @@ const SignupForm: React.FC = () => {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <span className="text-sm text-red-500">
+                {errors.password.message}
+              </span>
+            )}
           </div>
 
           {/* Confirm Password */}
@@ -115,7 +174,9 @@ const SignupForm: React.FC = () => {
                 id="confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                required
+                {...register("confirmPassword", {
+                  required: "Confirm password is required",
+                })}
                 className="pr-10"
               />
               <button
@@ -130,11 +191,16 @@ const SignupForm: React.FC = () => {
                 )}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <span className="text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </span>
+            )}
           </div>
 
           {/* Submit */}
-          <Button type="submit" className="w-full">
-            Sign Up
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </Button>
 
           {/* Signin link */}
