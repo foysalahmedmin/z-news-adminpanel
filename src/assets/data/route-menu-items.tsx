@@ -108,11 +108,11 @@ export const items: TItem[] = [
     element: <AuthLayout />,
     children: [
       {
-        path: "sign-in",
+        path: "signin",
         element: <SignInPage />,
       },
       {
-        path: "sign-up",
+        path: "signup",
         element: <SignUpPage />,
       },
     ],

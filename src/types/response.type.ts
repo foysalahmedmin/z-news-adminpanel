@@ -1,5 +1,3 @@
-import type { TUser } from "./user.type";
-
 export type Response<T = unknown> = {
   success?: boolean;
   message?: string;
@@ -9,12 +7,5 @@ export type Response<T = unknown> = {
     total?: number;
     page?: number;
     limit?: number;
-  };
-};
-
-export type AuthResponse = Omit<Response, "data"> & {
-  data?: {
-    token?: string;
-    info?: TUser;
   };
 };

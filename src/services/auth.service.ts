@@ -1,29 +1,12 @@
 import api from "@/lib/api";
-import type { AuthResponse } from "@/types/response.type";
-
-export type SignInPayload = {
-  email: string;
-  password: string;
-};
-
-export type SignUpPayload = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-export type ChangePasswordPayload = {
-  current_password: string;
-  new_password: string;
-};
-
-export type ForgetPasswordPayload = {
-  email: string;
-};
-
-export type ResetPasswordPayload = {
-  password: string;
-};
+import type {
+  AuthResponse,
+  ChangePasswordPayload,
+  ForgetPasswordPayload,
+  ResetPasswordPayload,
+  SignInPayload,
+  SignUpPayload,
+} from "@/types/auth.type";
 
 // POST - Sign In
 export async function signIn(payload: SignInPayload): Promise<AuthResponse> {
