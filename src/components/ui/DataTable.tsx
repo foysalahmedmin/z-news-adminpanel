@@ -15,6 +15,12 @@ export type TColumn<T> = {
     row: T,
     index: number,
   ) => React.ReactNode | string | number | null | undefined;
+  width?: string;
+  minWidth?: string;
+  maxWidth?: string;
+  align?: "start" | "center" | "end";
+  style?: React.CSSProperties;
+  className?: string;
 };
 
 export type TDataTableProps<T> = {
@@ -223,7 +229,7 @@ const DataTable = <T extends Record<string, unknown>>({
   );
 
   const getFieldValue = useCallback((row: T, field: keyof T): T[keyof T] => {
-    return row[field];
+    return row?.[field];
   }, []);
 
   // Sort handler
@@ -266,7 +272,10 @@ const DataTable = <T extends Record<string, unknown>>({
           <Table.Header>
             <Table.Row>
               {headers.map((header, index) => (
-                <Table.Head key={`header-${header.field as string}-${index}`}>
+                <Table.Head
+                  key={`header-${header.field as string}-${index}`}
+                  style={header.style}
+                >
                   {header.isSortable && isViewSort ? (
                     <button
                       className="flex items-center space-x-1 text-left transition-colors hover:text-gray-900 dark:hover:text-gray-100"
@@ -297,7 +306,10 @@ const DataTable = <T extends Record<string, unknown>>({
               paginatedData.map((row, rowIndex) => (
                 <Table.Row key={`row-${rowIndex}`}>
                   {headers.map((header, cellIndex) => (
-                    <Table.Cell key={`cell-${rowIndex}-${cellIndex}`}>
+                    <Table.Cell
+                      key={`cell-${rowIndex}-${cellIndex}`}
+                      style={header.style}
+                    >
                       <CellContent
                         value={getFieldValue(row, header.field)}
                         formatter={header.formatter}

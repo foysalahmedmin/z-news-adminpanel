@@ -1,7 +1,9 @@
 import api from "@/lib/api";
 import type {
   TCategoriesResponse,
+  TCategoryCreatePayload,
   TCategoryResponse,
+  TCategoryUpdatePayload,
 } from "@/types/category.type";
 
 // GET All Categories (Admin)
@@ -26,14 +28,9 @@ export async function fetchCategory(id: string): Promise<TCategoryResponse> {
 }
 
 // POST Create Category (Admin)
-export async function createCategory(payload: {
-  category?: string;
-  icon?: string;
-  name: string;
-  slug: string;
-  sequence: number;
-  status?: "active" | "inactive";
-}): Promise<TCategoryResponse> {
+export async function createCategory(
+  payload: TCategoryCreatePayload,
+): Promise<TCategoryResponse> {
   const response = await api.post("/api/category", payload);
   return response.data as TCategoryResponse;
 }
@@ -50,14 +47,7 @@ export async function updateCategories(payload: {
 // PATCH Single Category (Admin)
 export async function updateCategory(
   id: string,
-  payload: {
-    category?: string;
-    icon?: string;
-    name?: string;
-    slug?: string;
-    sequence?: number;
-    status?: "active" | "inactive";
-  },
+  payload: Partial<TCategoryUpdatePayload>,
 ): Promise<TCategoryResponse> {
   const response = await api.patch(`/api/category/${id}`, payload);
   return response.data as TCategoryResponse;

@@ -4,12 +4,31 @@ export type TStatus = "active" | "inactive";
 
 export type TCategory = {
   _id: string;
-  category?: string; // (As Parent) When adding a subcategory
+  category?: string;
+  icon?: string;
   name: string;
   slug: string;
   sequence: number; // To maintain sort order to display
   status: TStatus;
   children?: TCategory[];
+};
+
+export type TCategoryCreatePayload = {
+  category?: string;
+  icon?: string;
+  name: string;
+  slug: string;
+  sequence: number;
+  status: TStatus;
+};
+
+export type TCategoryUpdatePayload = {
+  category?: string;
+  icon?: string;
+  name?: string;
+  slug?: string;
+  sequence?: number;
+  status?: TStatus;
 };
 
 export type TCategoryResponse = Response<TCategory>;

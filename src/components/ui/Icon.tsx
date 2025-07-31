@@ -13,7 +13,7 @@ type IconKeys = {
 }[keyof typeof icons];
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
-  name: IconKeys | string;
+  name: IconKeys | string | any;
 }
 
 function toPascalCase(input: string): string {
@@ -28,7 +28,7 @@ function toPascalCase(input: string): string {
 const Icon = ({ name, ...props }: IconProps) => {
   const iconKeyName = toPascalCase(name) as keyof typeof icons;
 
-  if (!(iconKeyName in icons)) {
+  if (!(iconKeyName in icons) || typeof name !== "string") {
     console.warn(`[Icon] Invalid icon name: "${name}"`);
     return null;
   }
