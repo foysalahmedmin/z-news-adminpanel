@@ -24,10 +24,5 @@ export type TNotificationRecipient = {
   created_at: string;
 };
 
-export type TNotificationRecipientsResponse = Omit<Response, "data"> & {
-  data?: TNotificationRecipient[];
-};
-
-export type TNotificationRecipientResponse = Omit<Response, "data"> & {
-  data?: TNotificationRecipient;
-};
+export type TNotificationRecipientsResponse = Response<TNotificationRecipient>;
+export type TNotificationRecipientResponse = Response<TNotificationRecipient[]>;

@@ -1,3 +1,5 @@
+import type { Response } from "./response.type";
+
 export type TStatus = "draft" | "pending" | "published" | "archived";
 
 export type TNewsHeadline = {
@@ -16,10 +18,5 @@ export type TNewsHeadline = {
   edited_at?: Date;
 };
 
-export type TNewsHeadlineResponse = Omit<Response, "data"> & {
-  data?: TNewsHeadline;
-};
-
-export type TNewsHeadlinesResponse = Omit<Response, "data"> & {
-  data?: TNewsHeadline;
-};
+export type TNewsHeadlineResponse = Response<TNewsHeadline>;
+export type TNewsHeadlinesResponse = Response<TNewsHeadline[]>;

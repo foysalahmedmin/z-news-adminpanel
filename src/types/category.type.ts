@@ -1,3 +1,5 @@
+import type { Response } from "./response.type";
+
 export type TStatus = "active" | "inactive";
 
 export type TCategory = {
@@ -10,10 +12,5 @@ export type TCategory = {
   children?: TCategory[];
 };
 
-export type TCategoryResponse = Omit<Response, "data"> & {
-  data?: TCategory;
-};
-
-export type TCategoriesResponse = Omit<Response, "data"> & {
-  data?: TCategory[];
-};
+export type TCategoryResponse = Response<TCategory>;
+export type TCategoriesResponse = Response<TCategory[]>;

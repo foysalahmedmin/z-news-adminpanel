@@ -1,3 +1,5 @@
+import type { Response } from "./response.type";
+
 export type TStatus = "draft" | "pending" | "published" | "archived";
 
 export type TNewsBreak = {
@@ -16,10 +18,5 @@ export type TNewsBreak = {
   edited_at?: Date;
 };
 
-export type TNewsBreakResponse = Omit<Response, "data"> & {
-  data?: TNewsBreak;
-};
-
-export type TNewsBreaksResponse = Omit<Response, "data"> & {
-  data?: TNewsBreak;
-};
+export type TNewsBreakResponse = Response<TNewsBreak>;
+export type TNewsBreaksResponse = Response<TNewsBreak[]>;

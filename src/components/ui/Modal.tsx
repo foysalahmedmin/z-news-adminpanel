@@ -123,8 +123,6 @@ const ModalRoot: React.FC<ModalProps> = ({
 }) => {
   const overlayState = useOverlayState(isOpenProp, setIsOpenProp);
 
-  console.log(overlayState.isOpen);
-
   const Comp = asPortal ? PortalWrapper : Fragment;
   return (
     <ModalContext.Provider value={{ ...overlayState, variant, size, side }}>

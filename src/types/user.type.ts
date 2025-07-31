@@ -1,3 +1,5 @@
+import type { Response } from "./response.type";
+
 export type TRole =
   | "super-admin"
   | "admin"
@@ -21,10 +23,5 @@ export type TUser = {
   is_verified?: boolean;
 };
 
-export type TUserResponse = Omit<Response, "data"> & {
-  data?: TUser;
-};
-
-export type TUsersResponse = Omit<Response, "data"> & {
-  data?: TUser[];
-};
+export type TUserResponse = Response<TUser>;
+export type TUsersResponse = Response<TUser[]>;

@@ -1,3 +1,4 @@
+import type { Response } from "./response.type";
 import type { TUser } from "./user.type";
 
 export type TStatus = "active" | "inactive" | "archived";
@@ -27,6 +28,5 @@ export type TNotification = {
   created_at: string;
 };
 
-export type TNotificationsResponse = Omit<Response, "data"> & {
-  data?: TNotification[];
-};
+export type TNotificationResponse = Response<TNotification>;
+export type TNotificationsResponse = Response<TNotification[]>;

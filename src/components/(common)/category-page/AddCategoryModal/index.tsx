@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import { Modal } from "@/components/ui/Modal";
 import { createCategory } from "@/services/category.service";
+import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 type AddCategoryModalProps = {
   isOpen: boolean;
@@ -50,10 +53,15 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
 
   const mutation = useMutation({
     mutationFn: createCategory,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast.success(data?.message || "Category created successfully!");
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       reset();
       setIsOpen(false);
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || "Failed to create category");
+      console.error("Create Category Error:", error);
     },
   });
 

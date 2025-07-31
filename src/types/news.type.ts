@@ -61,10 +61,5 @@ export type TBulkUpdatePayload = {
   status?: TStatus;
 };
 
-export type TNewsResponse = Omit<Response, "data"> & {
-  data?: TNews;
-};
-
-export type TBulkNewsResponse = {
-  data?: TNews[];
-};
+export type TNewsResponse = Response<TNews>;
+export type TBulkNewsResponse = Response<TNews[]>;

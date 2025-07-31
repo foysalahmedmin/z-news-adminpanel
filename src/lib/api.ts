@@ -11,8 +11,6 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const userString: string | null = localStorage.getItem("user");
   let user: TUserState | null = null;
 
-  console.log(userString);
-
   try {
     user = userString ? (JSON.parse(userString) as TUserState) : null;
   } catch (error) {

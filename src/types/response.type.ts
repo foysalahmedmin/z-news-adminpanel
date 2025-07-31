@@ -9,3 +9,20 @@ export type Response<T = unknown> = {
     limit?: number;
   };
 };
+
+export type ErrorSource = {
+  path: string;
+  message: string;
+};
+
+export type ErrorResponse = {
+  success: false;
+  status: number;
+  message: string;
+  sources?: ErrorSource[];
+  error?: {
+    status: number;
+    name: string;
+  };
+  stack?: string | null;
+};

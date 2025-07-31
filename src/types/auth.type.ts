@@ -1,3 +1,4 @@
+import type { Response } from "./response.type";
 import type { TUser } from "./user.type";
 
 export type SignInPayload = {
@@ -25,9 +26,7 @@ export type ResetPasswordPayload = {
   password: string;
 };
 
-export type AuthResponse = Omit<Response, "data"> & {
-  data?: {
-    token?: string;
-    info?: TUser;
-  };
-};
+export type AuthResponse = Response<{
+  token?: string;
+  info?: TUser;
+}>;
