@@ -28,7 +28,7 @@ const modalVariants = cva(
 );
 
 const modalBackdropVariants = cva(
-  "fixed inset-0 z-[100] transition-all duration-200 ease-in-out",
+  "fixed inset-0 z-[100] flex flex-col transition-all duration-200 ease-in-out",
   {
     variants: {
       variant: {
@@ -123,12 +123,14 @@ const ModalRoot: React.FC<ModalProps> = ({
 }) => {
   const overlayState = useOverlayState(isOpenProp, setIsOpenProp);
 
+  console.log(overlayState.isOpen);
+
   const Comp = asPortal ? PortalWrapper : Fragment;
   return (
     <ModalContext.Provider value={{ ...overlayState, variant, size, side }}>
       <Comp>
         <div
-          className={cn(modalBackdropVariants({ variant, className }), {
+          className={cn(modalVariants({ variant, className }), {
             [cn("visible opacity-100", activeClassName)]: overlayState.isOpen,
           })}
           {...props}
@@ -199,7 +201,10 @@ const ModalHeader: React.FC<ComponentProps<"div">> = ({
   ...props
 }) => (
   <div
-    className={cn("flex items-center justify-between border-b p-6", className)}
+    className={cn(
+      "flex items-center justify-between border-b px-6 py-4",
+      className,
+    )}
     {...props}
   >
     {children}
@@ -236,7 +241,7 @@ const ModalFooter: React.FC<ComponentProps<"div">> = ({
 }) => (
   <div
     className={cn(
-      "flex items-center justify-end gap-3 border-t p-6",
+      "flex items-center justify-end gap-3 border-t px-6 py-4",
       className,
     )}
     {...props}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Dropdown } from "@/components/ui/Dropdown";
+import { URLS } from "@/config";
 import useUser from "@/hooks/states/useUser";
 import { LogOut, User, UserIcon } from "lucide-react";
 import React from "react";
@@ -9,11 +10,13 @@ import { Link } from "react-router";
 const Profile: React.FC = () => {
   const { user, clearUser } = useUser();
   const {
+    image: imageFileName,
     name = "Foysal Ahmed",
     email = "foysalamehd@gmail.com",
-    image,
     role = "admin",
   } = user?.info || {};
+
+  const image = imageFileName ? URLS.user + "/" + imageFileName : "";
 
   const [isOpen, setIsOpen] = React.useState(false);
 

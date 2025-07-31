@@ -27,6 +27,8 @@ export async function fetchCategory(id: string): Promise<TCategoryResponse> {
 
 // POST Create Category (Admin)
 export async function createCategory(payload: {
+  category?: string;
+  icon?: string;
   name: string;
   slug: string;
   sequence: number;
@@ -49,6 +51,8 @@ export async function updateCategories(payload: {
 export async function updateCategory(
   id: string,
   payload: {
+    category?: string;
+    icon?: string;
     name?: string;
     slug?: string;
     sequence?: number;

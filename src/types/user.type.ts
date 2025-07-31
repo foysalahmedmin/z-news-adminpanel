@@ -11,6 +11,7 @@ export type TStatus = "in-progress" | "blocked";
 
 export type TUser = {
   _id: string;
+  image?: string;
   name: string;
   email: string;
   password?: string;

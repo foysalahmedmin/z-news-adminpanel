@@ -77,10 +77,10 @@ const MenuItem: React.FC<Props> = ({ index, item }) => {
             <>
               <span
                 className={cn(
-                  "hidden lg:block lg:w-full lg:group-hover/sidebar:hidden",
+                  "hidden px-0.5 lg:block lg:w-full lg:group-hover/sidebar:hidden",
                 )}
               >
-                <Dot className="size-6" />
+                <Dot className="size-5" />
               </span>
               <span
                 className={cn("text-sm lg:hidden lg:group-hover/sidebar:block")}

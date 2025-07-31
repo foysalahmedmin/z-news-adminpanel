@@ -4,6 +4,7 @@ import CommonLayout from "@/layouts/CommonLayout";
 import UserLayout from "@/layouts/UserLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
+import CategoryPage from "@/pages/(common)/CategoryPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
@@ -31,20 +32,9 @@ export const items: TItem[] = [
       },
       {
         icon: "blocks",
-        // path: "categories",
+        path: "categories",
         name: "Categories",
-        children: [
-          {
-            path: "categories",
-            name: "Categories",
-            element: <Dashboard />,
-          },
-          {
-            path: "tags",
-            name: "Tags",
-            element: <Dashboard />,
-          },
-        ],
+        element: <CategoryPage />,
       },
       {
         icon: "newspaper",
