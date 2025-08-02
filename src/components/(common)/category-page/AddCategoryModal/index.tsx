@@ -11,10 +11,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type AddCategoryModalProps = {
+  category?: string;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
-  category?: string;
 };
 
 type CategoryFormValues = {
@@ -65,7 +65,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
 
   const onSubmit = (data: CategoryFormValues) => {
     mutation.mutate({
-      category,
+      ...(category ? { category: category } : {}),
       ...data,
     });
   };

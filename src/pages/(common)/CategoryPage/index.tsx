@@ -1,4 +1,5 @@
 import AddCategoryModal from "@/components/(common)/category-page/AddCategoryModal";
+import EditCategoryModal from "@/components/(common)/category-page/EditCategoryModal";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -9,12 +10,22 @@ import { cn } from "@/lib/utils";
 import { fetchCategories } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
 import { useQuery } from "@tanstack/react-query";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Eye, Trash } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 
 const CategoryPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditAddModalOpen] = useState(false);
+
+  const [selectedCategory, setSelectedCategory] = useState<TCategory>(
+    {} as TCategory,
+  );
+
+  const onOpenEditModal = (category: TCategory) => {
+    setSelectedCategory(category);
+    setIsEditAddModalOpen(true);
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["categories"],
@@ -56,9 +67,25 @@ const CategoryPage = () => {
       name: "Actions",
       field: "_id",
       isSpecial: true,
-      formatter: () => (
-        <div className="flex w-full items-center justify-center space-x-2">
-          <Button size={"sm"} variant="outline" shape={"icon"}>
+      formatter: (_cell, row) => (
+        <div className="flex w-full items-center justify-center gap-2">
+          <Button
+            asChild={true}
+            className="[--accent:green]"
+            size={"sm"}
+            variant="outline"
+            shape={"icon"}
+          >
+            <Link to={`/category/${row._id}`} state={{ category: row }}>
+              <Eye className="size-4" />
+            </Link>
+          </Button>
+          <Button
+            onClick={() => onOpenEditModal(row)}
+            size={"sm"}
+            variant="outline"
+            shape={"icon"}
+          >
             <Edit className="size-4" />
           </Button>
           <Button
@@ -83,7 +110,7 @@ const CategoryPage = () => {
       />
       <Card>
         <Card.Header>
-          <Card.Title>User Activities</Card.Title>
+          <Card.Title>Root Categories</Card.Title>
         </Card.Header>
         <Card.Content>
           <DataTable
@@ -97,6 +124,11 @@ const CategoryPage = () => {
         </Card.Content>
       </Card>
       <AddCategoryModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
+      <EditCategoryModal
+        category={selectedCategory}
+        isOpen={isEditModalOpen}
+        setIsOpen={setIsEditAddModalOpen}
+      />
     </main>
   );
 };

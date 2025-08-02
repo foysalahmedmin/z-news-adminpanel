@@ -12,17 +12,16 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type EditCategoryModalProps = {
+  category: TCategory;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-  id: string;
-  initialValues: TCategory;
+  className?: string;
 };
 
 const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   isOpen,
   setIsOpen,
-  id,
-  initialValues,
+  category,
 }) => {
   const queryClient = useQueryClient();
 
@@ -35,26 +34,27 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     formState: { errors },
   } = useForm<TCategoryUpdatePayload>({
     defaultValues: {
-      icon: initialValues.icon || "",
-      name: initialValues.name,
-      slug: initialValues.slug,
-      sequence: initialValues.sequence,
-      status: initialValues.status,
+      icon: category.icon || "",
+      name: category.name,
+      slug: category.slug,
+      sequence: category.sequence,
+      status: category.status,
     },
   });
 
   React.useEffect(() => {
     reset({
-      icon: initialValues.icon || "",
-      name: initialValues.name,
-      slug: initialValues.slug,
-      sequence: initialValues.sequence,
-      status: initialValues.status,
+      icon: category.icon || "",
+      name: category.name,
+      slug: category.slug,
+      sequence: category.sequence,
+      status: category.status,
     });
-  }, [initialValues, reset]);
+  }, [category, reset]);
 
   const mutation = useMutation({
-    mutationFn: (data: TCategoryUpdatePayload) => updateCategory(id, data),
+    mutationFn: (data: TCategoryUpdatePayload) =>
+      updateCategory(category._id, data),
     onSuccess: (data) => {
       toast.success(data?.message || "Category updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -72,7 +72,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     >((acc, [key, value]) => {
       const fieldKey = key as keyof TCategoryUpdatePayload;
 
-      if (value !== initialValues?.[fieldKey]) {
+      if (value !== category?.[fieldKey]) {
         (acc as any)[fieldKey] = value;
       }
 
