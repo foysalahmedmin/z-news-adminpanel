@@ -9,12 +9,7 @@ import { Link } from "react-router";
 
 const Profile: React.FC = () => {
   const { user, clearUser } = useUser();
-  const {
-    image: imageFileName,
-    name = "Foysal Ahmed",
-    email = "foysalamehd@gmail.com",
-    role = "admin",
-  } = user?.info || {};
+  const { image: imageFileName, name, email, role } = user?.info || {};
 
   const image = imageFileName ? URLS.user + "/" + imageFileName : "";
 

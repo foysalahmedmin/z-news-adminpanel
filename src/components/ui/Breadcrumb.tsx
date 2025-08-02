@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import Icon from "./Icon";
 
 export type TBreadcrumbs = {
-  index: number;
+  index?: number;
   name: string;
   description?: string;
   icon?: string;
@@ -16,6 +16,7 @@ type TBreadcrumbItemProps = {
   children: ReactNode;
   path?: string;
   className?: string;
+  breadcrumbs?: TBreadcrumbs;
 };
 
 type TBreadcrumbProps = {
@@ -26,10 +27,15 @@ const BreadcrumbItem = ({
   children,
   path,
   className,
+  breadcrumbs,
 }: TBreadcrumbItemProps) => {
   if (path) {
     return (
-      <Link to={path} className={cn("hover:text-accent", className)}>
+      <Link
+        to={path}
+        className={cn("hover:text-accent", className)}
+        state={{ breadcrumbs }}
+      >
         {children}
       </Link>
     );
@@ -64,12 +70,14 @@ const Breadcrumb = ({ items }: TBreadcrumbProps) => {
       {/* Remaining breadcrumbs */}
       {restItems?.map((item, i) => {
         const isLast = i === restItems.length - 1;
+        const breadcrumbs = [firstItem, ...(restItems?.slice(0, i + 1) || [])];
 
         return (
-          <div key={item.index} className="flex items-center space-x-1">
+          <div key={i} className="flex items-center space-x-1">
             <BreadcrumbItem
               path={!isLast ? item.path : undefined}
               className={cn("transition-colors", !isLast && "text-foreground")}
+              breadcrumbs={breadcrumbs || []}
             >
               {item.name}
             </BreadcrumbItem>

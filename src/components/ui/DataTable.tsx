@@ -24,6 +24,7 @@ export type TColumn<T> = {
 };
 
 export type TDataTableProps<T> = {
+  status?: string;
   columns: TColumn<T>[];
   data: T[];
   config?: {

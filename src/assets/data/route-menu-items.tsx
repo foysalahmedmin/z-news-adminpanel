@@ -4,6 +4,7 @@ import CommonLayout from "@/layouts/CommonLayout";
 import UserLayout from "@/layouts/UserLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
+import CategoryDetailsPage from "@/pages/(common)/CategoryDetailsPage";
 import CategoryPage from "@/pages/(common)/CategoryPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
@@ -35,6 +36,10 @@ export const items: TItem[] = [
         path: "categories",
         name: "Categories",
         element: <CategoryPage />,
+      },
+      {
+        path: "categories/:id",
+        element: <CategoryDetailsPage />,
       },
       {
         icon: "newspaper",
@@ -94,6 +99,7 @@ export const items: TItem[] = [
   },
   {
     menuType: "invisible",
+    routeType: "layout",
     path: "auth",
     element: <AuthLayout />,
     children: [

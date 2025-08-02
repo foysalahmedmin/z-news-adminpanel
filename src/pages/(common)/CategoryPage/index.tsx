@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import type { TColumn } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
+import useMenu from "@/hooks/states/useMenu";
 import { cn } from "@/lib/utils";
 import { fetchCategories } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
@@ -15,6 +16,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 const CategoryPage = () => {
+  const { activeBreadcrumbs } = useMenu();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditAddModalOpen] = useState(false);
 
@@ -76,7 +78,16 @@ const CategoryPage = () => {
             variant="outline"
             shape={"icon"}
           >
-            <Link to={`/category/${row._id}`} state={{ category: row }}>
+            <Link
+              to={`/categories/${row._id}`}
+              state={{
+                category: row,
+                breadcrumbs: [
+                  ...(activeBreadcrumbs || []),
+                  { name: row.name, path: `/categories/${row._id}` },
+                ],
+              }}
+            >
               <Eye className="size-4" />
             </Link>
           </Button>
@@ -114,6 +125,7 @@ const CategoryPage = () => {
         </Card.Header>
         <Card.Content>
           <DataTable
+            status={isLoading ? "loading" : isError ? "error" : "success"}
             columns={columns}
             data={data?.data || []}
             config={{
