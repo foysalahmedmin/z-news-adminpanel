@@ -5,15 +5,21 @@ import { URLS } from "@/config";
 import useUser from "@/hooks/states/useUser";
 import { LogOut, User, UserIcon } from "lucide-react";
 import React from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const { user, clearUser } = useUser();
   const { image: imageFileName, name, email, role } = user?.info || {};
 
   const image = imageFileName ? URLS.user + "/" + imageFileName : "";
 
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    clearUser();
+    navigate("/auth/signin", { replace: true });
+  };
 
   return (
     <div className="h-full">
@@ -47,7 +53,7 @@ const Profile: React.FC = () => {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >
-        <Dropdown.Content className="top-2 right-0 w-60">
+        <Dropdown.Content className="top-4 right-0 w-60">
           <div className="flex items-center gap-2 px-2 py-1">
             <div className="bg-accent text-accent-foreground flex size-10 items-center justify-center overflow-hidden rounded-md">
               {image ? (
@@ -75,7 +81,7 @@ const Profile: React.FC = () => {
             </Link>
           </Dropdown.Item>
           <Dropdown.Item
-            onClick={clearUser}
+            onClick={handleLogout}
             className="flex items-center gap-2 text-red-600 hover:bg-red-50"
           >
             <LogOut className="size-4" />
