@@ -12,6 +12,7 @@ import type {
 export async function signIn(payload: SignInPayload): Promise<AuthResponse> {
   const response = await api.post("/api/auth/signin", payload, {
     headers: { "Content-Type": "application/json" },
+    withCredentials: true,
   });
   return response.data as AuthResponse;
 }
@@ -26,16 +27,9 @@ export async function signUp(payload: SignUpPayload): Promise<AuthResponse> {
 
   const response = await api.post("/api/auth/signup", formData, {
     headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
   });
 
-  return response.data as AuthResponse;
-}
-
-// POST - Sign Out
-export async function signOut(): Promise<AuthResponse> {
-  const response = await api.post("/api/auth/signout", null, {
-    headers: { "Content-Type": "application/json" },
-  });
   return response.data as AuthResponse;
 }
 

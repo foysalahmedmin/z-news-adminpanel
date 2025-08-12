@@ -58,11 +58,18 @@ api.interceptors.response.use(
     if (error.response?.status === 403) {
       localStorage.removeItem("user");
       window.location.href = "/auth/signin";
+      return Promise.reject(error);
     }
 
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
+
+    if (originalRequest.url === "/api/auth/refresh-token") {
+      localStorage.removeItem("user");
+      window.location.href = "/auth/signin";
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
