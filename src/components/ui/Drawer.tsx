@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import type { ComponentProps } from "react";
-import React, { createContext, Fragment, useContext, useRef } from "react";
+import React, { createContext, Fragment, useContext } from "react";
 import PortalWrapper from "../wrappers/PortalWrapper";
 import type { ButtonProps } from "./Button";
 import { Button } from "./Button";
@@ -183,15 +183,14 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   ...props
 }) => {
   const { isOpen, onClose } = useDrawer();
-  const componentRef = useRef<HTMLDivElement>(null!);
-  useClickOutside<HTMLDivElement>(componentRef, onClose);
+  const ref = useClickOutside<HTMLDivElement>(onClose);
 
   return (
     <div
       className={cn(drawerContentVariants({ variant, size, side, className }), {
         [cn("translate-x-0", activeClassName)]: isOpen,
       })}
-      ref={componentRef}
+      ref={ref}
       {...props}
     >
       {children}

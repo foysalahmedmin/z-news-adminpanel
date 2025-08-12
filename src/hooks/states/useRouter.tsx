@@ -10,8 +10,6 @@ const useAppRouter = () => {
   const routeMenu = new RouteMenu(items);
   const { routes } = routeMenu.getRoutes();
 
-  console.log(routes);
-
   const router = useMemo(
     () =>
       createBrowserRouter([
