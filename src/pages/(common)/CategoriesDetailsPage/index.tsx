@@ -1,22 +1,25 @@
-import CategoryInfo from "@/components/(common)/category-details-page/CategoryInfo";
-import AddCategoryModal from "@/components/(common)/category-page/AddCategoryModal";
-import EditCategoryModal from "@/components/(common)/category-page/EditCategoryModal";
+import CategoryDataTableSection from "@/components/(common)/categories-details-page/CategoryDataTableSection";
+import CategoryInfoSection from "@/components/(common)/categories-details-page/CategoryInfoSection";
+import CategoryOverviewSection from "@/components/(common)/categories-details-page/CategoryOverviewSection";
+import AddCategoryModal from "@/components/modals/AddCategoryModal";
+import EditCategoryModal from "@/components/modals/EditCategoryModal";
 import PageHeader from "@/components/sections/PageHeader";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import type { TColumn } from "@/components/ui/DataTable";
-import DataTable from "@/components/ui/DataTable";
-import Icon from "@/components/ui/Icon";
-import { Switch } from "@/components/ui/Switch";
-import { cn } from "@/lib/utils";
-import { fetchCategory } from "@/services/category.service";
+import { Tabs } from "@/components/ui/Tabs";
+import useAlert from "@/hooks/ui/useAlert";
+import { deleteCategory, fetchCategory } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
-import { useQuery } from "@tanstack/react-query";
-import { Edit, Eye, Trash } from "lucide-react";
+import type { ErrorResponse } from "@/types/response.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { useState } from "react";
-import { Link, useLocation, useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
+import { toast } from "react-toastify";
 
-const CategoryDetailsPage = () => {
+const CategoriesDetailsPage = () => {
+  const queryClient = useQueryClient();
+  const confirm = useAlert();
+
   const { state } = useLocation();
   const { id } = useParams();
 
@@ -28,167 +31,100 @@ const CategoryDetailsPage = () => {
     {} as TCategory,
   );
 
-  const onOpenEditModal = (category: TCategory) => {
-    setSelectedCategory(category);
-    setIsEditAddModalOpen(true);
-  };
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["category", id],
     queryFn: () => fetchCategory(id || ""),
   });
 
-  const categoryInfo = data?.data;
+  const onOpenAddModal = () => {
+    setIsAddModalOpen(true);
+  };
 
-  const columns: TColumn<TCategory>[] = [
-    { name: "Sequence", field: "sequence", isSortable: true },
-    {
-      name: "Icon",
-      field: "icon",
-      cell: ({ cell }) => (
-        <span>
-          <Icon name={cell} />
-        </span>
-      ),
+  const onOpenEditModal = (category: TCategory) => {
+    setSelectedCategory(category);
+    setIsEditAddModalOpen(true);
+  };
+
+  const mutation = useMutation({
+    mutationFn: (id: string) => deleteCategory(id),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Category deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["category"] });
     },
-    { name: "Name", field: "name", isSortable: true, isSearchable: true },
-    { name: "Slug", field: "slug", isSortable: true },
-    {
-      name: "Layout",
-      field: "layout",
-      isSortable: true,
-      cell: ({ cell }) => <span>{cell?.toString()}</span>,
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || "Failed to delete category");
+      console.error("Delete Category Error:", error);
     },
-    {
-      name: "Status",
-      field: "status",
-      isSortable: true,
-      cell: ({ cell }) => (
-        <span
-          className={cn(
-            "rounded-full px-2 py-1 text-xs font-medium",
-            cell === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800",
-          )}
-        >
-          {cell !== "active" ? "Inactive" : "Active"}
-        </span>
-      ),
-    },
-    {
-      name: "Featured",
-      field: "is_featured",
-      isSortable: true,
-      cell: ({ cell }) => (
-        <div>
-          <Switch checked={cell === true} />
-        </div>
-      ),
-    },
-    {
-      style: { width: "150px", textAlign: "center" },
-      name: "Actions",
-      field: "_id",
-      cell: ({ row }) => (
-        <div className="flex w-full items-center justify-center gap-2">
-          <Button
-            asChild={true}
-            className="[--accent:green]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Link
-              to={`/categories/${row._id}`}
-              state={{
-                category: row,
-                breadcrumbs: [
-                  ...(breadcrumbs || []),
-                  { name: row.name, path: `/categories/${row._id}` },
-                ],
-              }}
-            >
-              <Eye className="size-4" />
-            </Link>
-          </Button>
-          <Button
-            onClick={() => onOpenEditModal(row)}
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Edit className="size-4" />
-          </Button>
-          <Button
-            className="[--accent:red]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Trash className="size-4" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  });
+
+  const onDelete = async (category: TCategory) => {
+    const ok = await confirm({
+      title: "Delete Category",
+      message: "Are you sure you want to delete this category?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (ok) {
+      mutation.mutate(category._id);
+    }
+  };
 
   return (
     <main className="space-y-6">
-      <PageHeader
-        breadcrumbs={breadcrumbs}
-        name="Category Details"
-        slot={
-          <Button onClick={() => setIsAddModalOpen(true)}>
-            Add Sub Category
-          </Button>
-        }
-      />
+      <PageHeader breadcrumbs={breadcrumbs} name="Category Details" />
 
-      {/* Category Info Card */}
-      {categoryInfo && (
-        <Card>
-          <Card.Content className="py-6">
-            <CategoryInfo category={categoryInfo} />
-          </Card.Content>
-        </Card>
-      )}
+      <Card>
+        <Card.Content className="py-6">
+          <CategoryInfoSection category={data?.data} />
+        </Card.Content>
+      </Card>
 
-      {/* Sub Categories Table */}
-      {!!categoryInfo?.children?.length && (
-        <Card>
-          <Card.Header>
-            <Card.Title>Sub Categories</Card.Title>
+      <Card>
+        <Tabs value={"overview"}>
+          <Card.Header className="pb-0">
+            <Tabs.List className="justify-start">
+              <Tabs.Trigger value="overview">Description</Tabs.Trigger>
+              <Tabs.Trigger value="subcategories">Subcategories</Tabs.Trigger>
+            </Tabs.List>
           </Card.Header>
           <Card.Content>
-            <DataTable
-              status={isLoading ? "loading" : isError ? "error" : "success"}
-              columns={columns}
-              data={categoryInfo?.children || []}
-              config={{
-                isSortProcessed: false,
-                isPaginationProcessed: false,
-              }}
-            />
+            <Tabs.Content>
+              <Tabs.Item value="overview">
+                <CategoryOverviewSection category={data?.data || {}} />
+              </Tabs.Item>
+              <Tabs.Item value="subcategories">
+                <CategoryDataTableSection
+                  data={data?.data?.children || []}
+                  breadcrumbs={breadcrumbs}
+                  isLoading={isLoading}
+                  isError={isError}
+                  onAdd={onOpenAddModal}
+                  onEdit={onOpenEditModal}
+                  onDelete={onDelete}
+                />
+              </Tabs.Item>
+            </Tabs.Content>
           </Card.Content>
-        </Card>
-      )}
+        </Tabs>
+      </Card>
 
       <AddCategoryModal
         isOpen={isAddModalOpen}
         setIsOpen={setIsAddModalOpen}
         default={{
-          category: categoryInfo?._id,
-          sequence: categoryInfo?.children?.length || 0,
+          category: data?.data?._id,
+          sequence: data?.data?.children?.length || 0,
         }}
+        key="category"
       />
       <EditCategoryModal
         default={selectedCategory}
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditAddModalOpen}
+        key="category"
       />
     </main>
   );
 };
 
-export default CategoryDetailsPage;
+export default CategoriesDetailsPage;

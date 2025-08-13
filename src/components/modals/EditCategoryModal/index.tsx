@@ -25,8 +25,6 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
-  console.log(category);
-
   const {
     register,
     handleSubmit,

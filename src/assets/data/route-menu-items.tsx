@@ -4,12 +4,13 @@ import CommonLayout from "@/layouts/CommonLayout";
 import UserLayout from "@/layouts/UserLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
-import CategoryDetailsPage from "@/pages/(common)/CategoryDetailsPage";
-import CategoryPage from "@/pages/(common)/CategoryPage";
+import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
+import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { TItem } from "@/types/route-menu.type";
+import { Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
@@ -35,11 +36,21 @@ export const items: TItem[] = [
         icon: "blocks",
         path: "categories",
         name: "Categories",
-        element: <CategoryPage />,
-      },
-      {
-        path: "categories/:id",
-        element: <CategoryDetailsPage />,
+        routeType: "layout",
+        menuType: "item-without-children",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            name: "Categories",
+            element: <CategoriesPage />,
+            menuType: "invisible",
+          },
+          {
+            path: ":id",
+            element: <CategoriesDetailsPage />,
+          },
+        ],
       },
       {
         icon: "newspaper",

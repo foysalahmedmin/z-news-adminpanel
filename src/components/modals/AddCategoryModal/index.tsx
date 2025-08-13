@@ -16,6 +16,7 @@ type AddCategoryModalProps = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
+  key?: "category" | "categories" | "subcategories";
 };
 
 // Update type to include new fields
@@ -34,6 +35,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   isOpen,
   setIsOpen,
   default: category,
+  key = "categories",
 }) => {
   const queryClient = useQueryClient();
 
@@ -61,7 +63,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     mutationFn: createCategory,
     onSuccess: (data) => {
       toast.success(data?.message || "Category created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: [key] });
       reset();
       setIsOpen(false);
     },

@@ -211,18 +211,8 @@ const TabsTrigger = ({
 
 // Content Container Component
 const TabsContent = ({ className, children, ...props }: TabsContentProps) => {
-  const { isAnimating } = useTabs();
-
   return (
-    <div
-      role="tabpanel"
-      className={cn(
-        "mt-4 transition-opacity duration-200",
-        isAnimating && "opacity-90",
-        className,
-      )}
-      {...props}
-    >
+    <div role="tabpanel" className={cn("", className)} {...props}>
       {children}
     </div>
   );
@@ -236,7 +226,7 @@ const TabsItem = ({
   children,
   ...props
 }: TabsItemProps) => {
-  const { activeValue, isAnimating } = useTabs();
+  const { activeValue } = useTabs();
   const isActive = value === activeValue;
 
   if (!isActive) {
@@ -250,7 +240,7 @@ const TabsItem = ({
       data-state="active"
       className={cn(
         "animate-in fade-in-0 slide-in-from-bottom-1 duration-200",
-        isAnimating && "animate-out fade-out-0 slide-out-to-top-1",
+        // isAnimating && "animate-out fade-out-0 slide-out-to-top-1",
         activeClassName,
         className,
       )}

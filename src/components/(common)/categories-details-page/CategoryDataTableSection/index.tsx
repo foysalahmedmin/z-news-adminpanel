@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import type { TColumn } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
@@ -125,26 +124,26 @@ const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
   ];
   return (
     <div>
-      <Card>
-        <Card.Content className="py-6">
-          <DataTable
-            title="Root Categories"
-            status={isLoading ? "loading" : isError ? "error" : "success"}
-            columns={columns}
-            data={data || []}
-            config={{
-              isSearchProcessed: false,
-              isSortProcessed: false,
-              isPaginationProcessed: false,
-            }}
-            slot={
-              <>
-                <Button onClick={() => onAdd()}>Add Sub Category</Button>
-              </>
-            }
-          />
-        </Card.Content>
-      </Card>
+      <DataTable
+        title="Root Categories"
+        status={isLoading ? "loading" : isError ? "error" : "success"}
+        columns={columns}
+        data={data || []}
+        config={{
+          isSearchProcessed: false,
+          isSortProcessed: false,
+          isPaginationProcessed: false,
+        }}
+        slot={
+          <Button
+            className="hover:border-border text-base"
+            variant="outline"
+            onClick={() => onAdd()}
+          >
+            Add Sub Category
+          </Button>
+        }
+      />
     </div>
   );
 };

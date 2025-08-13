@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 const CardRoot: React.FC<ComponentProps<"div">> = ({ className, ...props }) => (
   <div
     className={cn(
-      "bg-card text-card-foreground rounded-lg border shadow-sm",
+      "bg-card text-card-foreground rounded-md border shadow-sm",
       className,
     )}
     {...props}
@@ -31,14 +31,12 @@ const CardTitle: React.FC<ComponentProps<"h3">> = ({ className, ...props }) => (
 const CardContent: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
-}) => <div className={cn("p-6 pt-0", className)} {...props} />;
+}) => <div className={cn("p-6", className)} {...props} />;
 
 const CardFooter: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
-}) => (
-  <div className={cn("flex items-center p-6 pt-0", className)} {...props} />
-);
+}) => <div className={cn("flex items-center p-6", className)} {...props} />;
 
 const Card = Object.assign(CardRoot, {
   Header: CardHeader,
