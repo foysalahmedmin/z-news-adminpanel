@@ -1,6 +1,8 @@
 import { useQueryState } from "@/hooks/ui/useQueryState";
+import debounce from "@/utils/debounce";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
+import { FormControl } from "./FormControl";
 import { Pagination } from "./Pagination";
 import { Table } from "./Table";
 
@@ -9,12 +11,15 @@ export type TColumn<T> = {
   name: string;
   field: keyof T;
   isSortable?: boolean;
-  isSpecial?: boolean;
-  formatter?: (
-    cell: T[keyof T],
-    row: T,
-    index: number,
-  ) => React.ReactNode | string | number | null | undefined;
+  isSearchable?: boolean;
+  head?: (info: {
+    head: TColumn<T>;
+  }) => React.ReactNode | string | number | null | undefined;
+  cell?: (info: {
+    cell: T[keyof T];
+    row: T;
+    index: number;
+  }) => React.ReactNode | string | number | null | undefined;
   width?: string;
   minWidth?: string;
   maxWidth?: string;
@@ -24,35 +29,70 @@ export type TColumn<T> = {
 };
 
 export type TDataTableProps<T> = {
+  title?: string;
+  slot?: React.ReactNode | string | number | null | undefined;
   status?: string;
   columns: TColumn<T>[];
   data: T[];
   config?: {
+    isSearchProcessed?: boolean;
     isSortProcessed?: boolean;
     isPaginationProcessed?: boolean;
+    isViewSearch?: boolean;
     isViewSort?: boolean;
     isViewPagination?: boolean;
   };
   state?: {
+    search?: string;
     sort?: string;
     page?: number;
     limit?: number;
     total?: number;
+    onSearchChange?: (search: string) => void;
     onSortChange?: (sort: string) => void;
     onPageChange?: (page: number) => void;
     onLimitChange?: (limit: number) => void;
   };
 };
 
-type CellContentProps<T> = {
-  value: T[keyof T];
-  formatter?: (
-    cell: T[keyof T],
-    row: T,
-    index: number,
-  ) => React.ReactNode | string | number | null | undefined;
-  row: T;
-  rowIndex: number;
+// FIXED Searching Hook - Logic corrected!
+const useSearching = <T extends Record<string, unknown>>(
+  data: T[],
+  columns: TColumn<T>[],
+  search?: string,
+  isSearchProcessed: boolean = false,
+) => {
+  const filteredData = useMemo(() => {
+    if (isSearchProcessed) {
+      return data;
+    }
+
+    if (!search || search.trim() === "") {
+      return data;
+    }
+
+    const checkIsSearchable = (field: keyof T) => {
+      return columns.some(
+        (column) => column.field === field && column.isSearchable,
+      );
+    };
+
+    const searchLower = search.toLowerCase();
+
+    return data.filter((item) => {
+      return Object.entries(item).some(([key, value]) => {
+        if (
+          (typeof value === "string" || typeof value === "number") &&
+          checkIsSearchable(key as keyof T)
+        ) {
+          return value.toString().toLowerCase().includes(searchLower);
+        }
+        return false;
+      });
+    });
+  }, [data, columns, search, isSearchProcessed]);
+
+  return filteredData;
 };
 
 // FIXED Pagination Hook - Logic corrected!
@@ -136,11 +176,22 @@ const getSortIcon = (field: string, sort?: string) => {
 };
 
 // Cell Content Component
+type CellContentProps<T> = {
+  index: number;
+  row: T;
+  cell: T[keyof T];
+  formatter?: (info: {
+    index: number;
+    row: T;
+    cell: T[keyof T];
+  }) => React.ReactNode | string | number | null | undefined;
+};
+
 export const CellContent = <T extends Record<string, unknown>>({
-  value,
-  formatter,
+  index,
   row,
-  rowIndex,
+  cell,
+  formatter,
 }: CellContentProps<T>) => {
   const renderValue = (val: unknown): React.ReactNode => {
     if (React.isValidElement(val)) return val;
@@ -174,52 +225,75 @@ export const CellContent = <T extends Record<string, unknown>>({
   };
 
   if (formatter) {
-    return <>{formatter(value, row, rowIndex)}</>;
+    return <>{formatter({ cell: cell, row, index: index })}</>;
   }
 
-  return <>{renderValue(value)}</>;
+  return <>{renderValue(cell)}</>;
 };
 
 // Fixed DataTable Component
 const DataTable = <T extends Record<string, unknown>>({
-  columns: headers,
+  title,
+  slot,
+  columns,
   data,
   config,
   state,
 }: TDataTableProps<T>) => {
   const {
+    isSearchProcessed = false,
     isSortProcessed = false,
     isPaginationProcessed = false,
+    isViewSearch = true,
     isViewSort = true,
     isViewPagination = true,
   } = config || {};
 
-  const { sort, page, limit, onSortChange, onPageChange, onLimitChange } =
-    useQueryState({
-      sort: state?.sort,
-      page: state?.page,
-      limit: state?.limit,
-      onSortChange: state?.onSortChange,
-      onPageChange: state?.onPageChange,
-      onLimitChange: state?.onLimitChange,
-    });
+  const {
+    search,
+    sort,
+    page,
+    limit,
+    onSearchChange,
+    onSortChange,
+    onPageChange,
+    onLimitChange,
+  } = useQueryState({
+    search: state?.search,
+    sort: state?.sort,
+    page: state?.page,
+    limit: state?.limit,
+    onSearchChange: state?.onSearchChange,
+    onSortChange: state?.onSortChange,
+    onPageChange: state?.onPageChange,
+    onLimitChange: state?.onLimitChange,
+  });
 
   // Calculate pagination values
+  const currentSearch = search || "";
   const currentSort = sort || "";
   const currentPage = page || 1;
   const currentLimit = limit || 10;
+
+  //  Apply searching
+  const searchedData = useSearching(
+    data,
+    columns,
+    currentSearch,
+    isSearchProcessed,
+  );
+
+  // Apply sorting
+  const sortedData = useSorting(searchedData, currentSort, isSortProcessed);
 
   // Determine total count based on processing type
   const totalCount = useMemo(() => {
     if (isPaginationProcessed && typeof state?.total === "number") {
       return state?.total;
     } else {
-      return data.length;
+      return sortedData.length;
     }
-  }, [isPaginationProcessed, state?.total, data.length]);
-
-  // Apply sorting first
-  const sortedData = useSorting(data, currentSort, isSortProcessed);
+  }, [isPaginationProcessed, state?.total, sortedData.length]);
 
   // Apply pagination
   const paginatedData = usePagination(
@@ -250,6 +324,11 @@ const DataTable = <T extends Record<string, unknown>>({
     [currentSort, onSortChange],
   );
 
+  // Search handler
+  const handleSearchChange = debounce((value: string | null) => {
+    onSearchChange(value || "");
+  }, 500);
+
   // Page handler
   const handlePageChange = useCallback(
     (page: number) => {
@@ -268,26 +347,53 @@ const DataTable = <T extends Record<string, unknown>>({
 
   return (
     <div className="w-full space-y-4">
-      <div className="rounded-nd overflow-x-auto border px-4">
+      <div className="flex flex-wrap items-center justify-between">
+        {title && (
+          <div className="flex flex-1 items-center">
+            <h1 className="text-2xl font-bold">{title}</h1>
+          </div>
+        )}
+        <div className="flex flex-1 items-center gap-4">
+          {isViewSearch && (
+            <div className="flex-1">
+              <FormControl
+                className="w-full"
+                as="input"
+                type="search"
+                onChange={(e) => handleSearchChange(e.target.value || null)}
+                defaultValue={currentSearch}
+                placeholder="Search"
+              />
+            </div>
+          )}
+          {slot}
+          <div className="flex h-10 items-center rounded-md border px-4">
+            Columns
+          </div>
+        </div>
+      </div>
+      <div className="overflow-x-auto rounded-md border px-4">
         <Table className="w-full">
           <Table.Header>
             <Table.Row>
-              {headers.map((header, index) => (
+              {columns.map((head, index) => (
                 <Table.Head
-                  key={`header-${header.field as string}-${index}`}
-                  style={header.style}
+                  key={`header-${head.field as string}-${index}`}
+                  style={head.style}
                 >
-                  {header.isSortable && isViewSort ? (
+                  {head.isSortable && isViewSort ? (
                     <button
-                      className="flex items-center space-x-1 text-left transition-colors hover:text-gray-900 dark:hover:text-gray-100"
-                      onClick={() => handleSortClick(header.field as string)}
+                      className="flex items-center gap-2"
+                      onClick={() => handleSortClick(head.field as string)}
                       type="button"
                     >
-                      <span>{header.name}</span>
-                      {getSortIcon(header.field as string, currentSort)}
+                      <div>
+                        {head.head ? head.head({ head: head }) : head.name}
+                      </div>
+                      {getSortIcon(head.field as string, currentSort)}
                     </button>
                   ) : (
-                    <span>{header.name}</span>
+                    <>{head.head ? head.head({ head: head }) : head.name}</>
                   )}
                 </Table.Head>
               ))}
@@ -297,8 +403,8 @@ const DataTable = <T extends Record<string, unknown>>({
             {paginatedData.length === 0 ? (
               <Table.Row>
                 <Table.Cell
-                  colSpan={headers.length}
-                  className="py-8 text-center text-gray-500 dark:text-gray-400"
+                  colSpan={columns.length}
+                  className="text-muted-foreground py-8 text-center"
                 >
                   No data available
                 </Table.Cell>
@@ -306,16 +412,16 @@ const DataTable = <T extends Record<string, unknown>>({
             ) : (
               paginatedData.map((row, rowIndex) => (
                 <Table.Row key={`row-${rowIndex}`}>
-                  {headers.map((header, cellIndex) => (
+                  {columns.map((head, cellIndex) => (
                     <Table.Cell
                       key={`cell-${rowIndex}-${cellIndex}`}
-                      style={header.style}
+                      style={head.style}
                     >
                       <CellContent
-                        value={getFieldValue(row, header.field)}
-                        formatter={header.formatter}
+                        index={rowIndex}
                         row={row}
-                        rowIndex={rowIndex}
+                        cell={getFieldValue(row, head.field)}
+                        formatter={head.cell}
                       />
                     </Table.Cell>
                   ))}

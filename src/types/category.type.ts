@@ -6,20 +6,28 @@ export type TCategory = {
   _id: string;
   category?: string;
   icon?: string;
+  thumbnail?: string;
   name: string;
   slug: string;
-  sequence: number; // To maintain sort order to display
+  description?: string;
+  sequence: number;
+  is_featured?: boolean;
   status: TStatus;
+  layout?: string;
   children?: TCategory[];
 };
 
 export type TCategoryCreatePayload = {
   category?: string;
   icon?: string;
+  thumbnail?: string;
   name: string;
   slug: string;
+  description?: string;
   sequence: number;
+  is_featured?: boolean;
   status: TStatus;
+  layout?: string;
 };
 
 export type TCategoryUpdatePayload = {
@@ -27,8 +35,11 @@ export type TCategoryUpdatePayload = {
   icon?: string;
   name?: string;
   slug?: string;
+  description?: string;
   sequence?: number;
+  is_featured?: boolean;
   status?: TStatus;
+  layout?: string;
 };
 
 export type TCategoryResponse = Response<TCategory>;

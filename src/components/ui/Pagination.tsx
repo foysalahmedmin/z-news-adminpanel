@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { Fragment, useCallback, useMemo } from "react";
+import { Button } from "./Button";
+import { FormControl } from "./FormControl";
 
 type PaginationProps = {
   className?: string;
@@ -102,7 +104,7 @@ const Pagination: React.FC<PaginationProps> = ({
     >
       {/* Results Info */}
       {showInfo && (
-        <div className="text-sm text-gray-700 dark:text-gray-300">
+        <div className="text-muted-foreground text-sm">
           {total > 0 ? (
             <>
               Showing <span className="font-medium">{startItem}</span> to{" "}
@@ -116,76 +118,78 @@ const Pagination: React.FC<PaginationProps> = ({
       )}
 
       {/* Controls */}
-      <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+      <div className="flex flex-col items-center gap-4 sm:flex-row">
         {/* Limit Selector */}
         <div className="flex items-center space-x-2">
           <label
             htmlFor="limit"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-muted-foreground text-sm font-medium"
           >
             Rows per page:
           </label>
-          <select
+          <FormControl
+            as="select"
+            className="h-8 w-16 px-0 text-center"
             id="limit"
             value={limit}
             onChange={(e) => handleLimitChange(Number(e.target.value))}
-            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"
           >
             {limitOptions.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
             ))}
-          </select>
+          </FormControl>
         </div>
 
         {/* Pagination Buttons */}
         {totalPages > 1 && (
           <div className="flex items-center space-x-1">
             {/* Previous Button */}
-            <button
+            <Button
               onClick={() => handlePageChange(page - 1)}
               disabled={page <= 1}
-              className="inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
               aria-label="Previous page"
+              variant="ghost"
+              shape={"icon"}
+              size={"sm"}
             >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
+              <ChevronLeft className="size-6" />
+            </Button>
 
             {/* Page Numbers */}
             {pages.map((p, index) => (
               <Fragment key={`page-${index}`}>
                 {p === "..." ? (
-                  <span className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-muted-foreground inline-flex items-center px-4 py-2 text-sm font-medium">
                     ...
                   </span>
                 ) : (
-                  <button
+                  <Button
                     onClick={() => handlePageChange(p as number)}
-                    className={cn(
-                      "inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium transition-colors",
-                      p === page
-                        ? "border-blue-500 bg-blue-50 text-blue-600 dark:border-blue-400 dark:bg-blue-900/20 dark:text-blue-400"
-                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700",
-                    )}
                     aria-label={`Go to page ${p}`}
                     aria-current={p === page ? "page" : undefined}
+                    shape={"icon"}
+                    variant={p === page ? "default" : "outline"}
+                    size={"sm"}
                   >
                     {p}
-                  </button>
+                  </Button>
                 )}
               </Fragment>
             ))}
 
             {/* Next Button */}
-            <button
+            <Button
               onClick={() => handlePageChange(page + 1)}
               disabled={page >= totalPages}
-              className="inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
               aria-label="Next page"
+              variant="ghost"
+              shape={"icon"}
+              size={"sm"}
             >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+              <ChevronRight className="size-6" />
+            </Button>
           </div>
         )}
       </div>

@@ -42,7 +42,7 @@ const formControlVariants = cva(
     },
     defaultVariants: {
       variant: "default",
-      size: "md",
+      size: "default",
     },
   },
 );

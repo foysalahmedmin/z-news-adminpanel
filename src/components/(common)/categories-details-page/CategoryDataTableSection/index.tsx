@@ -1,57 +1,59 @@
-import AddCategoryModal from "@/components/(common)/category-page/AddCategoryModal";
-import EditCategoryModal from "@/components/(common)/category-page/EditCategoryModal";
-import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import type { TColumn } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
-import useMenu from "@/hooks/states/useMenu";
+import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib/utils";
-import { fetchCategories } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
-import { useQuery } from "@tanstack/react-query";
+import type { TBreadcrumbs } from "@/types/route-menu.type";
 import { Edit, Eye, Trash } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { Link } from "react-router";
 
-const CategoryPage = () => {
-  const { activeBreadcrumbs } = useMenu();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditAddModalOpen] = useState(false);
+type CategoryDataTableSectionProps = {
+  data?: TCategory[];
+  breadcrumbs: TBreadcrumbs[];
+  isLoading: boolean;
+  isError: boolean;
+  onAdd: () => void;
+  onEdit: (row: TCategory) => void;
+  onDelete: (row: TCategory) => void;
+};
 
-  const [selectedCategory, setSelectedCategory] = useState<TCategory>(
-    {} as TCategory,
-  );
-
-  const onOpenEditModal = (category: TCategory) => {
-    setSelectedCategory(category);
-    setIsEditAddModalOpen(true);
-  };
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => fetchCategories(),
-  });
-
+const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
+  data = [],
+  breadcrumbs,
+  isLoading,
+  isError,
+  onAdd,
+  onEdit,
+  onDelete,
+}) => {
   const columns: TColumn<TCategory>[] = [
     { name: "Sequence", field: "sequence", isSortable: true },
     {
       name: "Icon",
       field: "icon",
-      formatter: (cell) => (
+      cell: ({ cell }) => (
         <span>
           <Icon name={cell} />
         </span>
       ),
     },
-    { name: "Name", field: "name", isSortable: true },
+    { name: "Name", field: "name", isSortable: true, isSearchable: true },
     { name: "Slug", field: "slug", isSortable: true },
+    {
+      name: "Layout",
+      field: "layout",
+      isSortable: true,
+      cell: ({ cell }) => <span>{cell?.toString()}</span>,
+    },
     {
       name: "Status",
       field: "status",
       isSortable: true,
-      formatter: (cell) => (
+      cell: ({ cell }) => (
         <span
           className={cn(
             "rounded-full px-2 py-1 text-xs font-medium",
@@ -65,11 +67,20 @@ const CategoryPage = () => {
       ),
     },
     {
+      name: "Featured",
+      field: "is_featured",
+      isSortable: true,
+      cell: ({ cell }) => (
+        <div>
+          <Switch checked={cell === true} />
+        </div>
+      ),
+    },
+    {
       style: { width: "150px", textAlign: "center" },
       name: "Actions",
       field: "_id",
-      isSpecial: true,
-      formatter: (_cell, row) => (
+      cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
           <Button
             asChild={true}
@@ -83,7 +94,7 @@ const CategoryPage = () => {
               state={{
                 category: row,
                 breadcrumbs: [
-                  ...(activeBreadcrumbs || []),
+                  ...(breadcrumbs || []),
                   { name: row.name, path: `/categories/${row._id}` },
                 ],
               }}
@@ -92,7 +103,7 @@ const CategoryPage = () => {
             </Link>
           </Button>
           <Button
-            onClick={() => onOpenEditModal(row)}
+            onClick={() => onEdit(row)}
             size={"sm"}
             variant="outline"
             shape={"icon"}
@@ -100,6 +111,7 @@ const CategoryPage = () => {
             <Edit className="size-4" />
           </Button>
           <Button
+            onClick={() => onDelete(row)}
             className="[--accent:red]"
             size={"sm"}
             variant="outline"
@@ -111,38 +123,30 @@ const CategoryPage = () => {
       ),
     },
   ];
-
   return (
-    <main className="space-y-6">
-      <PageHeader
-        slot={
-          <Button onClick={() => setIsAddModalOpen(true)}>Add Category</Button>
-        }
-      />
+    <div>
       <Card>
-        <Card.Header>
-          <Card.Title>Root Categories</Card.Title>
-        </Card.Header>
-        <Card.Content>
+        <Card.Content className="py-6">
           <DataTable
+            title="Root Categories"
             status={isLoading ? "loading" : isError ? "error" : "success"}
             columns={columns}
-            data={data?.data || []}
+            data={data || []}
             config={{
+              isSearchProcessed: false,
               isSortProcessed: false,
               isPaginationProcessed: false,
             }}
+            slot={
+              <>
+                <Button onClick={() => onAdd()}>Add Sub Category</Button>
+              </>
+            }
           />
         </Card.Content>
       </Card>
-      <AddCategoryModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
-      <EditCategoryModal
-        category={selectedCategory}
-        isOpen={isEditModalOpen}
-        setIsOpen={setIsEditAddModalOpen}
-      />
-    </main>
+    </div>
   );
 };
 
-export default CategoryPage;
+export default CategoryDataTableSection;

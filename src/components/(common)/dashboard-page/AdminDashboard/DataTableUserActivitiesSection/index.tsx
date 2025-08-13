@@ -16,7 +16,7 @@ const DataTableUserActivitiesSection = () => {
       name: "Status",
       field: "status",
       isSortable: true,
-      formatter: (cell) => (
+      cell: ({ cell }) => (
         <span
           className={cn(
             "rounded-full px-2 py-1 text-xs font-medium",
@@ -35,8 +35,7 @@ const DataTableUserActivitiesSection = () => {
     {
       name: "Actions",
       field: "id",
-      isSpecial: true,
-      formatter: () => (
+      cell: () => (
         <div className="flex w-fit items-center space-x-2">
           <Button size={"sm"} variant="outline" shape={"icon"}>
             <Edit className="size-4" />

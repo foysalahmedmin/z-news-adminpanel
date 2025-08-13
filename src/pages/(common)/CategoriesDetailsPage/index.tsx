@@ -1,3 +1,4 @@
+import CategoryInfo from "@/components/(common)/category-details-page/CategoryInfo";
 import AddCategoryModal from "@/components/(common)/category-page/AddCategoryModal";
 import EditCategoryModal from "@/components/(common)/category-page/EditCategoryModal";
 import PageHeader from "@/components/sections/PageHeader";
@@ -6,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import type { TColumn } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
+import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib/utils";
 import { fetchCategory } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
@@ -43,19 +45,25 @@ const CategoryDetailsPage = () => {
     {
       name: "Icon",
       field: "icon",
-      formatter: (cell) => (
+      cell: ({ cell }) => (
         <span>
           <Icon name={cell} />
         </span>
       ),
     },
-    { name: "Name", field: "name", isSortable: true },
+    { name: "Name", field: "name", isSortable: true, isSearchable: true },
     { name: "Slug", field: "slug", isSortable: true },
+    {
+      name: "Layout",
+      field: "layout",
+      isSortable: true,
+      cell: ({ cell }) => <span>{cell?.toString()}</span>,
+    },
     {
       name: "Status",
       field: "status",
       isSortable: true,
-      formatter: (cell) => (
+      cell: ({ cell }) => (
         <span
           className={cn(
             "rounded-full px-2 py-1 text-xs font-medium",
@@ -69,18 +77,27 @@ const CategoryDetailsPage = () => {
       ),
     },
     {
+      name: "Featured",
+      field: "is_featured",
+      isSortable: true,
+      cell: ({ cell }) => (
+        <div>
+          <Switch checked={cell === true} />
+        </div>
+      ),
+    },
+    {
       style: { width: "150px", textAlign: "center" },
       name: "Actions",
       field: "_id",
-      isSpecial: true,
-      formatter: (_cell, row) => (
+      cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
           <Button
-            asChild
+            asChild={true}
             className="[--accent:green]"
-            size="sm"
+            size={"sm"}
             variant="outline"
-            shape="icon"
+            shape={"icon"}
           >
             <Link
               to={`/categories/${row._id}`}
@@ -97,17 +114,17 @@ const CategoryDetailsPage = () => {
           </Button>
           <Button
             onClick={() => onOpenEditModal(row)}
-            size="sm"
+            size={"sm"}
             variant="outline"
-            shape="icon"
+            shape={"icon"}
           >
             <Edit className="size-4" />
           </Button>
           <Button
             className="[--accent:red]"
-            size="sm"
+            size={"sm"}
             variant="outline"
-            shape="icon"
+            shape={"icon"}
           >
             <Trash className="size-4" />
           </Button>
@@ -120,6 +137,7 @@ const CategoryDetailsPage = () => {
     <main className="space-y-6">
       <PageHeader
         breadcrumbs={breadcrumbs}
+        name="Category Details"
         slot={
           <Button onClick={() => setIsAddModalOpen(true)}>
             Add Sub Category
@@ -130,39 +148,8 @@ const CategoryDetailsPage = () => {
       {/* Category Info Card */}
       {categoryInfo && (
         <Card>
-          <Card.Header>
-            <Card.Title>Information</Card.Title>
-          </Card.Header>
-          <Card.Content>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <span className="font-semibold">Name:</span> {categoryInfo.name}
-              </div>
-              <div>
-                <span className="font-semibold">Slug:</span> {categoryInfo.slug}
-              </div>
-              <div>
-                <span className="font-semibold">Sequence:</span>{" "}
-                {categoryInfo.sequence}
-              </div>
-              <div>
-                <span className="font-semibold">Status:</span>{" "}
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-1 text-xs font-medium",
-                    categoryInfo.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800",
-                  )}
-                >
-                  {categoryInfo.status !== "active" ? "Inactive" : "Active"}
-                </span>
-              </div>
-              <div>
-                <span className="font-semibold">Icon:</span>{" "}
-                <Icon name={categoryInfo.icon} className="ml-1 inline-block" />
-              </div>
-            </div>
+          <Card.Content className="py-6">
+            <CategoryInfo category={categoryInfo} />
           </Card.Content>
         </Card>
       )}
@@ -190,10 +177,13 @@ const CategoryDetailsPage = () => {
       <AddCategoryModal
         isOpen={isAddModalOpen}
         setIsOpen={setIsAddModalOpen}
-        category={categoryInfo?._id}
+        default={{
+          category: categoryInfo?._id,
+          sequence: categoryInfo?.children?.length || 0,
+        }}
       />
       <EditCategoryModal
-        category={selectedCategory}
+        default={selectedCategory}
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditAddModalOpen}
       />
