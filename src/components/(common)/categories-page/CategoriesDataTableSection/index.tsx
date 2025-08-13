@@ -134,7 +134,15 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
           isSortProcessed: false,
           isPaginationProcessed: false,
         }}
-        slot={<Button onClick={() => onAdd()}>Add Category</Button>}
+        slot={
+          <Button
+            className="hover:border-border text-base"
+            variant="outline"
+            onClick={() => onAdd()}
+          >
+            Add Category
+          </Button>
+        }
       />
     </div>
   );
