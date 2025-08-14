@@ -54,23 +54,19 @@ const DataTableUserActivitiesSection = () => {
   ];
 
   return (
-    <div className="mb-8">
-      <Card>
-        <Card.Header>
-          <Card.Title>User Activities</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <DataTable
-            columns={columns}
-            data={userActivities}
-            config={{
-              isSortProcessed: false,
-              isPaginationProcessed: false,
-            }}
-          />
-        </Card.Content>
-      </Card>
-    </div>
+    <Card>
+      <Card.Content>
+        <DataTable
+          title="User Activities"
+          columns={columns}
+          data={userActivities}
+          config={{
+            isSortProcessed: false,
+            isPaginationProcessed: false,
+          }}
+        />
+      </Card.Content>
+    </Card>
   );
 };
 

@@ -14,8 +14,6 @@ type NewsArticlesDataTableSectionProps = {
   breadcrumbs: TBreadcrumbs[];
   isLoading: boolean;
   isError: boolean;
-  onAdd: () => void;
-  onEdit: (row: TNews) => void;
   onDelete: (row: TNews) => void;
   onToggleFeatured: (row: TNews) => void;
 };
@@ -27,7 +25,6 @@ const NewsArticlesDataTableSection: React.FC<
   breadcrumbs,
   isLoading,
   isError,
-  onEdit,
   onDelete,
   onToggleFeatured,
 }) => {
@@ -92,13 +89,19 @@ const NewsArticlesDataTableSection: React.FC<
               <Eye className="size-4" />
             </Link>
           </Button>
-          <Button
-            onClick={() => onEdit(row)}
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Edit className="size-4" />
+          <Button asChild={true} size={"sm"} variant="outline" shape={"icon"}>
+            <Link
+              to={`/news-articles/edit/${row._id}`}
+              state={{
+                category: row,
+                breadcrumbs: [
+                  ...(breadcrumbs || []),
+                  { name: row.title, path: `/news-articles/${row._id}` },
+                ],
+              }}
+            >
+              <Edit className="size-4" />
+            </Link>
           </Button>
           <Button
             onClick={() => onDelete(row)}

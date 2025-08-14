@@ -37,7 +37,7 @@ export type TUpdateNewsPayload = {
   title?: string;
   slug?: string;
   summary?: string;
-  content: string;
+  content?: string;
   thumbnail?: File | null;
   images?: File[] | null;
   tags?: string[];
