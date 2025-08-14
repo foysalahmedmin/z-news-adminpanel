@@ -11,17 +11,19 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-type EditCategoryModalProps = {
+type CategoryEditModalProps = {
   default: Partial<TCategory>;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
+  mutationKey?: string[];
 };
 
-const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
+const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
   isOpen,
   setIsOpen,
   default: category,
+  mutationKey: key = ["categories"],
 }) => {
   const queryClient = useQueryClient();
 
@@ -63,7 +65,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
       updateCategory(category._id!, data),
     onSuccess: (data) => {
       toast.success(data?.message || "Category updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: key || [] });
       setIsOpen(false);
     },
     onError: (error: AxiosError<ErrorResponse>) => {
@@ -248,4 +250,4 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   );
 };
 
-export default EditCategoryModal;
+export default CategoryEditModal;

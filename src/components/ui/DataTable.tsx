@@ -71,32 +71,28 @@ type CellContentProps<T> = {
 const useColumns = <T extends Record<string, unknown>>(
   initialColumns: TColumn<T>[],
 ) => {
-  const [columns, setColumns] = useState<TColumn<T>[]>(initialColumns || []);
   const [selected, setSelected] = useState<string[]>(
     initialColumns?.map((c) => c?.name.toString()) || [],
   );
 
   const toggler = (column: TColumn<T>) => {
-    if (selected?.includes(column?.name.toString())) {
-      setSelected(selected?.filter((c) => c !== column?.name.toString()));
-    } else {
-      setSelected([...selected, column?.name.toString()]);
-    }
+    setSelected((prev) =>
+      prev.includes(column.name.toString())
+        ? prev.filter((c) => c !== column.name.toString())
+        : [...prev, column.name.toString()],
+    );
   };
 
-  useMemo(() => {
+  const processedColumns = useMemo(() => {
     if (!(selected?.length > 0)) {
-      return;
+      return [];
     }
-
-    const processedColumns = columns?.filter((column) =>
-      selected?.includes(column?.name.toString()),
+    return initialColumns?.filter((column) =>
+      selected.includes(column.name.toString()),
     );
+  }, [initialColumns, selected]);
 
-    setColumns(processedColumns);
-  }, [columns, selected]);
-
-  return { columns, selected, setSelected, toggler };
+  return { columns: processedColumns, selected, setSelected, toggler };
 };
 
 // Searching Hook - Logic corrected!
@@ -382,17 +378,17 @@ const DataTable = <T extends Record<string, unknown>>({
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-wrap items-center justify-between">
+      <div className="flex w-full flex-col flex-wrap gap-4 lg:flex-row lg:items-center lg:justify-between">
         {title && (
           <div className="flex flex-1 items-center">
             <h1 className="text-2xl font-bold">{title}</h1>
           </div>
         )}
-        <div className="flex flex-1 items-center gap-4">
+        <div className="flex w-full flex-1 items-center gap-4">
           {isViewSearch && (
             <div className="flex-1">
               <FormControl
-                className="w-full"
+                className="w-full min-w-12"
                 as="input"
                 type="search"
                 onChange={(e) => handleSearchChange(e.target.value || null)}
@@ -401,33 +397,43 @@ const DataTable = <T extends Record<string, unknown>>({
               />
             </div>
           )}
-          {slot}
-          <div className="flex h-10 items-center rounded-md border px-4">
-            <Dropdown>
-              <Dropdown.Trigger variant={"none"} size={"none"}>
-                <span>Columns</span>
-              </Dropdown.Trigger>
-              <Dropdown.Content>
-                <ul className="space-y-1">
+
+          <Dropdown side={"end"}>
+            <Dropdown.Trigger className="" variant={"outline"}>
+              <span>Columns</span>
+            </Dropdown.Trigger>
+            <Dropdown.Content className="top-full right-0 mt-1 min-w-40">
+              <div className="bg-card text-card-foreground py-1">
+                <ul>
                   {columns?.map((column) => (
                     <li
-                      className=""
+                      className="hover:bg-muted cursor-pointer rounded p-2 py-1"
                       key={column.name}
-                      onSelect={() => toggler(column)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggler(column);
+                      }}
                     >
                       <div className="flex items-center gap-2">
                         <input
+                          className="accent-accent size-4 cursor-pointer"
                           type="checkbox"
                           checked={selected?.includes(column?.name.toString())}
+                          onChange={() => {}} // Controlled by onClick above
+                          onClick={(e) => e.stopPropagation()}
+                          readOnly
                         />
-                        <span>{column.name}</span>
+                        {column.name}
                       </div>
                     </li>
                   ))}
                 </ul>
-              </Dropdown.Content>
-            </Dropdown>
-          </div>
+              </div>
+            </Dropdown.Content>
+          </Dropdown>
+
+          {slot && <>{slot}</>}
         </div>
       </div>
       <div className="overflow-x-auto rounded-md border px-4">
@@ -461,7 +467,7 @@ const DataTable = <T extends Record<string, unknown>>({
             {paginatedData.length === 0 ? (
               <Table.Row>
                 <Table.Cell
-                  colSpan={columns.length}
+                  colSpan={processedColumns.length}
                   className="text-muted-foreground py-8 text-center"
                 >
                   No data available
@@ -470,7 +476,7 @@ const DataTable = <T extends Record<string, unknown>>({
             ) : (
               paginatedData.map((row, rowIndex) => (
                 <Table.Row key={`row-${rowIndex}`}>
-                  {columns.map((head, cellIndex) => (
+                  {processedColumns.map((head, cellIndex) => (
                     <Table.Cell
                       key={`cell-${rowIndex}-${cellIndex}`}
                       style={head.style}

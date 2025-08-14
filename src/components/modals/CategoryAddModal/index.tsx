@@ -11,12 +11,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-type AddCategoryModalProps = {
+type CategoryAddModalProps = {
   default?: Partial<TCategory>;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
-  key?: "category" | "categories" | "subcategories";
+  mutationKey?: string[];
 };
 
 // Update type to include new fields
@@ -31,11 +31,11 @@ type CategoryFormValues = {
   layout: string;
 };
 
-const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
+const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
   isOpen,
   setIsOpen,
   default: category,
-  key = "categories",
+  mutationKey: key = ["categories"],
 }) => {
   const queryClient = useQueryClient();
 
@@ -63,7 +63,7 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
     mutationFn: createCategory,
     onSuccess: (data) => {
       toast.success(data?.message || "Category created successfully!");
-      queryClient.invalidateQueries({ queryKey: [key] });
+      queryClient.invalidateQueries({ queryKey: key || [] });
       reset();
       setIsOpen(false);
     },
@@ -242,4 +242,4 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   );
 };
 
-export default AddCategoryModal;
+export default CategoryAddModal;

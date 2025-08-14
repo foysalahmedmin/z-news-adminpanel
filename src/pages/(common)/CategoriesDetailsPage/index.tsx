@@ -1,14 +1,18 @@
 import CategoryDataTableSection from "@/components/(common)/categories-details-page/CategoryDataTableSection";
 import CategoryInfoSection from "@/components/(common)/categories-details-page/CategoryInfoSection";
 import CategoryOverviewSection from "@/components/(common)/categories-details-page/CategoryOverviewSection";
-import AddCategoryModal from "@/components/modals/AddCategoryModal";
-import EditCategoryModal from "@/components/modals/EditCategoryModal";
+import CategoryAddModal from "@/components/modals/CategoryAddModal";
+import CategoryEditModal from "@/components/modals/CategoryEditModal";
 import PageHeader from "@/components/sections/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Tabs } from "@/components/ui/Tabs";
 import useAlert from "@/hooks/ui/useAlert";
-import { deleteCategory, fetchCategory } from "@/services/category.service";
-import type { TCategory } from "@/types/category.type";
+import {
+  deleteCategory,
+  fetchCategory,
+  updateCategory,
+} from "@/services/category.service";
+import type { TCategory, TCategoryUpdatePayload } from "@/types/category.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -45,17 +49,40 @@ const CategoriesDetailsPage = () => {
     setIsEditAddModalOpen(true);
   };
 
-  const mutation = useMutation({
+  const subcategory_update_mutation = useMutation({
+    mutationFn: ({
+      _id,
+      payload,
+    }: {
+      _id: string;
+      payload: TCategoryUpdatePayload;
+    }) => updateCategory(_id, payload),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Category updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["category"] });
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || "Failed to update category");
+      console.error("Update Category Error:", error);
+    },
+  });
+
+  const subcategory_delete_mutation = useMutation({
     mutationFn: (id: string) => deleteCategory(id),
     onSuccess: (data) => {
-      toast.success(data?.message || "Category deleted successfully!");
+      toast.success(data?.message || "Subcategory deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["category"] });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error.response?.data?.message || "Failed to delete category");
-      console.error("Delete Category Error:", error);
+      console.error("Delete Subcategory Error:", error);
     },
   });
+
+  const onToggleFeatured = async (category: TCategory) => {
+    const payload = { is_featured: !category.is_featured };
+    subcategory_update_mutation.mutate({ _id: category._id, payload });
+  };
 
   const onDelete = async (category: TCategory) => {
     const ok = await confirm({
@@ -65,7 +92,7 @@ const CategoriesDetailsPage = () => {
       cancelText: "Cancel",
     });
     if (ok) {
-      mutation.mutate(category._id);
+      subcategory_delete_mutation.mutate(category._id);
     }
   };
 
@@ -101,6 +128,7 @@ const CategoriesDetailsPage = () => {
                   onAdd={onOpenAddModal}
                   onEdit={onOpenEditModal}
                   onDelete={onDelete}
+                  onToggleFeatured={onToggleFeatured}
                 />
               </Tabs.Item>
             </Tabs.Content>
@@ -108,20 +136,20 @@ const CategoriesDetailsPage = () => {
         </Tabs>
       </Card>
 
-      <AddCategoryModal
+      <CategoryAddModal
         isOpen={isAddModalOpen}
         setIsOpen={setIsAddModalOpen}
         default={{
           category: data?.data?._id,
           sequence: data?.data?.children?.length || 0,
         }}
-        key="category"
+        mutationKey={["category", data?.data?._id || ""]}
       />
-      <EditCategoryModal
+      <CategoryEditModal
         default={selectedCategory}
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditAddModalOpen}
-        key="category"
+        mutationKey={["category", data?.data?._id || ""]}
       />
     </main>
   );

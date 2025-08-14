@@ -26,6 +26,10 @@ function toPascalCase(input: string): string {
 }
 
 const Icon = ({ name, ...props }: IconProps) => {
+  if (typeof name !== "string") {
+    return <></>;
+  }
+
   const iconKeyName = toPascalCase(name) as keyof typeof icons;
 
   if (!(iconKeyName in icons) || typeof name !== "string") {

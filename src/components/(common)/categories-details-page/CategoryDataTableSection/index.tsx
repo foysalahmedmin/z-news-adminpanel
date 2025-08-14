@@ -18,6 +18,7 @@ type CategoryDataTableSectionProps = {
   onAdd: () => void;
   onEdit: (row: TCategory) => void;
   onDelete: (row: TCategory) => void;
+  onToggleFeatured: (row: TCategory) => void;
 };
 
 const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
@@ -28,6 +29,7 @@ const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
   onAdd,
   onEdit,
   onDelete,
+  onToggleFeatured,
 }) => {
   const columns: TColumn<TCategory>[] = [
     { name: "Sequence", field: "sequence", isSortable: true },
@@ -69,9 +71,13 @@ const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
       name: "Featured",
       field: "is_featured",
       isSortable: true,
-      cell: ({ cell }) => (
+      cell: ({ cell, row }) => (
         <div>
-          <Switch checked={cell === true} />
+          <Switch
+            disabled={isLoading}
+            onChange={() => onToggleFeatured(row)}
+            checked={cell === true}
+          />
         </div>
       ),
     },
@@ -135,11 +141,7 @@ const CategoryDataTableSection: React.FC<CategoryDataTableSectionProps> = ({
           isPaginationProcessed: false,
         }}
         slot={
-          <Button
-            className="hover:border-border text-base"
-            variant="outline"
-            onClick={() => onAdd()}
-          >
+          <Button variant="outline" onClick={() => onAdd()}>
             Add Sub Category
           </Button>
         }
