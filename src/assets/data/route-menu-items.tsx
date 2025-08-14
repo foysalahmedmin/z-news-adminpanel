@@ -7,6 +7,10 @@ import SignUpPage from "@/pages/(auth)/SignUpPage";
 import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
 import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import Dashboard from "@/pages/(common)/Dashboard";
+import NewsArticlesAddPage from "@/pages/(common)/NewsArticlesAddPage";
+import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
+import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
+import NewsArticlesPage from "@/pages/(common)/NewsArticlesPage";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { TItem } from "@/types/route-menu.type";
@@ -49,14 +53,82 @@ export const items: TItem[] = [
           {
             path: ":id",
             element: <CategoriesDetailsPage />,
+            menuType: "invisible",
           },
         ],
       },
       {
         icon: "newspaper",
-        path: "news",
-        name: "News Article",
-        element: <Dashboard />,
+        path: "news-articles",
+        name: "News Articles",
+        routeType: "layout",
+        menuType: "item-without-children",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            name: "News Articles",
+            element: <NewsArticlesPage />,
+            menuType: "invisible",
+          },
+          {
+            path: ":id",
+            element: <NewsArticlesDetailsPage />,
+            menuType: "invisible",
+          },
+          {
+            path: "add",
+            element: <NewsArticlesAddPage />,
+            menuType: "invisible",
+          },
+          {
+            path: "edit/:id",
+            element: <NewsArticlesEditPage />,
+            menuType: "invisible",
+          },
+        ],
+      },
+      {
+        icon: "scroll-text",
+        path: "news-headlines",
+        name: "News Headlines",
+        routeType: "layout",
+        menuType: "item-without-children",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            name: "News Headlines",
+            element: <CategoriesPage />,
+            menuType: "invisible",
+          },
+          {
+            path: ":id",
+            element: <CategoriesDetailsPage />,
+            menuType: "invisible",
+          },
+        ],
+      },
+      {
+        icon: "zap",
+        path: "news-breaks",
+        name: "News Breaks",
+        routeType: "layout",
+        menuType: "item-without-children",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            name: "News Breaks",
+            element: <CategoriesPage />,
+            menuType: "invisible",
+          },
+          {
+            path: ":id",
+            element: <CategoriesDetailsPage />,
+            menuType: "invisible",
+          },
+        ],
       },
       {
         icon: "message-square-quote",
