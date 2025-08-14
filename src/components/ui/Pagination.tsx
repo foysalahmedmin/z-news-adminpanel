@@ -161,7 +161,7 @@ const Pagination: React.FC<PaginationProps> = ({
             {pages.map((p, index) => (
               <Fragment key={`page-${index}`}>
                 {p === "..." ? (
-                  <span className="text-muted-foreground inline-flex items-center px-4 py-2 text-sm font-medium">
+                  <span className="text-muted-foreground inline-flex size-8 items-center justify-center pb-1.5 text-sm font-medium">
                     ...
                   </span>
                 ) : (
