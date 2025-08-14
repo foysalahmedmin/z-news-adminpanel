@@ -1,7 +1,8 @@
 import { useQueryState } from "@/hooks/ui/useQueryState";
 import debounce from "@/utils/debounce";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { Dropdown } from "./Dropdown";
 import { FormControl } from "./FormControl";
 import { Pagination } from "./Pagination";
 import { Table } from "./Table";
@@ -55,7 +56,50 @@ export type TDataTableProps<T> = {
   };
 };
 
-// FIXED Searching Hook - Logic corrected!
+type CellContentProps<T> = {
+  index: number;
+  row: T;
+  cell: T[keyof T];
+  formatter?: (info: {
+    index: number;
+    row: T;
+    cell: T[keyof T];
+  }) => React.ReactNode | string | number | null | undefined;
+};
+
+// Columns Hook - Logic corrected!
+const useColumns = <T extends Record<string, unknown>>(
+  initialColumns: TColumn<T>[],
+) => {
+  const [columns, setColumns] = useState<TColumn<T>[]>(initialColumns || []);
+  const [selected, setSelected] = useState<string[]>(
+    initialColumns?.map((c) => c?.name.toString()) || [],
+  );
+
+  const toggler = (column: TColumn<T>) => {
+    if (selected?.includes(column?.name.toString())) {
+      setSelected(selected?.filter((c) => c !== column?.name.toString()));
+    } else {
+      setSelected([...selected, column?.name.toString()]);
+    }
+  };
+
+  useMemo(() => {
+    if (!(selected?.length > 0)) {
+      return;
+    }
+
+    const processedColumns = columns?.filter((column) =>
+      selected?.includes(column?.name.toString()),
+    );
+
+    setColumns(processedColumns);
+  }, [columns, selected]);
+
+  return { columns, selected, setSelected, toggler };
+};
+
+// Searching Hook - Logic corrected!
 const useSearching = <T extends Record<string, unknown>>(
   data: T[],
   columns: TColumn<T>[],
@@ -95,7 +139,7 @@ const useSearching = <T extends Record<string, unknown>>(
   return filteredData;
 };
 
-// FIXED Pagination Hook - Logic corrected!
+// Pagination Hook - Logic corrected!
 const usePagination = <T extends Record<string, unknown>>(
   data: T[],
   page: number,
@@ -117,7 +161,7 @@ const usePagination = <T extends Record<string, unknown>>(
   return paginatedData;
 };
 
-// FIXED Sorting Hook - Logic corrected!
+// Sorting Hook - Logic corrected!
 const useSorting = <T extends Record<string, unknown>>(
   data: T[],
   sort?: string,
@@ -176,17 +220,6 @@ const getSortIcon = (field: string, sort?: string) => {
 };
 
 // Cell Content Component
-type CellContentProps<T> = {
-  index: number;
-  row: T;
-  cell: T[keyof T];
-  formatter?: (info: {
-    index: number;
-    row: T;
-    cell: T[keyof T];
-  }) => React.ReactNode | string | number | null | undefined;
-};
-
 export const CellContent = <T extends Record<string, unknown>>({
   index,
   row,
@@ -231,7 +264,7 @@ export const CellContent = <T extends Record<string, unknown>>({
   return <>{renderValue(cell)}</>;
 };
 
-// Fixed DataTable Component
+// DataTable Component
 const DataTable = <T extends Record<string, unknown>>({
   title,
   slot,
@@ -345,6 +378,8 @@ const DataTable = <T extends Record<string, unknown>>({
     [onLimitChange],
   );
 
+  const { columns: processedColumns, selected, toggler } = useColumns(columns);
+
   return (
     <div className="w-full space-y-4">
       <div className="flex flex-wrap items-center justify-between">
@@ -368,7 +403,30 @@ const DataTable = <T extends Record<string, unknown>>({
           )}
           {slot}
           <div className="flex h-10 items-center rounded-md border px-4">
-            Columns
+            <Dropdown>
+              <Dropdown.Trigger variant={"none"} size={"none"}>
+                <span>Columns</span>
+              </Dropdown.Trigger>
+              <Dropdown.Content>
+                <ul className="space-y-1">
+                  {columns?.map((column) => (
+                    <li
+                      className=""
+                      key={column.name}
+                      onSelect={() => toggler(column)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selected?.includes(column?.name.toString())}
+                        />
+                        <span>{column.name}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </Dropdown.Content>
+            </Dropdown>
           </div>
         </div>
       </div>
@@ -376,7 +434,7 @@ const DataTable = <T extends Record<string, unknown>>({
         <Table className="w-full">
           <Table.Header>
             <Table.Row>
-              {columns.map((head, index) => (
+              {processedColumns?.map((head, index) => (
                 <Table.Head
                   key={`header-${head.field as string}-${index}`}
                   style={head.style}
