@@ -34,7 +34,7 @@ export const items: TItem[] = [
       },
       {
         menuType: "title",
-        name: "Management",
+        name: "Categories",
       },
       {
         icon: "blocks",
@@ -56,6 +56,10 @@ export const items: TItem[] = [
             menuType: "invisible",
           },
         ],
+      },
+      {
+        menuType: "title",
+        name: "News",
       },
       {
         icon: "newspaper",
@@ -131,6 +135,10 @@ export const items: TItem[] = [
         ],
       },
       {
+        menuType: "title",
+        name: "Activities",
+      },
+      {
         icon: "message-square-quote",
         path: "comments",
         name: "Comments",
@@ -141,6 +149,10 @@ export const items: TItem[] = [
         path: "reactions",
         name: "Reactions",
         element: <Dashboard />,
+      },
+      {
+        menuType: "title",
+        name: "Management",
       },
       {
         icon: "users",
