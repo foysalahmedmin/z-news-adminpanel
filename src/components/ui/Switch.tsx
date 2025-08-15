@@ -5,9 +5,11 @@ type SwitchProps = {
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
   label?: string;
+  id?: string;
 };
 
 export const Switch: React.FC<SwitchProps> = ({
+  id,
   checked = false,
   onChange,
   disabled = false,
@@ -17,6 +19,7 @@ export const Switch: React.FC<SwitchProps> = ({
     <label className="flex cursor-pointer items-center gap-2 select-none">
       <div className="relative inline-flex items-center">
         <input
+          id={id}
           type="checkbox"
           checked={checked}
           disabled={disabled}

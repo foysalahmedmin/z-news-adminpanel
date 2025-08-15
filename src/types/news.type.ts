@@ -14,9 +14,47 @@ export type TNews = {
   thumbnail?: string;
   images?: string[];
   tags?: string[];
+  category: {
+    _id: string;
+    name: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+  };
+  layout: string;
+  status: TStatus;
+  is_top_featured: boolean;
+  is_featured: boolean;
+  is_premium: boolean;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+  };
+  published_at?: Date;
+  expired_at?: Date;
+  is_edited?: boolean;
+  edited_at?: Date;
+  news_headline?: Partial<TNewsHeadline>;
+  news_break?: Partial<TNewsBreak>;
+};
+
+export type TCreateNewsPayload = {
+  _id: string;
+  sequence: number;
+  title: string;
+  slug: string;
+  summary?: string;
+  content: string; // html string
+  thumbnail?: File | null;
+  images?: File[] | null;
+  tags?: string[];
   category: string;
   author: string;
+  layout: string;
   status: TStatus;
+  is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
   seo?: {
@@ -42,7 +80,9 @@ export type TUpdateNewsPayload = {
   images?: File[] | null;
   tags?: string[];
   category?: string;
+  layout?: string;
   status?: TStatus;
+  is_top_featured?: boolean;
   is_featured?: boolean;
   is_premium?: boolean;
   seo?: {

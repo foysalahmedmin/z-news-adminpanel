@@ -7,17 +7,25 @@ import { FormControl } from "./FormControl";
 import { Pagination } from "./Pagination";
 import { Table } from "./Table";
 
+// type DotNestedKeys<T> = T extends object
+//   ? {
+//       [K in keyof T & string]: T[K] extends object
+//         ? `${K}` | `${K}.${DotNestedKeys<T[K]>}`
+//         : `${K}`;
+//     }[keyof T & string]
+//   : "";
+
 // Types
-export type TColumn<T> = {
+export type TColumn<T, K extends keyof T = keyof T> = {
   name: string;
-  field: keyof T;
+  field: K;
   isSortable?: boolean;
   isSearchable?: boolean;
   head?: (info: {
-    head: TColumn<T>;
+    head: TColumn<T, K>;
   }) => React.ReactNode | string | number | null | undefined;
   cell?: (info: {
-    cell: T[keyof T];
+    cell: T[K]; // 👈 Now this matches the exact field type
     row: T;
     index: number;
   }) => React.ReactNode | string | number | null | undefined;
@@ -29,41 +37,45 @@ export type TColumn<T> = {
   className?: string;
 };
 
+export type TState = {
+  search?: string;
+  sort?: string;
+  page?: number;
+  limit?: number;
+  total?: number;
+  setSearch?: (search: string) => void;
+  setSort?: (sort: string) => void;
+  setPage?: (page: number) => void;
+  setLimit?: (limit: number) => void;
+};
+
+export type TConfig = {
+  isSearchProcessed?: boolean;
+  isSortProcessed?: boolean;
+  isPaginationProcessed?: boolean;
+  isViewSearch?: boolean;
+  isViewSort?: boolean;
+  isViewPagination?: boolean;
+};
+
 export type TDataTableProps<T> = {
   title?: string;
   slot?: React.ReactNode | string | number | null | undefined;
   status?: string;
   columns: TColumn<T>[];
   data: T[];
-  config?: {
-    isSearchProcessed?: boolean;
-    isSortProcessed?: boolean;
-    isPaginationProcessed?: boolean;
-    isViewSearch?: boolean;
-    isViewSort?: boolean;
-    isViewPagination?: boolean;
-  };
-  state?: {
-    search?: string;
-    sort?: string;
-    page?: number;
-    limit?: number;
-    total?: number;
-    onSearchChange?: (search: string) => void;
-    onSortChange?: (sort: string) => void;
-    onPageChange?: (page: number) => void;
-    onLimitChange?: (limit: number) => void;
-  };
+  config?: TConfig;
+  state?: TState;
 };
 
-type CellContentProps<T> = {
+type CellContentProps<T, K extends keyof T = keyof T> = {
   index: number;
   row: T;
-  cell: T[keyof T];
+  cell: T[K];
   formatter?: (info: {
     index: number;
     row: T;
-    cell: T[keyof T];
+    cell: T[K];
   }) => React.ReactNode | string | number | null | undefined;
 };
 
@@ -292,10 +304,10 @@ const DataTable = <T extends Record<string, unknown>>({
     sort: state?.sort,
     page: state?.page,
     limit: state?.limit,
-    onSearchChange: state?.onSearchChange,
-    onSortChange: state?.onSortChange,
-    onPageChange: state?.onPageChange,
-    onLimitChange: state?.onLimitChange,
+    onSearchChange: state?.setSearch,
+    onSortChange: state?.setSort,
+    onPageChange: state?.setPage,
+    onLimitChange: state?.setLimit,
   });
 
   // Calculate pagination values

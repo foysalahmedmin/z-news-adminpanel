@@ -130,7 +130,6 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
   return (
     <div>
       <DataTable
-        title="Root Categories"
         status={isLoading ? "loading" : isError ? "error" : "success"}
         columns={columns}
         data={data || []}
