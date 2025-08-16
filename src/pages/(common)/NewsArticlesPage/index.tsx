@@ -17,6 +17,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { Link } from "react-router";
 import { toast } from "react-toastify";
 
 const NewsArticlesPage = () => {
@@ -188,7 +189,7 @@ const NewsArticlesPage = () => {
 
   return (
     <main className="space-y-6">
-      <PageHeader name="News Articles" slot={<Button>Add news</Button>} />
+      <PageHeader name="News Articles" slot={<Button asChild><Link to="/news-articles/add">Add New</Link></Button>} />
 
       <Card>
         <Card.Content>

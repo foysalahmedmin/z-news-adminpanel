@@ -9,7 +9,7 @@ export type TNews = {
   sequence: number;
   title: string;
   slug: string;
-  summary?: string;
+  description?: string;
   content: string;
   thumbnail?: string;
   images?: string[];
@@ -28,6 +28,7 @@ export type TNews = {
   is_featured: boolean;
   is_premium: boolean;
   seo?: {
+    image?: string;
     title?: string;
     description?: string;
     keywords?: string[];
@@ -41,11 +42,10 @@ export type TNews = {
 };
 
 export type TCreateNewsPayload = {
-  _id: string;
   sequence: number;
   title: string;
   slug: string;
-  summary?: string;
+  description?: string;
   content: string; // html string
   thumbnail?: File | null;
   images?: File[] | null;
@@ -53,11 +53,12 @@ export type TCreateNewsPayload = {
   category: string;
   author: string;
   layout: string;
-  status: TStatus;
+  status: "draft" | "published";
   is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
   seo?: {
+    image?: File | null;
     title?: string;
     description?: string;
     keywords?: string[];
@@ -74,7 +75,7 @@ export type TUpdateNewsPayload = {
   sequence?: number;
   title?: string;
   slug?: string;
-  summary?: string;
+  description?: string;
   content?: string;
   thumbnail?: File | null;
   images?: File[] | null;
@@ -86,6 +87,7 @@ export type TUpdateNewsPayload = {
   is_featured?: boolean;
   is_premium?: boolean;
   seo?: {
+    image?: File | null;
     title?: string;
     description?: string;
     keywords?: string[];

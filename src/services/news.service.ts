@@ -3,6 +3,7 @@ import api from "@/lib/api";
 import type {
   TBulkNewsResponse,
   TBulkUpdatePayload,
+  TCreateNewsPayload,
   TNewsResponse,
   TUpdateNewsPayload,
 } from "@/types/news.type";
@@ -37,7 +38,7 @@ export async function fetchNews(id: string): Promise<TNewsResponse> {
 
 // ========================= POST =========================
 export async function createNews(
-  payload: TUpdateNewsPayload,
+  payload: TCreateNewsPayload,
 ): Promise<TNewsResponse> {
   const response = await api.post(
     "/api/news",
