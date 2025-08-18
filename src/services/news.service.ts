@@ -4,6 +4,7 @@ import type {
   TBulkNewsResponse,
   TBulkUpdatePayload,
   TCreateNewsPayload,
+  TNewsFileResponse,
   TNewsResponse,
   TUpdateNewsPayload,
 } from "@/types/news.type";
@@ -37,6 +38,17 @@ export async function fetchNews(id: string): Promise<TNewsResponse> {
 }
 
 // ========================= POST =========================
+export async function uploadNewsFile(file: File, type: "image" | "video" | "audio" | "file" = "image"): Promise<TNewsFileResponse> {
+  if(!file || !type) return Promise.reject();
+
+  const formData = new FormData();
+  formData.append(type, file);
+  const response = await api.post(`/api/news/file/${type}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+}
+
 export async function createNews(
   payload: TCreateNewsPayload,
 ): Promise<TNewsResponse> {
@@ -118,6 +130,11 @@ export async function updateNews(
 }
 
 // ========================= DELETE =========================
+export async function deleteNewsFile(path : string): Promise<TNewsFileResponse> {
+  const response = await api.delete(`/api/news/file/${path}`);
+  return response.data;
+}
+
 export async function deleteSelfBulkNews(payload: {
   ids: string[];
 }): Promise<TBulkNewsResponse> {

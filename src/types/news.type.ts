@@ -9,6 +9,7 @@ export type TNews = {
   sequence: number;
   title: string;
   slug: string;
+  caption?: string;
   description?: string;
   content: string;
   thumbnail?: string;
@@ -24,7 +25,6 @@ export type TNews = {
   };
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
-  is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
   seo?: {
@@ -45,6 +45,7 @@ export type TCreateNewsPayload = {
   sequence?: number;
   title: string;
   slug: string;
+  caption?: string;
   description?: string;
   content: string; // html string
   thumbnail?: File | null;
@@ -73,6 +74,7 @@ export type TUpdateNewsPayload = {
   sequence?: number;
   title?: string;
   slug?: string;
+  caption?: string;
   description?: string;
   content?: string;
   thumbnail?: File | null;
@@ -99,5 +101,11 @@ export type TBulkUpdatePayload = {
   status?: TStatus;
 };
 
+export type TNewsFileResponse = Response<{
+    type: "image" | "video" | "audio" | "file";
+    filename: string;
+    path: string;
+    url: string;
+}>;
 export type TNewsResponse = Response<TNews>;
 export type TBulkNewsResponse = Response<TNews[]>;

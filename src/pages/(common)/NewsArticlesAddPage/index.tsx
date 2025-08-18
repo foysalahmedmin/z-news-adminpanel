@@ -18,7 +18,7 @@ import useSetting from "@/hooks/states/useSetting";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import { fetchCategoriesTree } from "@/services/category.service";
-import { createNews } from "@/services/news.service";
+import { createNews, uploadNewsFile } from "@/services/news.service";
 import type { TCreateNewsPayload } from "@/types/news.type";
 import { Plus, Upload, X } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -28,6 +28,7 @@ const newsSchema = z.object({
   sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
+  caption: z.string().optional(),
   description: z.string().optional(),
   content: z.string().min(1, "Content is required"),
   thumbnail: z.instanceof(File).nullable().optional(),
@@ -406,21 +407,14 @@ const ContentEditor = () => {
       },
     },
     uploadFile: async (file: File) => {
-      // 👉 ekhane apnar API call / storage upload korte hobe
-      // Example: fake upload delay + local URL
-      const formData = new FormData();
-      formData.append("file", file);
+      let fileType: "image" | "video" | "audio" | "file" = "file";
 
-      // Example upload:
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      if (file.type.startsWith("image/")) fileType = "image";
+      else if (file.type.startsWith("video/")) fileType = "video";
+      else if (file.type.startsWith("audio/")) fileType = "audio";
 
-      const data = await response.json();
-
-      // return URL of the uploaded image
-      return data.url;
+      const { data } = await uploadNewsFile(file, fileType);
+      return { url: data?.url || "" , filename: data?.filename || "" };
     },
   });
 
