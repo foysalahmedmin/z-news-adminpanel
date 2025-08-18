@@ -13,7 +13,7 @@ export type TCategory = {
   sequence: number;
   is_featured?: boolean;
   status: TStatus;
-  layout?: string;
+  layout?: "default" | "standard" | "featured" | "minimal";
   children?: TCategory[];
 };
 
@@ -39,7 +39,7 @@ export type TCategoryUpdatePayload = {
   sequence?: number;
   is_featured?: boolean;
   status?: TStatus;
-  layout?: string;
+  layout?: "default" | "standard" | "featured" | "minimal";
 };
 
 export type TCategoryResponse = Response<TCategory>;

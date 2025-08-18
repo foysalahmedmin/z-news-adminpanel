@@ -25,6 +25,7 @@ import { useNavigate } from "react-router";
 
 // Updated schema with proper File types and consistent defaults
 const newsSchema = z.object({
+  sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
   description: z.string().optional(),
@@ -34,13 +35,11 @@ const newsSchema = z.object({
   tags: z.array(z.string()).optional(),
   category: z.string().min(1, "Category is required"),
   author: z.string().min(1, "Author is required"),
-  layout: z.string().default("standard"),
-  status: z
-    .enum(["draft", "pending", "published", "archived"])
-    .default("draft"),
-  is_top_featured: z.boolean().default(false),
-  is_featured: z.boolean().default(false),
-  is_premium: z.boolean().default(false),
+  layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
+  status: z.enum(["draft", "published"]).optional(),
+  is_top_featured: z.boolean(),
+  is_featured: z.boolean(),
+  is_premium: z.boolean(),
   seo: z
     .object({
       image: z.instanceof(File).nullable().optional(),
@@ -294,11 +293,14 @@ const ArticleDetails = () => {
     setValue("slug", generateSlug(title));
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
+  const generateSlug = (title: string): string => {
+    if (!title) return "";
+    const base = `${title.trim().toLowerCase()}-${Date.now()}`;
+    return base
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
       .trim();
   };
 
@@ -403,6 +405,23 @@ const ContentEditor = () => {
         style: "min-height: 350px; padding-top: 1rem; padding-bottom: 1rem;",
       },
     },
+    uploadFile: async (file: File) => {
+      // 👉 ekhane apnar API call / storage upload korte hobe
+      // Example: fake upload delay + local URL
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Example upload:
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      // return URL of the uploaded image
+      return data.url;
+    },
   });
 
   return (
@@ -494,21 +513,32 @@ const CategoriesAndTags = () => {
 
         <div>
           <FormControl.Label htmlFor="layout">Layout</FormControl.Label>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {["standard", "featured", "minimal"].map((layoutOption) => (
-              <div
-                key={layoutOption}
-                className={cn(
-                  "cursor-pointer rounded-md border p-4 text-center",
-                  layout === layoutOption
-                    ? "border-primary bg-primary/10"
-                    : "border-muted",
-                )}
-                onClick={() => setValue("layout", layoutOption)}
-              >
-                <div className="font-medium capitalize">{layoutOption}</div>
-              </div>
-            ))}
+          <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
+            {["default", "standard", "featured", "minimal"].map(
+              (layoutOption) => (
+                <div
+                  key={layoutOption}
+                  className={cn(
+                    "cursor-pointer rounded-md border p-4 text-center",
+                    layout === layoutOption
+                      ? "border-primary bg-primary/10"
+                      : "border-muted",
+                  )}
+                  onClick={() =>
+                    setValue(
+                      "layout",
+                      layoutOption as
+                        | "default"
+                        | "standard"
+                        | "featured"
+                        | "minimal",
+                    )
+                  }
+                >
+                  <div className="font-medium capitalize">{layoutOption}</div>
+                </div>
+              ),
+            )}
           </div>
         </div>
       </Card.Content>
@@ -587,60 +617,6 @@ const PublishSettings = () => {
         <Card.Title>Publish Settings</Card.Title>
       </Card.Header>
       <Card.Content className="space-y-4">
-        <div>
-          <FormControl.Label htmlFor="status">Status</FormControl.Label>
-          <div className="mt-2 grid grid-cols-4 gap-2">
-            {["draft", "pending", "published", "archived"].map(
-              (statusOption) => (
-                <div
-                  key={statusOption}
-                  className={cn(
-                    "cursor-pointer rounded-md border p-2 text-center",
-                    status === statusOption
-                      ? "border-primary bg-primary/10"
-                      : "border-muted",
-                  )}
-                  onClick={() => setValue("status", statusOption as any)}
-                >
-                  <div className="font-medium capitalize">{statusOption}</div>
-                </div>
-              ),
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <FormControl.Label htmlFor="published_at">
-              Publish Date
-            </FormControl.Label>
-            <FormControl
-              as="input"
-              className="w-full"
-              id="published_at"
-              type="datetime-local"
-              value={formatDateTimeLocal(publishedAt)}
-              onChange={handlePublishedAtChange}
-            />
-          </div>
-
-          <div>
-            <FormControl.Label htmlFor="expired_at">
-              Expiry Date
-            </FormControl.Label>
-            <FormControl
-              as="input"
-              className="w-full"
-              id="expired_at"
-              type="datetime-local"
-              min={formatDateTimeLocal(publishedAt)}
-              onChange={handleExpiredAtChange}
-            />
-          </div>
-        </div>
-
-        <hr />
-
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -690,6 +666,55 @@ const PublishSettings = () => {
             />
           </div>
         </div>
+        <hr />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <FormControl.Label htmlFor="published_at">
+              Publish Date
+            </FormControl.Label>
+            <FormControl
+              as="input"
+              className="w-full"
+              id="published_at"
+              type="datetime-local"
+              value={formatDateTimeLocal(publishedAt)}
+              onChange={handlePublishedAtChange}
+            />
+          </div>
+
+          <div>
+            <FormControl.Label htmlFor="expired_at">
+              Expiry Date
+            </FormControl.Label>
+            <FormControl
+              as="input"
+              className="w-full"
+              id="expired_at"
+              type="datetime-local"
+              min={formatDateTimeLocal(publishedAt)}
+              onChange={handleExpiredAtChange}
+            />
+          </div>
+        </div>
+        <div>
+          <FormControl.Label htmlFor="status">Status</FormControl.Label>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {["draft", "published"].map((statusOption) => (
+              <div
+                key={statusOption}
+                className={cn(
+                  "cursor-pointer rounded-md border p-2 text-center",
+                  status === statusOption
+                    ? "border-primary bg-primary/10"
+                    : "border-muted",
+                )}
+                onClick={() => setValue("status", statusOption as any)}
+              >
+                <div className="font-medium capitalize">{statusOption}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </Card.Content>
     </Card>
   );
@@ -714,7 +739,7 @@ const NewsArticlesAddPage = () => {
       category: "",
       author: user.info?._id,
       status: "draft",
-      layout: "standard",
+      layout: "default",
       is_top_featured: false,
       is_featured: false,
       is_premium: false,
@@ -754,7 +779,7 @@ const NewsArticlesAddPage = () => {
   };
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-6 pb-16">
       <PageHeader
         name="Add News Article"
         breadcrumbs={[

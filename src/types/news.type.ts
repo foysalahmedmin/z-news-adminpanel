@@ -22,8 +22,8 @@ export type TNews = {
     _id: string;
     name: string;
   };
-  layout: string;
-  status: TStatus;
+  layout?: "default" | "standard" | "featured" | "minimal";
+  status?: TStatus;
   is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
@@ -42,7 +42,7 @@ export type TNews = {
 };
 
 export type TCreateNewsPayload = {
-  sequence: number;
+  sequence?: number;
   title: string;
   slug: string;
   description?: string;
@@ -52,8 +52,8 @@ export type TCreateNewsPayload = {
   tags?: string[];
   category: string;
   author: string;
-  layout: string;
-  status: "draft" | "published";
+  layout?: "default" | "standard" | "featured" | "minimal";
+  status?: "draft" | "published";
   is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
@@ -65,10 +65,8 @@ export type TCreateNewsPayload = {
   };
   published_at?: Date;
   expired_at?: Date;
-  is_edited?: boolean;
-  edited_at?: Date;
-  news_headline?: Partial<TNewsHeadline>;
-  news_break?: Partial<TNewsBreak>;
+  // news_headline?: Partial<TNewsHeadline>;
+  // news_break?: Partial<TNewsBreak>;
 };
 
 export type TUpdateNewsPayload = {
@@ -81,7 +79,7 @@ export type TUpdateNewsPayload = {
   images?: File[] | null;
   tags?: string[];
   category?: string;
-  layout?: string;
+  layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_top_featured?: boolean;
   is_featured?: boolean;
@@ -94,8 +92,6 @@ export type TUpdateNewsPayload = {
   };
   published_at?: string | Date;
   expired_at?: string | Date;
-  news_headline?: Partial<TNewsHeadline>;
-  news_break?: Partial<TNewsBreak>;
 };
 
 export type TBulkUpdatePayload = {

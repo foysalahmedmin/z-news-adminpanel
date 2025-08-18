@@ -203,9 +203,18 @@ const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
                   className="border-input bg-card w-full rounded-md border px-3 py-2 text-sm"
                   {...register("layout", { required: "Layout is required" })}
                 >
-                  <option value="default">Default</option>
-                  <option value="highlight">Highlight</option>
-                  <option value="grid-card">Grid Card</option>
+                  <option value="">Select a layout</option>
+                  {["default", "standard", "featured", "minimal"].map(
+                    (layout) => (
+                      <option
+                        className="capitalize"
+                        key={layout}
+                        value={layout}
+                      >
+                        {layout}
+                      </option>
+                    ),
+                  )}
                 </FormControl>
                 {errors.layout && (
                   <FormControl.Error>{errors.layout.message}</FormControl.Error>
