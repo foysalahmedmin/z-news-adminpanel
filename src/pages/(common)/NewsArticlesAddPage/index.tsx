@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
 import { Switch } from "@/components/ui/Switch";
+import { URLS } from "@/config";
 import useSetting from "@/hooks/states/useSetting";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
@@ -36,9 +37,9 @@ const newsSchema = z.object({
   tags: z.array(z.string()).optional(),
   category: z.string().min(1, "Category is required"),
   author: z.string().min(1, "Author is required"),
+  writer: z.string().optional(),
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
   status: z.enum(["draft", "published"]).optional(),
-  is_top_featured: z.boolean(),
   is_featured: z.boolean(),
   is_premium: z.boolean(),
   seo: z
@@ -51,6 +52,8 @@ const newsSchema = z.object({
     .optional(),
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
+  is_news_headline: z.coerce.boolean().optional(),
+  is_news_break: z.coerce.boolean().optional(),
 });
 
 type NewsFormData = z.infer<typeof newsSchema>;
@@ -129,11 +132,11 @@ const ImageUpload = ({
   };
 
   return (
-    <div className={className}>
+    <div className={cn("flex flex-col", className)}>
       <FormControl.Label>{label}</FormControl.Label>
       <div
         className={cn(
-          "cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
+          "flex flex-1 cursor-pointer flex-col rounded-lg border-2 border-dashed p-4 text-center transition-colors",
           isDragging
             ? "border-primary bg-primary/10"
             : "border-muted-foreground",
@@ -151,66 +154,82 @@ const ImageUpload = ({
           className="hidden"
         />
 
-        {(!files || (multiple && (!files || files.length === 0))) && (
-          <label htmlFor={name} className="cursor-pointer">
-            <Upload className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
-            <p className="text-muted-foreground text-sm">
-              Drag & drop images here or click to browse
-            </p>
-            <p className="text-muted-foreground mt-1 text-xs">
-              {multiple ? "Multiple images allowed" : "Single image only"}
-            </p>
+        {!files || (multiple && (!files || files.length === 0)) ? (
+          <label
+            htmlFor={name}
+            className="flex size-full flex-1 cursor-pointer items-center justify-center"
+          >
+            <div>
+              <Upload className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
+              <p className="text-muted-foreground text-sm">
+                Drag & drop images here or click to browse
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {multiple ? "Multiple images allowed" : "Single image only"}
+              </p>
+            </div>
           </label>
+        ) : (
+          <div className="relative size-full flex-1">
+            {multiple && Array.isArray(files) && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                {files.map((file, index) => {
+                  const previewUrl = generatePreviewUrl(file);
+                  return previewUrl ? (
+                    <div
+                      key={index}
+                      style={{
+                        width: files.length > 1 ? "50%" : "100%",
+                        height: files.length > 2 ? "50%" : "100%",
+                      }}
+                      className="group relative"
+                    >
+                      <img
+                        src={previewUrl}
+                        alt={`Preview ${index + 1}`}
+                        className="size-full rounded-md object-cover"
+                        onLoad={() => URL.revokeObjectURL(previewUrl)}
+                      />
+                      <button
+                        type="button"
+                        className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                        onClick={() => removeFile(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
+
+            {!multiple &&
+              files &&
+              files instanceof File &&
+              (() => {
+                const previewUrl = generatePreviewUrl(files);
+                return previewUrl ? (
+                  <div className="absolute inset-0">
+                    <div className="group relative size-full">
+                      <img
+                        src={previewUrl}
+                        alt="Thumbnail preview"
+                        className="size-full rounded-md object-cover"
+                        onLoad={() => URL.revokeObjectURL(previewUrl)}
+                      />
+                      <button
+                        type="button"
+                        className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                        onClick={() => removeFile()}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+          </div>
         )}
-
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          {multiple &&
-            Array.isArray(files) &&
-            files.map((file, index) => {
-              const previewUrl = generatePreviewUrl(file);
-              return previewUrl ? (
-                <div key={index} className="group relative">
-                  <img
-                    src={previewUrl}
-                    alt={`Preview ${index + 1}`}
-                    className="h-24 w-full rounded-md object-cover"
-                    onLoad={() => URL.revokeObjectURL(previewUrl)}
-                  />
-                  <button
-                    type="button"
-                    className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => removeFile(index)}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : null;
-            })}
-
-          {!multiple &&
-            files &&
-            files instanceof File &&
-            (() => {
-              const previewUrl = generatePreviewUrl(files);
-              return previewUrl ? (
-                <div className="group relative">
-                  <img
-                    src={previewUrl}
-                    alt="Thumbnail preview"
-                    className="h-24 w-full rounded-md object-cover"
-                    onLoad={() => URL.revokeObjectURL(previewUrl)}
-                  />
-                  <button
-                    type="button"
-                    className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => removeFile()}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : null;
-            })()}
-        </div>
       </div>
     </div>
   );
@@ -283,9 +302,10 @@ const TagsInput = ({ name, label, placeholder }: TagsInputProps) => {
 const ArticleDetails = () => {
   const { user } = useUser();
   const {
+    watch,
     register,
-    formState: { errors },
     setValue,
+    formState: { errors },
   } = useFormContext<NewsFormData>();
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -311,76 +331,113 @@ const ArticleDetails = () => {
         <Card.Title>Article Details</Card.Title>
       </Card.Header>
       <Card.Content className="space-y-4">
-        <div>
-          <FormControl.Label htmlFor="title">Title *</FormControl.Label>
-          <FormControl
-            id="title"
-            placeholder="Enter title"
-            {...register("title")}
-            onChange={handleTitleChange}
-            className={cn(errors.title && "border-destructive")}
-          />
-          {errors.title && (
-            <p className="text-destructive mt-1 text-sm">
-              {errors.title.message}
-            </p>
-          )}
-        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-4 self-stretch">
+            <div>
+              <FormControl.Label htmlFor="title">Title *</FormControl.Label>
+              <FormControl
+                id="title"
+                placeholder="Enter title"
+                {...register("title")}
+                onChange={handleTitleChange}
+                className={cn(errors.title && "border-destructive")}
+              />
+              {errors.title && (
+                <p className="text-destructive mt-1 text-sm">
+                  {errors.title.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <FormControl.Label htmlFor="slug">Slug *</FormControl.Label>
-          <FormControl
-            id="slug"
-            placeholder="Enter slug"
-            {...register("slug")}
-            className={cn(errors.slug && "border-destructive")}
-          />
-          {errors.slug && (
-            <p className="text-destructive mt-1 text-sm">
-              {errors.slug.message}
-            </p>
-          )}
-        </div>
+            <div>
+              <FormControl.Label htmlFor="slug">Slug *</FormControl.Label>
+              <FormControl
+                id="slug"
+                placeholder="Enter slug"
+                {...register("slug")}
+                className={cn(errors.slug && "border-destructive")}
+              />
+              {errors.slug && (
+                <p className="text-destructive mt-1 text-sm">
+                  {errors.slug.message}
+                </p>
+              )}
+            </div>
 
-        <div>
-          <FormControl.Label htmlFor="description">
-            Description
-          </FormControl.Label>
-          <FormControl
-            as="textarea"
-            className="h-20 py-2"
-            placeholder="Enter description"
-            id="description"
-            {...register("description")}
-          />
-        </div>
+            <div>
+              <FormControl.Label htmlFor="description">
+                Description
+              </FormControl.Label>
+              <FormControl
+                as="textarea"
+                className="h-20 py-2"
+                placeholder="Enter description"
+                id="description"
+                {...register("description")}
+              />
+            </div>
 
-        <div>
-          <FormControl.Label className="text-muted-foreground" htmlFor="author">
-            Author *
-          </FormControl.Label>
-          <div className="flex items-center gap-2">
-            <FormControl
-              disabled
-              value={user?.info?.name ?? ""}
-              id="author-name"
-              placeholder="Enter author name"
-              className={cn(errors.author && "border-destructive")}
-            />
-            <FormControl
-              disabled
-              value={user?.info?._id ?? ""}
-              id="author"
-              placeholder="Enter author _id"
-              {...register("author")}
-              className={cn(errors.author && "border-destructive")}
-            />
+            <div>
+              <FormControl.Label htmlFor="caption">Caption</FormControl.Label>
+              <FormControl
+                id="caption"
+                placeholder="Enter caption"
+                value={watch("caption")}
+                onChange={(e) => setValue("caption", e.target.value)}
+              />
+            </div>
+
+            <div className="!mb-0">
+              <FormControl.Label htmlFor="description">
+                Writer
+              </FormControl.Label>
+              <FormControl
+                placeholder="Enter writer"
+                id="writer"
+                {...register("writer")}
+              />
+            </div>
+
+            <div className="hidden">
+              <FormControl.Label
+                className="text-muted-foreground"
+                htmlFor="author"
+              >
+                Author *
+              </FormControl.Label>
+              <div className="flex items-center gap-2">
+                <FormControl
+                  disabled
+                  value={user?.info?.name ?? ""}
+                  id="author-name"
+                  placeholder="Enter author name"
+                  className={cn(errors.author && "border-destructive")}
+                />
+                <FormControl
+                  disabled
+                  value={user?.info?._id ?? ""}
+                  id="author"
+                  placeholder="Enter author _id"
+                  {...register("author")}
+                  className={cn(errors.author && "border-destructive")}
+                />
+              </div>
+              {errors.author && (
+                <p className="text-destructive mt-1 text-sm">
+                  {errors.author.message}
+                </p>
+              )}
+            </div>
           </div>
-          {errors.author && (
-            <p className="text-destructive mt-1 text-sm">
-              {errors.author.message}
-            </p>
-          )}
+          <div className="flex flex-col space-y-4 self-stretch">
+            <div className="h-full flex-1">
+              <ImageUpload
+                name="thumbnail"
+                label="Thumbnail"
+                className="h-full"
+              />
+            </div>
+          </div>
         </div>
       </Card.Content>
     </Card>
@@ -414,7 +471,7 @@ const ContentEditor = () => {
       else if (file.type.startsWith("audio/")) fileType = "audio";
 
       const { data } = await uploadNewsFile(file, fileType);
-      return { url: data?.url || "" , filename: data?.filename || "" };
+      return data?.filename ? URLS.news_images + "/" + data?.filename : "";
     },
   });
 
@@ -442,21 +499,6 @@ const ContentEditor = () => {
             {errors.content.message}
           </p>
         )}
-      </Card.Content>
-    </Card>
-  );
-};
-
-const MediaSection = () => {
-  return (
-    <Card>
-      <Card.Header className="border-b">
-        <Card.Title>Media</Card.Title>
-      </Card.Header>
-      <Card.Content className="space-y-6">
-        <ImageUpload name="thumbnail" label="Thumbnail" className="mb-4" />
-
-        <ImageUpload name="images" label="Additional Images" multiple={true} />
       </Card.Content>
     </Card>
   );
@@ -513,7 +555,7 @@ const CategoriesAndTags = () => {
                 <div
                   key={layoutOption}
                   className={cn(
-                    "cursor-pointer rounded-md border p-4 text-center",
+                    "cursor-pointer rounded-md border p-2 text-center",
                     layout === layoutOption
                       ? "border-primary bg-primary/10"
                       : "border-muted",
@@ -549,35 +591,46 @@ const SEOSection = () => {
         <Card.Title>SEO Settings</Card.Title>
       </Card.Header>
       <Card.Content className="space-y-4">
-        <ImageUpload name="seo.image" label="SEO Image" />
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-4 self-stretch">
+            <div>
+              <FormControl.Label htmlFor="seo-title">
+                SEO Title
+              </FormControl.Label>
+              <FormControl
+                id="seo-title"
+                placeholder="SEO Title"
+                {...register("seo.title")}
+              />
+            </div>
 
-        <div>
-          <FormControl.Label htmlFor="seo-title">SEO Title</FormControl.Label>
-          <FormControl
-            id="seo-title"
-            placeholder="SEO Title"
-            {...register("seo.title")}
-          />
+            <div>
+              <FormControl.Label htmlFor="seo-description">
+                SEO Description
+              </FormControl.Label>
+              <FormControl
+                className="h-20 py-2"
+                placeholder="SEO Description"
+                as="textarea"
+                id="seo-description"
+                {...register("seo.description")}
+              />
+            </div>
+
+            <TagsInput
+              name="seo.keywords"
+              label="SEO Keywords"
+              placeholder="Add keyword"
+            />
+          </div>
+          <div className="flex flex-col self-stretch">
+            <ImageUpload
+              className="flex-1"
+              name="seo.image"
+              label="SEO Image"
+            />
+          </div>
         </div>
-
-        <div>
-          <FormControl.Label htmlFor="seo-description">
-            SEO Description
-          </FormControl.Label>
-          <FormControl
-            className="h-20 py-2"
-            placeholder="SEO Description"
-            as="textarea"
-            id="seo-description"
-            {...register("seo.description")}
-          />
-        </div>
-
-        <TagsInput
-          name="seo.keywords"
-          label="SEO Keywords"
-          placeholder="Add keyword"
-        />
       </Card.Content>
     </Card>
   );
@@ -614,19 +667,51 @@ const PublishSettings = () => {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_top_featured">
-                Top Featured
+              <FormControl.Label htmlFor="is_news_headline">
+                News Headline
               </FormControl.Label>
               <p className="text-muted-foreground text-sm">
-                Display at the top of featured section
+                Display at the top of news headline section
               </p>
             </div>
             <Switch
-              id="is_top_featured"
-              checked={watch("is_top_featured")}
-              onChange={(checked) => setValue("is_top_featured", checked)}
+              id="is_news_headline"
+              checked={watch("is_news_headline")}
+              onChange={(checked) => setValue("is_news_headline", checked)}
             />
           </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <FormControl.Label htmlFor="is_news_break">
+                News Break
+              </FormControl.Label>
+              <p className="text-muted-foreground text-sm">
+                Display as news break
+              </p>
+            </div>
+            <Switch
+              id="is_news_break"
+              checked={watch("is_news_break")}
+              onChange={(checked) => setValue("is_news_break", checked)}
+            />
+          </div>
+
+          {/* <div className="flex items-center justify-between">
+            <div>
+              <FormControl.Label htmlFor="is_premium">
+                Premium
+              </FormControl.Label>
+              <p className="text-muted-foreground text-sm">
+                Require subscription to view
+              </p>
+            </div>
+            <Switch
+              id="is_premium"
+              checked={watch("is_premium")}
+              onChange={(checked) => setValue("is_premium", checked)}
+            />
+          </div> */}
 
           <div className="flex items-center justify-between">
             <div>
@@ -643,20 +728,22 @@ const PublishSettings = () => {
               onChange={(checked) => setValue("is_featured", checked)}
             />
           </div>
-
           <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_premium">
-                Premium
-              </FormControl.Label>
+              <FormControl.Label htmlFor="sequence">Sequence</FormControl.Label>
               <p className="text-muted-foreground text-sm">
-                Require subscription to view
+                Display order for featured articles
               </p>
             </div>
-            <Switch
-              id="is_premium"
-              checked={watch("is_premium")}
-              onChange={(checked) => setValue("is_premium", checked)}
+            <FormControl
+              className="flex h-8 w-12 items-center justify-center px-0 text-center"
+              min={0}
+              max={8}
+              as="input"
+              type="number"
+              id="sequence"
+              value={watch("sequence")}
+              onChange={(e) => setValue("sequence", Number(e.target.value))}
             />
           </div>
         </div>
@@ -734,7 +821,6 @@ const NewsArticlesAddPage = () => {
       author: user.info?._id,
       status: "draft",
       layout: "default",
-      is_top_featured: false,
       is_featured: false,
       is_premium: false,
       published_at: new Date(),
@@ -763,7 +849,6 @@ const NewsArticlesAddPage = () => {
     try {
       const payload: TCreateNewsPayload = {
         ...data,
-        sequence: Date.now(), // Generate sequence number
       };
 
       createNewsMutation.mutate(payload);
@@ -773,7 +858,7 @@ const NewsArticlesAddPage = () => {
   };
 
   return (
-    <main className="space-y-6 pb-16">
+    <main className="space-y-6">
       <PageHeader
         name="Add News Article"
         breadcrumbs={[
@@ -787,9 +872,8 @@ const NewsArticlesAddPage = () => {
           <div className="grid gap-6">
             <ArticleDetails />
             <ContentEditor />
-            <MediaSection />
-            <CategoriesAndTags />
             <SEOSection />
+            <CategoriesAndTags />
             <PublishSettings />
           </div>
 
@@ -800,12 +884,14 @@ const NewsArticlesAddPage = () => {
             <Button
               type="button"
               variant="outline"
+              size={"lg"}
               onClick={() => navigate(-1)}
             >
               Cancel
             </Button>
             <Button
               type="submit"
+              size={"lg"}
               isLoading={createNewsMutation.isPending}
               disabled={createNewsMutation.isPending}
             >

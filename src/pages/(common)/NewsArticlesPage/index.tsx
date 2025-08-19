@@ -110,16 +110,6 @@ const NewsArticlesPage = () => {
     [updateMutation],
   );
 
-  const handleToggleTopFeatured = useCallback(
-    (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: { is_top_featured: !news.is_top_featured },
-      });
-    },
-    [updateMutation],
-  );
-
   const handleDelete = useCallback(
     async (news: TNews) => {
       const ok = await confirm({
@@ -189,7 +179,16 @@ const NewsArticlesPage = () => {
 
   return (
     <main className="space-y-6">
-      <PageHeader name="News Articles" slot={<Button asChild><Link to="/news-articles/add">Add New</Link></Button>} />
+      <PageHeader
+        name="News Articles"
+        slot={
+          <Button asChild>
+            <Link className="flex h-full items-center" to="/news-articles/add">
+              Add New
+            </Link>
+          </Button>
+        }
+      />
 
       <Card>
         <Card.Content>
@@ -283,7 +282,6 @@ const NewsArticlesPage = () => {
             isError={newsQuery.isError}
             onDelete={handleDelete}
             onToggleFeatured={handleToggleFeatured}
-            onToggleTopFeatured={handleToggleTopFeatured}
             state={{
               total: newsQuery.data?.meta?.total || 0,
               page,

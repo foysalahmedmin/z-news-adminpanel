@@ -23,6 +23,7 @@ export type TNews = {
     _id: string;
     name: string;
   };
+  writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_featured: boolean;
@@ -37,6 +38,8 @@ export type TNews = {
   expired_at?: Date;
   is_edited?: boolean;
   edited_at?: Date;
+  is_news_headline?: boolean;
+  is_news_break?: boolean;
   news_headline?: Partial<TNewsHeadline>;
   news_break?: Partial<TNewsBreak>;
 };
@@ -53,9 +56,9 @@ export type TCreateNewsPayload = {
   tags?: string[];
   category: string;
   author: string;
+  writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: "draft" | "published";
-  is_top_featured: boolean;
   is_featured: boolean;
   is_premium: boolean;
   seo?: {
@@ -66,8 +69,8 @@ export type TCreateNewsPayload = {
   };
   published_at?: Date;
   expired_at?: Date;
-  // news_headline?: Partial<TNewsHeadline>;
-  // news_break?: Partial<TNewsBreak>;
+  is_news_headline?: boolean;
+  is_news_break?: boolean;
 };
 
 export type TUpdateNewsPayload = {
@@ -81,6 +84,7 @@ export type TUpdateNewsPayload = {
   images?: File[] | null;
   tags?: string[];
   category?: string;
+  writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_top_featured?: boolean;
@@ -94,6 +98,8 @@ export type TUpdateNewsPayload = {
   };
   published_at?: string | Date;
   expired_at?: string | Date;
+  is_news_headline?: boolean;
+  is_news_break?: boolean;
 };
 
 export type TBulkUpdatePayload = {
@@ -102,10 +108,10 @@ export type TBulkUpdatePayload = {
 };
 
 export type TNewsFileResponse = Response<{
-    type: "image" | "video" | "audio" | "file";
-    filename: string;
-    path: string;
-    url: string;
+  type: "image" | "video" | "audio" | "file";
+  filename: string;
+  path: string;
+  url: string;
 }>;
 export type TNewsResponse = Response<TNews>;
 export type TBulkNewsResponse = Response<TNews[]>;

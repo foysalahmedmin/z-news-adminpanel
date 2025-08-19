@@ -38,11 +38,14 @@ export async function fetchNews(id: string): Promise<TNewsResponse> {
 }
 
 // ========================= POST =========================
-export async function uploadNewsFile(file: File, type: "image" | "video" | "audio" | "file" = "image"): Promise<TNewsFileResponse> {
-  if(!file || !type) return Promise.reject();
+export async function uploadNewsFile(
+  file: File,
+  type: "image" | "video" | "audio" | "file" = "image",
+): Promise<TNewsFileResponse> {
+  if (!file || !type) return Promise.reject();
 
   const formData = new FormData();
-  formData.append(type, file);
+  formData.append("file", file);
   const response = await api.post(`/api/news/file/${type}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
@@ -130,7 +133,7 @@ export async function updateNews(
 }
 
 // ========================= DELETE =========================
-export async function deleteNewsFile(path : string): Promise<TNewsFileResponse> {
+export async function deleteNewsFile(path: string): Promise<TNewsFileResponse> {
   const response = await api.delete(`/api/news/file/${path}`);
   return response.data;
 }

@@ -16,7 +16,6 @@ type NewsArticlesDataTableSectionProps = {
   isError: boolean;
   onDelete: (row: TNews) => void;
   onToggleFeatured: (row: TNews) => void;
-  onToggleTopFeatured: (row: TNews) => void;
   state: TState;
 };
 
@@ -29,11 +28,9 @@ const NewsArticlesDataTableSection: React.FC<
   isError,
   onDelete,
   onToggleFeatured,
-  onToggleTopFeatured,
   state,
 }) => {
   const columns: TColumn<TNews>[] = [
-    { name: "Sequence", field: "sequence", isSortable: true },
     { name: "Title", field: "title", isSortable: true, isSearchable: true },
     { name: "Slug", field: "slug", isSortable: true },
     {
@@ -51,11 +48,15 @@ const NewsArticlesDataTableSection: React.FC<
       ),
     },
     {
-      name: "Layout",
-      field: "layout",
-      isSortable: true,
-      cell: ({ cell }) => <span>{cell?.toString()}</span>,
+      name: "Writer",
+      field: "writer",
     },
+    // {
+    //   name: "Layout",
+    //   field: "layout",
+    //   isSortable: true,
+    //   cell: ({ cell }) => <span>{cell?.toString()}</span>,
+    // },
     {
       name: "Status",
       field: "status",
@@ -79,20 +80,6 @@ const NewsArticlesDataTableSection: React.FC<
           </span>
         );
       },
-    },
-    {
-      name: "Top Featured",
-      field: "is_top_featured",
-      isSortable: true,
-      cell: ({ cell, row }) => (
-        <div>
-          <Switch
-            disabled={isLoading}
-            onChange={() => onToggleTopFeatured(row)}
-            checked={cell === true}
-          />
-        </div>
-      ),
     },
     {
       name: "Featured",

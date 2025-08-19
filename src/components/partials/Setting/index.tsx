@@ -16,15 +16,16 @@ const Settings = () => {
   const settingOptions: SettingName[] = ["theme", "direction", "sidebar"];
 
   return (
-    <div className={cn("fixed end-6 bottom-6 z-50")}>
-      <Button
-        onClick={() => setIsOpen(true)}
-        shape="icon"
-        size="lg"
-        className="group/button rounded-full"
-      >
-        <SettingsIcon className="group-hover/button:animate-spin" />
-      </Button>
+    <div className={cn("fixed end-0 bottom-6 z-50")}>
+      <div className="group/button-container inline-block">
+        <Button
+          onClick={() => setIsOpen(true)}
+          shape="icon"
+          className="group/button -me-6 size-12 rounded-full group-hover/button-container:me-6"
+        >
+          <SettingsIcon className="group-hover/button:animate-spin" />
+        </Button>
+      </div>
 
       <Drawer isOpen={isOpen} setIsOpen={setIsOpen} asPortal side="right">
         <Drawer.Backdrop />
