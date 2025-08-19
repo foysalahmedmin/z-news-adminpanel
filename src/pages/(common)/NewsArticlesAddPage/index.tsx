@@ -1,31 +1,29 @@
 import "@blocknote/core/fonts/inter.css";
-import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
-import { useCreateBlockNote } from "@blocknote/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
+import ArticleDetails from "@/components/(common)/news-articles-add-page/ArticleDetails";
+import ContentEditor from "@/components/(common)/news-articles-add-page/ContentEditor";
 import PageHeader from "@/components/sections/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
 import { Switch } from "@/components/ui/Switch";
-import { URLS } from "@/config";
-import useSetting from "@/hooks/states/useSetting";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import { fetchCategoriesTree } from "@/services/category.service";
-import { createNews, uploadNewsFile } from "@/services/news.service";
+import { createNews } from "@/services/news.service";
 import type { TCreateNewsPayload } from "@/types/news.type";
-import { Plus, Upload, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useNavigate } from "react-router";
 
 // Updated schema with proper File types and consistent defaults
-const newsSchema = z.object({
+export const newsSchema = z.object({
   sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
@@ -56,184 +54,7 @@ const newsSchema = z.object({
   is_news_break: z.coerce.boolean().optional(),
 });
 
-type NewsFormData = z.infer<typeof newsSchema>;
-
-// ================ Reusable Components ================
-interface ImageUploadProps {
-  name: keyof NewsFormData | "seo.image";
-  label: string;
-  multiple?: boolean;
-  className?: string;
-}
-
-const ImageUpload = ({
-  name,
-  label,
-  multiple = false,
-  className,
-}: ImageUploadProps) => {
-  const { setValue, watch } = useFormContext<NewsFormData>();
-  const files = watch(name as any);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const fileList = Array.from(e.target.files);
-      if (multiple) {
-        setValue(name as any, fileList);
-      } else {
-        setValue(name as any, fileList[0] || null);
-      }
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    if (e.dataTransfer.files) {
-      const fileList = Array.from(e.dataTransfer.files);
-      if (multiple) {
-        setValue(name as any, fileList);
-      } else {
-        setValue(name as any, fileList[0] || null);
-      }
-    }
-  };
-
-  const removeFile = (index?: number) => {
-    if (multiple && Array.isArray(files)) {
-      const newFiles = [...files];
-      if (index !== undefined) {
-        newFiles.splice(index, 1);
-      }
-      setValue(name as any, newFiles.length ? newFiles : null);
-    } else {
-      setValue(name as any, null);
-    }
-  };
-
-  const generatePreviewUrl = (file: File) => {
-    try {
-      return URL.createObjectURL(file);
-    } catch (error) {
-      console.error("Error creating preview URL:", error);
-      return "";
-    }
-  };
-
-  return (
-    <div className={cn("flex flex-col", className)}>
-      <FormControl.Label>{label}</FormControl.Label>
-      <div
-        className={cn(
-          "flex flex-1 cursor-pointer flex-col rounded-lg border-2 border-dashed p-4 text-center transition-colors",
-          isDragging
-            ? "border-primary bg-primary/10"
-            : "border-muted-foreground",
-        )}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <input
-          id={name}
-          type="file"
-          accept="image/*"
-          multiple={multiple}
-          onChange={handleFileChange}
-          className="hidden"
-        />
-
-        {!files || (multiple && (!files || files.length === 0)) ? (
-          <label
-            htmlFor={name}
-            className="flex size-full flex-1 cursor-pointer items-center justify-center"
-          >
-            <div>
-              <Upload className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
-              <p className="text-muted-foreground text-sm">
-                Drag & drop images here or click to browse
-              </p>
-              <p className="text-muted-foreground mt-1 text-xs">
-                {multiple ? "Multiple images allowed" : "Single image only"}
-              </p>
-            </div>
-          </label>
-        ) : (
-          <div className="relative size-full flex-1">
-            {multiple && Array.isArray(files) && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                {files.map((file, index) => {
-                  const previewUrl = generatePreviewUrl(file);
-                  return previewUrl ? (
-                    <div
-                      key={index}
-                      style={{
-                        width: files.length > 1 ? "50%" : "100%",
-                        height: files.length > 2 ? "50%" : "100%",
-                      }}
-                      className="group relative"
-                    >
-                      <img
-                        src={previewUrl}
-                        alt={`Preview ${index + 1}`}
-                        className="size-full rounded-md object-cover"
-                        onLoad={() => URL.revokeObjectURL(previewUrl)}
-                      />
-                      <button
-                        type="button"
-                        className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                        onClick={() => removeFile(index)}
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-            )}
-
-            {!multiple &&
-              files &&
-              files instanceof File &&
-              (() => {
-                const previewUrl = generatePreviewUrl(files);
-                return previewUrl ? (
-                  <div className="absolute inset-0">
-                    <div className="group relative size-full">
-                      <img
-                        src={previewUrl}
-                        alt="Thumbnail preview"
-                        className="size-full rounded-md object-cover"
-                        onLoad={() => URL.revokeObjectURL(previewUrl)}
-                      />
-                      <button
-                        type="button"
-                        className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                        onClick={() => removeFile()}
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-                ) : null;
-              })()}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+export type NewsFormData = z.infer<typeof newsSchema>;
 
 interface TagsInputProps {
   name: "tags" | "seo.keywords";
@@ -299,211 +120,6 @@ const TagsInput = ({ name, label, placeholder }: TagsInputProps) => {
 };
 
 // ================ Form Sections ================
-const ArticleDetails = () => {
-  const { user } = useUser();
-  const {
-    watch,
-    register,
-    setValue,
-    formState: { errors },
-  } = useFormContext<NewsFormData>();
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setValue("title", title);
-    setValue("slug", generateSlug(title));
-  };
-
-  const generateSlug = (title: string): string => {
-    if (!title) return "";
-    const base = `${title.trim().toLowerCase()}-${Date.now()}`;
-    return base
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "")
-      .trim();
-  };
-
-  return (
-    <Card>
-      <Card.Header className="border-b">
-        <Card.Title>Article Details</Card.Title>
-      </Card.Header>
-      <Card.Content className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-4 self-stretch">
-            <div>
-              <FormControl.Label htmlFor="title">Title *</FormControl.Label>
-              <FormControl
-                id="title"
-                placeholder="Enter title"
-                {...register("title")}
-                onChange={handleTitleChange}
-                className={cn(errors.title && "border-destructive")}
-              />
-              {errors.title && (
-                <p className="text-destructive mt-1 text-sm">
-                  {errors.title.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <FormControl.Label htmlFor="slug">Slug *</FormControl.Label>
-              <FormControl
-                id="slug"
-                placeholder="Enter slug"
-                {...register("slug")}
-                className={cn(errors.slug && "border-destructive")}
-              />
-              {errors.slug && (
-                <p className="text-destructive mt-1 text-sm">
-                  {errors.slug.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <FormControl.Label htmlFor="description">
-                Description
-              </FormControl.Label>
-              <FormControl
-                as="textarea"
-                className="h-20 py-2"
-                placeholder="Enter description"
-                id="description"
-                {...register("description")}
-              />
-            </div>
-
-            <div>
-              <FormControl.Label htmlFor="caption">Caption</FormControl.Label>
-              <FormControl
-                id="caption"
-                placeholder="Enter caption"
-                value={watch("caption")}
-                onChange={(e) => setValue("caption", e.target.value)}
-              />
-            </div>
-
-            <div className="!mb-0">
-              <FormControl.Label htmlFor="description">
-                Writer
-              </FormControl.Label>
-              <FormControl
-                placeholder="Enter writer"
-                id="writer"
-                {...register("writer")}
-              />
-            </div>
-
-            <div className="hidden">
-              <FormControl.Label
-                className="text-muted-foreground"
-                htmlFor="author"
-              >
-                Author *
-              </FormControl.Label>
-              <div className="flex items-center gap-2">
-                <FormControl
-                  disabled
-                  value={user?.info?.name ?? ""}
-                  id="author-name"
-                  placeholder="Enter author name"
-                  className={cn(errors.author && "border-destructive")}
-                />
-                <FormControl
-                  disabled
-                  value={user?.info?._id ?? ""}
-                  id="author"
-                  placeholder="Enter author _id"
-                  {...register("author")}
-                  className={cn(errors.author && "border-destructive")}
-                />
-              </div>
-              {errors.author && (
-                <p className="text-destructive mt-1 text-sm">
-                  {errors.author.message}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col space-y-4 self-stretch">
-            <div className="h-full flex-1">
-              <ImageUpload
-                name="thumbnail"
-                label="Thumbnail"
-                className="h-full"
-              />
-            </div>
-          </div>
-        </div>
-      </Card.Content>
-    </Card>
-  );
-};
-
-const ContentEditor = () => {
-  const {
-    setValue,
-    formState: { errors },
-  } = useFormContext<NewsFormData>();
-  const { setting } = useSetting();
-
-  const blockNoteEditor = useCreateBlockNote({
-    initialContent: [
-      {
-        type: "paragraph",
-        content: "Start writing your article...",
-      },
-    ],
-    domAttributes: {
-      editor: {
-        style: "min-height: 350px; padding-top: 1rem; padding-bottom: 1rem;",
-      },
-    },
-    uploadFile: async (file: File) => {
-      let fileType: "image" | "video" | "audio" | "file" = "file";
-
-      if (file.type.startsWith("image/")) fileType = "image";
-      else if (file.type.startsWith("video/")) fileType = "video";
-      else if (file.type.startsWith("audio/")) fileType = "audio";
-
-      const { data } = await uploadNewsFile(file, fileType);
-      return data?.filename ? URLS.news_images + "/" + data?.filename : "";
-    },
-  });
-
-  return (
-    <Card>
-      <Card.Header className="border-b">
-        <Card.Title>Content *</Card.Title>
-      </Card.Header>
-      <Card.Content>
-        <div className="rounded-md border p-2">
-          <BlockNoteView
-            theme={setting?.theme === "dark" ? "dark" : "light"}
-            editor={blockNoteEditor}
-            onChange={() => {
-              blockNoteEditor
-                .blocksToHTMLLossy(blockNoteEditor.document)
-                .then((html) => {
-                  setValue("content", html);
-                });
-            }}
-          />
-        </div>
-        {errors.content && (
-          <p className="text-destructive mt-1 text-sm">
-            {errors.content.message}
-          </p>
-        )}
-      </Card.Content>
-    </Card>
-  );
-};
-
 const CategoriesAndTags = () => {
   const {
     setValue,
