@@ -98,7 +98,7 @@ const PublishSettings = () => {
               onChange={(checked) => setValue("is_featured", checked)}
             />
           </div>
-          <div className="flex items-center justify-between">
+          <div className="grid grid-cols-2 items-center justify-between gap-4">
             <div>
               <FormControl.Label htmlFor="sequence">Sequence</FormControl.Label>
               <p className="text-muted-foreground text-sm">
@@ -106,12 +106,13 @@ const PublishSettings = () => {
               </p>
             </div>
             <FormControl
-              className="flex h-8 w-12 items-center justify-center px-0 text-center"
+              className="flex items-center justify-center px-0 text-center placeholder:px-2 placeholder:text-xs"
               min={0}
               max={8}
               as="input"
               type="number"
               id="sequence"
+              placeholder="SEQUENCE"
               value={watch("sequence")}
               onChange={(e) => setValue("sequence", Number(e.target.value))}
             />

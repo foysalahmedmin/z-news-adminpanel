@@ -8,6 +8,7 @@ import useMenu from "@/hooks/states/useMenu";
 import useAlert from "@/hooks/ui/useAlert";
 import { fetchCategoriesTree } from "@/services/category.service";
 import { deleteNews, fetchBulkNews, updateNews } from "@/services/news.service";
+import { fetchUsers } from "@/services/user.service";
 import type { TNews, TUpdateNewsPayload } from "@/types/news.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,6 +33,9 @@ const NewsArticlesPage = () => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-published_at");
   const [category, setCategory] = useState("");
+  const [author, setAuthor] = useState("");
+  const [status, setStatus] = useState("");
+  const [featured, setFeatured] = useState("");
   const [publishedAtGte, setPublishedAtGte] = useState("");
   const [publishedAtLte, setPublishedAtLte] = useState("");
 
@@ -70,7 +74,18 @@ const NewsArticlesPage = () => {
   const newsQuery = useQuery({
     queryKey: [
       "bulkNews",
-      { sort, search, page, limit, category, publishedAtGte, publishedAtLte },
+      {
+        sort,
+        search,
+        page,
+        limit,
+        category,
+        publishedAtGte,
+        publishedAtLte,
+        author,
+        status,
+        featured,
+      },
     ],
     queryFn: () =>
       fetchBulkNews({
@@ -81,12 +96,32 @@ const NewsArticlesPage = () => {
         ...(search && { search }),
         ...(publishedAtGte && { published_at_gte: publishedAtGte }),
         ...(publishedAtLte && { published_at_lte: publishedAtLte }),
+        ...(author && { author }),
+        ...(status && { status }),
+        ...(featured && {
+          is_featured: featured === "featured" ? true : false,
+        }),
       }),
   });
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: () => fetchCategoriesTree({ sort: "sequence" }),
+  });
+
+  const usersQuery = useQuery({
+    queryKey: ["users"],
+    queryFn: () =>
+      fetchUsers({
+        or: [
+          {
+            role: "admin",
+          },
+          {
+            role: "author",
+          },
+        ],
+      }),
   });
 
   // Derived data
@@ -194,7 +229,7 @@ const NewsArticlesPage = () => {
         <Card.Content>
           <div className="mb-6 grid w-full gap-4 md:grid-cols-2">
             {/* Date Range Picker */}
-            <Dropdown className="w-full">
+            <Dropdown className="w-full md:grid-cols-2">
               <Dropdown.Trigger
                 isAnimation={false}
                 className="w-full active:scale-100"
@@ -273,6 +308,42 @@ const NewsArticlesPage = () => {
                   {cat.name}
                 </option>
               ))}
+            </FormControl>
+
+            {/* Author Filter */}
+            <FormControl
+              as="select"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+            >
+              <option value="">All authors</option>
+              {usersQuery.data?.data?.map((user) => (
+                <option key={user._id} value={user._id}>
+                  {user.name}
+                </option>
+              ))}
+            </FormControl>
+
+            {/* Status Filter */}
+            <FormControl
+              as="select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value || "")}
+            >
+              <option value="">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </FormControl>
+
+            {/* Featured Filter */}
+            <FormControl
+              as="select"
+              value={featured}
+              onChange={(e) => setFeatured(e.target.value || "")}
+            >
+              <option value="">All</option>
+              <option value="featured">Featured</option>
+              <option value="not-featured">Not Featured</option>
             </FormControl>
           </div>
           <NewsArticlesDataTableSection

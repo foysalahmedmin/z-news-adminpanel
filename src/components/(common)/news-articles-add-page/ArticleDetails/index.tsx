@@ -147,11 +147,11 @@ const ArticleDetails = () => {
             </div>
             <div>
               <FormControl.Label htmlFor="youtube">
-                Youtube (ID Only)
+                Youtube Video URL
               </FormControl.Label>
               <FormControl
                 id="youtube"
-                placeholder="Enter youtube video ID"
+                placeholder="Enter youtube video URL"
                 value={watch("youtube")}
                 onChange={(e) => setValue("youtube", e.target.value)}
               />
