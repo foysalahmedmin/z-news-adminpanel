@@ -145,6 +145,17 @@ const ArticleDetails = () => {
                 className="h-full"
               />
             </div>
+            <div>
+              <FormControl.Label htmlFor="youtube">
+                Youtube (ID Only)
+              </FormControl.Label>
+              <FormControl
+                id="youtube"
+                placeholder="Enter youtube video ID"
+                value={watch("youtube")}
+                onChange={(e) => setValue("youtube", e.target.value)}
+              />
+            </div>
           </div>
         </div>
       </Card.Content>

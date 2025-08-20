@@ -27,6 +27,8 @@ export const newsSchema = z.object({
   content: z.string().min(1, "Content is required"),
   thumbnail: z.instanceof(File).nullable().optional(),
   images: z.array(z.instanceof(File)).nullable().optional(),
+  video: z.instanceof(File).nullable().optional(),
+  youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
   category: z.string().min(1, "Category is required"),
   author: z.string().min(1, "Author is required"),
@@ -51,7 +53,6 @@ export const newsSchema = z.object({
 
 export type NewsFormData = z.infer<typeof newsSchema>;
 
-// ================ Main Component ================
 const NewsArticlesAddPage = () => {
   const { user } = useUser();
   const navigate = useNavigate();
