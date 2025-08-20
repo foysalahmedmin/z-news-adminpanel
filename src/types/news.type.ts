@@ -14,6 +14,8 @@ export type TNews = {
   content: string;
   thumbnail?: string;
   images?: string[];
+  video?: string;
+  youtube?: string;
   tags?: string[];
   category: {
     _id: string;
@@ -53,6 +55,8 @@ export type TCreateNewsPayload = {
   content: string; // html string
   thumbnail?: File | null;
   images?: File[] | null;
+  video?: File | null;
+  youtube?: string;
   tags?: string[];
   category: string;
   author: string;
@@ -82,6 +86,8 @@ export type TUpdateNewsPayload = {
   content?: string;
   thumbnail?: File | null;
   images?: File[] | null;
+  video?: File | null;
+  youtube?: string;
   tags?: string[];
   category?: string;
   writer?: string;
