@@ -1,5 +1,6 @@
 import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
+import useUser from "@/hooks/states/useUser";
 import {
   setActiveBreadcrumbs,
   setActiveIndexes,
@@ -14,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
 const MenuApplier = () => {
+  const { user } = useUser();
+  const { info } = user || {};
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const { indexesMap, breadcrumbsMap } = useSelector(
@@ -22,8 +25,8 @@ const MenuApplier = () => {
 
   const menusData = useMemo(() => {
     const routeMenu = new RouteMenu(items);
-    return routeMenu.getMenus();
-  }, []);
+    return routeMenu.getMenus({ role: info?.role });
+  }, [info?.role]);
 
   useEffect(() => {
     if (!indexesMap || Object.keys(indexesMap).length === 0) {

@@ -7,6 +7,7 @@ export type Response<T = unknown> = {
     total?: number;
     page?: number;
     limit?: number;
+    statistics?: Record<string, number>;
   };
 };
 

@@ -1,14 +1,24 @@
 import NewsArticlesDataTableSection from "@/components/(common)/news-articles-page/NewsArticlesDataTableSection";
+import { NewsArticlesFilterSection } from "@/components/(common)/news-articles-page/NewsArticlesFilterSection";
+import NewsArticlesStatisticsSection from "@/components/(common)/news-articles-page/NewsArticlesStatisticsSection";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { FormControl } from "@/components/ui/FormControl";
 import useMenu from "@/hooks/states/useMenu";
+import useUser from "@/hooks/states/useUser";
 import useAlert from "@/hooks/ui/useAlert";
 import { fetchCategoriesTree } from "@/services/category.service";
-import { deleteNews, fetchBulkNews, updateNews } from "@/services/news.service";
-import { fetchUsers } from "@/services/user.service";
+import {
+  deleteNews,
+  deleteSelfNews,
+  fetchBulkNews,
+  updateNews,
+  updateSelfNews,
+} from "@/services/news.service";
+import { fetchWritersUsers } from "@/services/user.service";
+import type { TCategory } from "@/types/category.type";
 import type { TNews, TUpdateNewsPayload } from "@/types/news.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +31,27 @@ import "react-day-picker/dist/style.css";
 import { Link } from "react-router";
 import { toast } from "react-toastify";
 
+const renderCategoryOptions = (
+  category?: TCategory,
+  prefix = "",
+): React.ReactNode => {
+  if (!category) return null;
+  return (
+    <>
+      <option key={category._id} value={category._id}>
+        {prefix + category.name}
+      </option>
+      {category.children?.map((child) =>
+        renderCategoryOptions(child, prefix + "-- "),
+      )}
+    </>
+  );
+};
+
 const NewsArticlesPage = () => {
+  const { user } = useUser();
+  const { info } = user || {};
+
   // Hooks and state initialization
   const { activeBreadcrumbs } = useMenu();
   const queryClient = useQueryClient();
@@ -47,7 +77,10 @@ const NewsArticlesPage = () => {
     }: {
       id: string;
       payload: TUpdateNewsPayload;
-    }) => updateNews(id, payload),
+    }) =>
+      info?.role === "admin"
+        ? updateNews(id, payload)
+        : updateSelfNews(id, payload),
     onSuccess: (data) => {
       toast.success(data?.message || "News updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["news_articles"] });
@@ -59,7 +92,8 @@ const NewsArticlesPage = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteNews(id),
+    mutationFn: (id: string) =>
+      info?.role === "admin" ? deleteNews(id) : deleteSelfNews(id),
     onSuccess: (data) => {
       toast.success(data?.message || "News deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["news_articles"] });
@@ -104,24 +138,14 @@ const NewsArticlesPage = () => {
       }),
   });
 
-  const categoriesQuery = useQuery({
+  const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
     queryFn: () => fetchCategoriesTree({ sort: "sequence" }),
   });
 
-  const usersQuery = useQuery({
+  const { data: usersData } = useQuery({
     queryKey: ["users"],
-    queryFn: () =>
-      fetchUsers({
-        or: [
-          {
-            role: "admin",
-          },
-          {
-            role: "author",
-          },
-        ],
-      }),
+    queryFn: () => fetchWritersUsers(),
   });
 
   // Derived data
@@ -225,11 +249,36 @@ const NewsArticlesPage = () => {
         }
       />
 
+      <NewsArticlesStatisticsSection meta={newsQuery.data?.meta} />
+
       <Card>
         <Card.Content>
-          <div className="mb-6 grid w-full gap-4 md:grid-cols-2">
+          <NewsArticlesFilterSection
+            state={{
+              category,
+              setCategory,
+              author,
+              setAuthor,
+              status,
+              setStatus,
+              featured,
+              setFeatured,
+              publishedAtGte,
+              setPublishedAtGte,
+              publishedAtLte,
+              setPublishedAtLte,
+              categories: categoriesData?.data || [],
+              users: usersData?.data || [],
+            }}
+          />
+        </Card.Content>
+      </Card>
+
+      <Card>
+        <Card.Content>
+          <div className="grid w-full gap-4 md:grid-cols-2">
             {/* Date Range Picker */}
-            <Dropdown className="w-full md:grid-cols-2">
+            <Dropdown className="w-full md:col-span-2">
               <Dropdown.Trigger
                 isAnimation={false}
                 className="w-full active:scale-100"
@@ -303,11 +352,9 @@ const NewsArticlesPage = () => {
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="">All categories</option>
-              {categoriesQuery.data?.data?.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
+              {categoriesQuery.data?.data?.map((cat) =>
+                renderCategoryOptions(cat),
+              )}
             </FormControl>
 
             {/* Author Filter */}
@@ -341,11 +388,16 @@ const NewsArticlesPage = () => {
               value={featured}
               onChange={(e) => setFeatured(e.target.value || "")}
             >
-              <option value="">All</option>
+              <option value="">All Features</option>
               <option value="featured">Featured</option>
               <option value="not-featured">Not Featured</option>
             </FormControl>
           </div>
+        </Card.Content>
+      </Card>
+
+      <Card>
+        <Card.Content>
           <NewsArticlesDataTableSection
             data={newsQuery.data?.data || []}
             breadcrumbs={activeBreadcrumbs || []}

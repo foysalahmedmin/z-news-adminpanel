@@ -5,10 +5,18 @@ import RootLayout from "@/layouts/RootLayout";
 import ErrorPage from "@/pages/(partial)/ErrorPage";
 import { useMemo } from "react";
 import { createBrowserRouter } from "react-router";
+import useUser from "./useUser";
 
 const useAppRouter = () => {
-  const routeMenu = new RouteMenu(items);
-  const { routes } = routeMenu.getRoutes();
+  const { user } = useUser();
+  const { info } = user || {};
+
+  const routesData = useMemo(() => {
+    const routeMenu = new RouteMenu(items);
+    return routeMenu.getRoutes({ role: info?.role });
+  }, [info?.role]);
+
+  const { routes } = routesData || {};
 
   const router = useMemo(
     () =>

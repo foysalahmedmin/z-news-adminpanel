@@ -18,6 +18,15 @@ import { Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
+    roles: [
+      "supper-admin",
+      "admin",
+      "author",
+      "editor",
+      "contributor",
+      "subscriber",
+      "user",
+    ],
     path: "",
     element: <CommonLayout />,
     routeType: "layout",
@@ -27,16 +36,27 @@ export const items: TItem[] = [
         name: "Dashboard",
       },
       {
+        roles: [
+          "supper-admin",
+          "admin",
+          "author",
+          "editor",
+          "contributor",
+          "subscriber",
+          "user",
+        ],
         icon: "layout-template",
         index: true,
         name: "Dashboard",
         element: <Dashboard />,
       },
       {
+        roles: ["supper-admin", "admin"],
         menuType: "title",
         name: "Categories",
       },
       {
+        roles: ["supper-admin", "admin"],
         icon: "blocks",
         path: "categories",
         name: "Categories",
@@ -81,11 +101,13 @@ export const items: TItem[] = [
             menuType: "invisible",
           },
           {
+            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
             path: "add",
             element: <NewsArticlesAddPage />,
             menuType: "invisible",
           },
           {
+            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
             path: "edit/:id",
             element: <NewsArticlesEditPage />,
             menuType: "invisible",
@@ -135,26 +157,31 @@ export const items: TItem[] = [
         ],
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         menuType: "title",
         name: "Activities",
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "message-square-quote",
         path: "comments",
         name: "Comments",
         element: <Dashboard />,
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "smile",
         path: "reactions",
         name: "Reactions",
         element: <Dashboard />,
       },
       {
+        roles: ["supper-admin", "admin"],
         menuType: "title",
         name: "Management",
       },
       {
+        roles: ["supper-admin", "admin"],
         icon: "users",
         path: "users",
         name: "Users",

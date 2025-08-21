@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/Button";
 import type { TColumn, TState } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import { Switch } from "@/components/ui/Switch";
+import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import type { TNews, TStatus } from "@/types/news.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
@@ -30,6 +31,9 @@ const NewsArticlesDataTableSection: React.FC<
   onToggleFeatured,
   state,
 }) => {
+  const { user } = useUser();
+  const { info } = user || {};
+
   const columns: TColumn<TNews>[] = [
     { name: "Title", field: "title", isSortable: true, isSearchable: true },
     { name: "Slug", field: "slug", isSortable: true },
@@ -123,7 +127,11 @@ const NewsArticlesDataTableSection: React.FC<
             shape={"icon"}
           >
             <Link
-              to={`/news-articles/${row._id}`}
+              to={
+                info?.role !== "admin" || row.author?._id !== info?._id
+                  ? "#"
+                  : `/news-articles/${row._id}`
+              }
               state={{
                 category: row,
                 breadcrumbs: [
@@ -135,29 +143,46 @@ const NewsArticlesDataTableSection: React.FC<
               <Eye className="size-4" />
             </Link>
           </Button>
-          <Button asChild={true} size={"sm"} variant="outline" shape={"icon"}>
-            <Link
-              to={`/news-articles/edit/${row._id}`}
-              state={{
-                category: row,
-                breadcrumbs: [
-                  ...(breadcrumbs || []),
-                  { name: row.title, path: `/news-articles/${row._id}` },
-                ],
-              }}
+
+          {(info?.role === "admin" || row.author?._id === info?._id) && (
+            <Button
+              disabled={info?.role !== "admin" || row.author?._id !== info?._id}
+              asChild={true}
+              size={"sm"}
+              variant="outline"
+              shape={"icon"}
             >
-              <Edit className="size-4" />
-            </Link>
-          </Button>
-          <Button
-            onClick={() => onDelete(row)}
-            className="[--accent:red]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Trash className="size-4" />
-          </Button>
+              <Link
+                to={
+                  info?.role !== "admin" || row.author?._id !== info?._id
+                    ? "#"
+                    : `/news-articles/edit/${row._id}`
+                }
+                state={{
+                  category: row,
+                  breadcrumbs: [
+                    ...(breadcrumbs || []),
+                    { name: row.title, path: `/news-articles/${row._id}` },
+                  ],
+                }}
+              >
+                <Edit className="size-4" />
+              </Link>
+            </Button>
+          )}
+
+          {(info?.role === "admin" || row.author?._id === info?._id) && (
+            <Button
+              disabled={info?.role !== "admin" || row.author?._id !== info?._id}
+              onClick={() => onDelete(row)}
+              className="[--accent:red]"
+              size={"sm"}
+              variant="outline"
+              shape={"icon"}
+            >
+              <Trash className="size-4" />
+            </Button>
+          )}
         </div>
       ),
     },
