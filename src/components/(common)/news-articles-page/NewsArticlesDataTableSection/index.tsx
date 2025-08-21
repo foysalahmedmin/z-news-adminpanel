@@ -144,7 +144,8 @@ const NewsArticlesDataTableSection: React.FC<
             </Link>
           </Button>
 
-          {(info?.role === "admin" || row.author?._id === info?._id) && (
+          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
+            row.author?._id === info?._id) && (
             <Button
               disabled={info?.role !== "admin" || row.author?._id !== info?._id}
               asChild={true}
@@ -171,7 +172,8 @@ const NewsArticlesDataTableSection: React.FC<
             </Button>
           )}
 
-          {(info?.role === "admin" || row.author?._id === info?._id) && (
+          {(["supper-admin", "admin"].includes(info?.role || "") ||
+            row.author?._id === info?._id) && (
             <Button
               disabled={info?.role !== "admin" || row.author?._id !== info?._id}
               onClick={() => onDelete(row)}

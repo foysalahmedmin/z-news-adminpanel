@@ -54,7 +54,7 @@ const NewsArticlesPage = () => {
       id: string;
       payload: TUpdateNewsPayload;
     }) =>
-      info?.role === "admin"
+      ["supper-admin", "admin", "editor"].includes(info?.role || "")
         ? updateNews(id, payload)
         : updateSelfNews(id, payload),
     onSuccess: (data) => {
@@ -69,7 +69,9 @@ const NewsArticlesPage = () => {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      info?.role === "admin" ? deleteNews(id) : deleteSelfNews(id),
+      ["supper-admin", "admin"].includes(info?.role || "")
+        ? deleteNews(id)
+        : deleteSelfNews(id),
     onSuccess: (data) => {
       toast.success(data?.message || "News deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["news_articles"] });

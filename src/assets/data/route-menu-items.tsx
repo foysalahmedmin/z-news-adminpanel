@@ -78,10 +78,12 @@ export const items: TItem[] = [
         ],
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         menuType: "title",
         name: "News",
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "newspaper",
         path: "news-articles",
         name: "News Articles",
@@ -96,12 +98,13 @@ export const items: TItem[] = [
             menuType: "invisible",
           },
           {
+            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
             path: ":id",
             element: <NewsArticlesDetailsPage />,
             menuType: "invisible",
           },
           {
-            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
+            roles: ["supper-admin", "admin", "author"],
             path: "add",
             element: <NewsArticlesAddPage />,
             menuType: "invisible",
@@ -115,6 +118,7 @@ export const items: TItem[] = [
         ],
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "scroll-text",
         path: "news-headlines",
         name: "News Headlines",
@@ -129,6 +133,7 @@ export const items: TItem[] = [
             menuType: "invisible",
           },
           {
+            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
             path: ":id",
             element: <CategoriesDetailsPage />,
             menuType: "invisible",
@@ -136,6 +141,7 @@ export const items: TItem[] = [
         ],
       },
       {
+        roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "zap",
         path: "news-breaks",
         name: "News Breaks",
@@ -150,6 +156,7 @@ export const items: TItem[] = [
             menuType: "invisible",
           },
           {
+            roles: ["supper-admin", "admin", "author", "editor", "contributor"],
             path: ":id",
             element: <CategoriesDetailsPage />,
             menuType: "invisible",
