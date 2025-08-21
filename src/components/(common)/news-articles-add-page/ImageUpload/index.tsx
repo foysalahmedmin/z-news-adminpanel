@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { FormControl } from "@/components/ui/FormControl";
+import { URLS } from "@/config";
 import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
 import { Upload, X } from "lucide-react";
@@ -29,7 +30,11 @@ const ImageUpload = ({
     if (e.target.files) {
       const fileList = Array.from(e.target.files);
       if (multiple) {
-        setValue(name as any, fileList);
+        // For multiple files, combine existing files with new ones
+        const existingFiles = Array.isArray(files)
+          ? files.filter((file) => typeof file === "string")
+          : [];
+        setValue(name as any, [...existingFiles, ...fileList]);
       } else {
         setValue(name as any, fileList[0] || null);
       }
@@ -52,7 +57,11 @@ const ImageUpload = ({
     if (e.dataTransfer.files) {
       const fileList = Array.from(e.dataTransfer.files);
       if (multiple) {
-        setValue(name as any, fileList);
+        // For multiple files, combine existing files with new ones
+        const existingFiles = Array.isArray(files)
+          ? files.filter((file) => typeof file === "string")
+          : [];
+        setValue(name as any, [...existingFiles, ...fileList]);
       } else {
         setValue(name as any, fileList[0] || null);
       }
@@ -71,14 +80,26 @@ const ImageUpload = ({
     }
   };
 
-  const generatePreviewUrl = (file: File) => {
-    try {
-      return URL.createObjectURL(file);
-    } catch (error) {
-      console.error("Error creating preview URL:", error);
-      return "";
+  const generatePreviewUrl = (file: File | string) => {
+    if (typeof file === "string") {
+      // Handle existing images from server
+      if (name === "thumbnail") {
+        return `${URLS.news.thumbnail}/${file}`;
+      } else if (name === "seo.image") {
+        return `${URLS.news.seo.image}/${file}`;
+      } else {
+        return `${URLS.news.image}/${file}`;
+      }
     }
+
+    // Handle new file uploads
+    return URL.createObjectURL(file);
   };
+
+  // Check if we have any files to display
+  const hasFiles = multiple
+    ? Array.isArray(files) && files.length > 0
+    : files && (typeof files === "string" || files instanceof File);
 
   return (
     <div className={cn("flex flex-col", className)}>
@@ -103,7 +124,7 @@ const ImageUpload = ({
           className="hidden"
         />
 
-        {!files || (multiple && (!files || files.length === 0)) ? (
+        {!hasFiles ? (
           <label
             htmlFor={name}
             className="flex size-full flex-1 cursor-pointer items-center justify-center"
@@ -121,23 +142,20 @@ const ImageUpload = ({
         ) : (
           <div className="relative size-full flex-1">
             {multiple && Array.isArray(files) && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="grid grid-cols-2 gap-2">
                 {files.map((file, index) => {
                   const previewUrl = generatePreviewUrl(file);
                   return previewUrl ? (
-                    <div
-                      key={index}
-                      style={{
-                        width: files.length > 1 ? "50%" : "100%",
-                        height: files.length > 2 ? "50%" : "100%",
-                      }}
-                      className="group relative"
-                    >
+                    <div key={index} className="group relative aspect-video">
                       <img
                         src={previewUrl}
                         alt={`Preview ${index + 1}`}
                         className="size-full rounded-md object-cover"
-                        onLoad={() => URL.revokeObjectURL(previewUrl)}
+                        onLoad={() => {
+                          if (typeof file !== "string") {
+                            URL.revokeObjectURL(previewUrl);
+                          }
+                        }}
                       />
                       <button
                         type="button"
@@ -152,31 +170,29 @@ const ImageUpload = ({
               </div>
             )}
 
-            {!multiple &&
-              files &&
-              files instanceof File &&
-              (() => {
-                const previewUrl = generatePreviewUrl(files);
-                return previewUrl ? (
-                  <div className="absolute inset-0">
-                    <div className="group relative size-full">
-                      <img
-                        src={previewUrl}
-                        alt="Thumbnail preview"
-                        className="size-full rounded-md object-cover"
-                        onLoad={() => URL.revokeObjectURL(previewUrl)}
-                      />
-                      <button
-                        type="button"
-                        className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-                        onClick={() => removeFile()}
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-                ) : null;
-              })()}
+            {!multiple && (
+              <div className="absolute inset-0">
+                <div className="group relative size-full">
+                  <img
+                    src={generatePreviewUrl(files)}
+                    alt="Preview"
+                    className="size-full rounded-md object-cover"
+                    onLoad={() => {
+                      if (typeof files !== "string") {
+                        URL.revokeObjectURL(generatePreviewUrl(files));
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="bg-destructive absolute top-1 right-1 rounded-full p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    onClick={() => removeFile()}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

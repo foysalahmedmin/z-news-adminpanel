@@ -18,7 +18,7 @@ import type { TCreateNewsPayload } from "@/types/news.type";
 import { useNavigate } from "react-router";
 
 // Updated schema with proper File types and consistent defaults
-export const newsSchema = z.object({
+const newsSchema = z.object({
   sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
@@ -26,8 +26,6 @@ export const newsSchema = z.object({
   description: z.string().optional(),
   content: z.string().min(1, "Content is required"),
   thumbnail: z.instanceof(File).nullable().optional(),
-  images: z.array(z.instanceof(File)).nullable().optional(),
-  video: z.instanceof(File).nullable().optional(),
   youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
   category: z.string().min(1, "Category is required"),
@@ -36,7 +34,6 @@ export const newsSchema = z.object({
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
   status: z.enum(["draft", "published"]).optional(),
   is_featured: z.boolean(),
-  is_premium: z.boolean(),
   seo: z
     .object({
       image: z.instanceof(File).nullable().optional(),
@@ -73,7 +70,6 @@ const NewsArticlesAddPage = () => {
       status: "draft",
       layout: "default",
       is_featured: false,
-      is_premium: false,
       published_at: new Date(),
       tags: [],
       seo: {

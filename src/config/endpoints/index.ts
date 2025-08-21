@@ -1,6 +1,6 @@
 import { ENV } from "../env";
 
-export const BASE_URL = ENV.base_url;
+export const BASE_URL = ENV.api_url;
 
 export const ENDPOINTS = {
   signin: "/api/auth/signin",

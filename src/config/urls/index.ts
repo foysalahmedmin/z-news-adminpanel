@@ -1,5 +1,14 @@
+import { ENV } from "../env";
+
 export const URLS = {
-  user: `http://localhost:3000/uploads/users`,
-  news_thumbnail: `http://localhost:3000/uploads/news/thumbnails`,
-  news_images: `http://localhost:3000/uploads/news/images`,
+  app: ENV.app_url,
+  api: ENV.api_url,
+  user: `${ENV.api_url}/uploads/images/users`,
+  news: {
+    thumbnail: `${ENV.api_url}/uploads/news/thumbnails`,
+    image: `${ENV.api_url}/uploads/news/images`,
+    seo: {
+      image: `${ENV.api_url}/uploads/news/seo/images`,
+    },
+  },
 };

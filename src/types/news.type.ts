@@ -1,5 +1,3 @@
-import type { TNewsBreak } from "./news-break.type";
-import type { TNewsHeadline } from "./news-headline.type";
 import type { Response } from "./response.type";
 
 export type TStatus = "draft" | "pending" | "published" | "archived";
@@ -42,8 +40,8 @@ export type TNews = {
   edited_at?: Date;
   is_news_headline?: boolean;
   is_news_break?: boolean;
-  news_headline?: Partial<TNewsHeadline>;
-  news_break?: Partial<TNewsBreak>;
+  // news_headline?: Partial<TNewsHeadline>;
+  // news_break?: Partial<TNewsBreak>;
 };
 
 export type TCreateNewsPayload = {
@@ -64,7 +62,6 @@ export type TCreateNewsPayload = {
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: "draft" | "published";
   is_featured: boolean;
-  is_premium: boolean;
   seo?: {
     image?: File | null;
     title?: string;
@@ -84,20 +81,18 @@ export type TUpdateNewsPayload = {
   caption?: string;
   description?: string;
   content?: string;
-  thumbnail?: File | null;
-  images?: File[] | null;
-  video?: File | null;
+  thumbnail?: File | null | string;
+  images?: File[] | null | string[];
+  video?: File | null | string;
   youtube?: string;
   tags?: string[];
   category?: string;
   writer?: string;
-  layout?: "default" | "standard" | "featured" | "minimal";
+  layout?: "draft" | "published";
   status?: TStatus;
-  is_top_featured?: boolean;
   is_featured?: boolean;
-  is_premium?: boolean;
   seo?: {
-    image?: File | null;
+    image?: File | null | string;
     title?: string;
     description?: string;
     keywords?: string[];
