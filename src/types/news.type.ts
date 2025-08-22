@@ -42,6 +42,8 @@ export type TNews = {
   is_news_break?: boolean;
   // news_headline?: Partial<TNewsHeadline>;
   // news_break?: Partial<TNewsBreak>;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type TCreateNewsPayload = {

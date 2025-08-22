@@ -94,7 +94,10 @@ api.interceptors.response.use(
           throw new Error("No new token returned");
         }
 
-        localStorage.setItem("user", JSON.stringify(data));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ is_authenticated: true, ...data }),
+        );
 
         api.defaults.headers.Authorization = `${data?.token}`;
         processQueue(null, `${data?.token}`);

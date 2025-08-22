@@ -23,7 +23,7 @@ const Profile: React.FC = () => {
 
   return (
     <>
-      {user.isAuthenticated && (
+      {(user.is_authenticated || user?.info?._id) && (
         <div className="h-full">
           <button
             onClick={() => setIsOpen(true)}

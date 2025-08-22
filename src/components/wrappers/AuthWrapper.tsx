@@ -11,7 +11,7 @@ const AuthWrapper: React.FC<PrivateRouteProps> = ({ roles = [], children }) => {
   const { user } = useUser();
   const location = useLocation();
 
-  if (!user?.isAuthenticated) {
+  if (!user?.is_authenticated) {
     return <Navigate to="/auth/signin" state={{ from: location }} replace />;
   }
 

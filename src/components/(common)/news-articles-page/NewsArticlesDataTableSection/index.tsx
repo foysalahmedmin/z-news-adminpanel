@@ -1,12 +1,14 @@
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { TColumn, TState } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import { Switch } from "@/components/ui/Switch";
+import { URLS } from "@/config";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import type { TNews, TStatus } from "@/types/news.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
-import { Edit, Eye, Trash } from "lucide-react";
+import { Edit, Eye, Tag, Trash, User } from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
 
@@ -17,6 +19,8 @@ type NewsArticlesDataTableSectionProps = {
   isError: boolean;
   onDelete: (row: TNews) => void;
   onToggleFeatured: (row: TNews) => void;
+  onToggleNewsHeadline: (row: TNews) => void;
+  onToggleNewsBreak: (row: TNews) => void;
   state: TState;
 };
 
@@ -29,38 +33,66 @@ const NewsArticlesDataTableSection: React.FC<
   isError,
   onDelete,
   onToggleFeatured,
+  onToggleNewsHeadline,
+  onToggleNewsBreak,
   state,
 }) => {
   const { user } = useUser();
   const { info } = user || {};
 
   const columns: TColumn<TNews>[] = [
-    { name: "Title", field: "title", isSortable: true, isSearchable: true },
-    { name: "Slug", field: "slug", isSortable: true },
     {
-      name: "Category",
-      field: "category",
-      cell: ({ cell }) => (
-        <span>{(cell as TNews["category"])?.name?.toString()}</span>
+      name: "News",
+      field: "_id",
+      isSortable: true,
+      isSearchable: true,
+      cell: ({ cell, row }) => (
+        <div className="flex items-center gap-2">
+          <div className="aspect-square h-20 flex-shrink-0 rounded">
+            {row.thumbnail && (
+              <img
+                className="size-full object-cover"
+                src={URLS.news.thumbnail + "/" + row.thumbnail}
+                alt=""
+              />
+            )}
+          </div>
+          <div className="flex-1 space-y-1">
+            <h3 className="text-base font-bold">{row.title}</h3>
+            <p className="text-sm">{row.slug}</p>
+            <div className="flex items-center">
+              <Badge className="bg-muted text-foreground flex w-fit items-center gap-2 px-2 py-1 text-xs">
+                <Tag className="size-4" />
+                <span className="leading-none">{row?.category?.name}</span>
+              </Badge>
+              <Badge className="bg-muted text-foreground flex w-fit items-center gap-2 px-2 py-1 text-xs">
+                <User className="size-4" />
+                <span className="leading-none">{row?.author?.name}</span>
+              </Badge>
+            </div>
+          </div>
+        </div>
       ),
     },
     {
-      name: "Author",
-      field: "author",
+      name: "Published At",
+      field: "published_at",
+      isSortable: true,
       cell: ({ cell }) => (
-        <span>{(cell as TNews["author"])?.name?.toString()}</span>
+        <div>
+          {new Date((cell as string) || "").toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </div>
       ),
     },
     {
-      name: "Writer",
-      field: "writer",
+      name: "Layout",
+      field: "layout",
+      isSortable: true,
     },
-    // {
-    //   name: "Layout",
-    //   field: "layout",
-    //   isSortable: true,
-    //   cell: ({ cell }) => <span>{cell?.toString()}</span>,
-    // },
     {
       name: "Status",
       field: "status",
@@ -100,16 +132,30 @@ const NewsArticlesDataTableSection: React.FC<
       ),
     },
     {
-      name: "Published At",
-      field: "published_at",
+      name: "News Headline",
+      field: "is_news_headline",
       isSortable: true,
-      cell: ({ cell }) => (
+      cell: ({ cell, row }) => (
         <div>
-          {new Date((cell as string) || "").toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          <Switch
+            disabled={isLoading}
+            onChange={() => onToggleNewsHeadline(row)}
+            checked={cell === true}
+          />
+        </div>
+      ),
+    },
+    {
+      name: "News Break",
+      field: "is_news_break",
+      isSortable: true,
+      cell: ({ cell, row }) => (
+        <div>
+          <Switch
+            disabled={isLoading}
+            onChange={() => onToggleNewsBreak(row)}
+            checked={cell === true}
+          />
         </div>
       ),
     },

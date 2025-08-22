@@ -16,6 +16,7 @@ import type { TCategory, TCategoryUpdatePayload } from "@/types/category.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -96,7 +97,11 @@ const CategoriesPage = () => {
     <main className="space-y-6">
       <PageHeader
         name="Categories"
-        slot={<Button onClick={() => onOpenAddModal()}>Add Category</Button>}
+        slot={
+          <Button onClick={() => onOpenAddModal()}>
+            <Plus className="h-4 w-4" /> Add Category
+          </Button>
+        }
       />
       <CategoriesStatisticsSection data={data?.data || []} />
       <Card>

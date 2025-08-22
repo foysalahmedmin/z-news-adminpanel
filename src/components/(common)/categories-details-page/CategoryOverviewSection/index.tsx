@@ -5,6 +5,7 @@ import React from "react";
 export type TCategoryOverviewSectionProps = {
   category?: Partial<TCategory>;
 };
+
 const CategoryOverviewSection: React.FC<TCategoryOverviewSectionProps> = ({
   category,
 }) => {
@@ -13,11 +14,11 @@ const CategoryOverviewSection: React.FC<TCategoryOverviewSectionProps> = ({
       {/* Description */}
       {category?.description && (
         <div>
-          <h3 className="mb-3 flex items-center text-lg font-semibold text-gray-900">
+          <h3 className="text-foreground mb-3 flex items-center text-lg font-semibold">
             <FileText className="mr-2 h-5 w-5" />
             Description
           </h3>
-          <p className="leading-relaxed text-gray-700">
+          <p className="text-muted-foreground leading-relaxed">
             {category.description}
           </p>
         </div>
@@ -25,31 +26,39 @@ const CategoryOverviewSection: React.FC<TCategoryOverviewSectionProps> = ({
 
       {/* Category Details */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
+        <h3 className="text-foreground mb-4 text-lg font-semibold">
           Category Details
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-lg bg-gray-50 p-4">
-            <div className="mb-1 text-sm text-gray-500">Category ID</div>
-            <div className="font-mono text-sm text-gray-900">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
+              Category ID
+            </div>
+            <div className="text-foreground font-mono text-sm">
               {category?._id}
             </div>
           </div>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <div className="mb-1 text-sm text-gray-500">Parent Category</div>
-            <div className="text-sm text-gray-900">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
+              Parent Category
+            </div>
+            <div className="text-foreground text-sm">
               {category?.category || "None"}
             </div>
           </div>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <div className="mb-1 text-sm text-gray-500">Layout Type</div>
-            <div className="flex items-center text-sm text-gray-900">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
+              Layout Type
+            </div>
+            <div className="text-foreground flex items-center text-sm">
               {category?.layout || "Default"}
             </div>
           </div>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <div className="mb-1 text-sm text-gray-500">Subcategories</div>
-            <div className="text-sm text-gray-900">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">
+              Subcategories
+            </div>
+            <div className="text-foreground text-sm">
               {category?.children?.length || 0} items
             </div>
           </div>

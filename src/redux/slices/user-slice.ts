@@ -5,10 +5,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const getInitialUser = (): TUserState => {
   try {
     const user = localStorage.getItem("user");
-    return user ? JSON.parse(user) : { isAuthenticated: false };
+    return user ? JSON.parse(user) : { is_authenticated: false };
   } catch (error) {
     console.error("Error parsing user from localStorage", error);
-    return { isAuthenticated: false };
+    return { is_authenticated: false };
   }
 };
 
@@ -23,15 +23,15 @@ export const userSlice = createSlice({
       if (user?.token) {
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...user, isAuthenticated: true }),
+          JSON.stringify({ ...user, is_authenticated: true }),
         );
-        return { ...user, isAuthenticated: true };
+        return { ...user, is_authenticated: true };
       }
       return state;
     },
     clearUser: () => {
       localStorage.removeItem("user");
-      return { isAuthenticated: false };
+      return { is_authenticated: false };
     },
   },
 });

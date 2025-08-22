@@ -14,8 +14,9 @@ import SEOSection from "@/components/(common)/news-articles-add-page/SEOSection"
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
-import { fetchNews, updateNews } from "@/services/news.service";
+import { fetchNews, updateNews, updateSelfNews } from "@/services/news.service";
 import type { TUpdateNewsPayload } from "@/types/news.type";
+import { ArrowLeft, View } from "lucide-react";
 import { useEffect } from "react";
 
 // Updated schema with proper File types and consistent defaults
@@ -59,10 +60,12 @@ export type NewsFormData = z.infer<typeof newsSchema>;
 const NewsArticlesUpdatePage = () => {
   const { id } = useParams();
   const { user } = useUser();
+  const { info } = user || {};
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  if (!user.info?._id) {
+  if (!info?._id) {
     navigate("/auth/signin");
   }
 
@@ -126,7 +129,10 @@ const NewsArticlesUpdatePage = () => {
 
   // TanStack Query mutation for update
   const updateNewsMutation = useMutation({
-    mutationFn: (data: TUpdateNewsPayload) => updateNews(id!, data),
+    mutationFn: (data: TUpdateNewsPayload) =>
+      ["super-admin", "admin"].includes(info?.role || "")
+        ? updateNews(id!, data)
+        : updateSelfNews(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["news", id] });
       navigate("/news-articles");
@@ -204,6 +210,8 @@ const NewsArticlesUpdatePage = () => {
     return <div>Loading...</div>;
   }
 
+  const news = newsData?.data;
+
   return (
     <main className="space-y-6">
       <PageHeader
@@ -212,6 +220,20 @@ const NewsArticlesUpdatePage = () => {
           { name: "News Articles", path: "/news-articles" },
           { name: "Update News Article" },
         ]}
+        slot={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <Button
+              onClick={() => navigate(`/news-articles/edit/${news?._id}`)}
+            >
+              <View className="h-4 w-4" />
+              View
+            </Button>
+          </div>
+        }
       />
 
       <FormProvider {...methods}>

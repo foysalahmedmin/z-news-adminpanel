@@ -20,6 +20,7 @@ import type { TNews, TUpdateNewsPayload } from "@/types/news.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "react-toastify";
@@ -137,6 +138,26 @@ const NewsArticlesPage = () => {
     [updateMutation],
   );
 
+  const handleToggleNewsHeadline = useCallback(
+    (news: TNews) => {
+      updateMutation.mutate({
+        id: news._id,
+        payload: { is_news_headline: !news.is_news_headline },
+      });
+    },
+    [updateMutation],
+  );
+
+  const handleToggleNewsBreak = useCallback(
+    (news: TNews) => {
+      updateMutation.mutate({
+        id: news._id,
+        payload: { is_news_break: !news.is_news_break },
+      });
+    },
+    [updateMutation],
+  );
+
   const handleDelete = useCallback(
     async (news: TNews) => {
       const ok = await confirm({
@@ -163,6 +184,7 @@ const NewsArticlesPage = () => {
                 className="flex h-full items-center"
                 to="/news-articles/add"
               >
+                <Plus className="h-4 w-4" />
                 Add New
               </Link>
             </Button>
@@ -204,6 +226,8 @@ const NewsArticlesPage = () => {
             isError={newsQuery.isError}
             onDelete={handleDelete}
             onToggleFeatured={handleToggleFeatured}
+            onToggleNewsHeadline={handleToggleNewsHeadline}
+            onToggleNewsBreak={handleToggleNewsBreak}
             state={{
               total: newsQuery.data?.meta?.total || 0,
               page,

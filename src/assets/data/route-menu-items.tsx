@@ -11,10 +11,11 @@ import NewsArticlesAddPage from "@/pages/(common)/NewsArticlesAddPage";
 import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
 import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
 import NewsArticlesPage from "@/pages/(common)/NewsArticlesPage";
+import UsersPage from "@/pages/(common)/UsersPage";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { TItem } from "@/types/route-menu.type";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
@@ -173,14 +174,14 @@ export const items: TItem[] = [
         icon: "message-square-quote",
         path: "comments",
         name: "Comments",
-        element: <Dashboard />,
+        element: <Navigate to="/under-maintenance" />,
       },
       {
         roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "smile",
         path: "reactions",
         name: "Reactions",
-        element: <Dashboard />,
+        element: <Navigate to="/under-maintenance" />,
       },
       {
         roles: ["supper-admin", "admin"],
@@ -192,7 +193,7 @@ export const items: TItem[] = [
         icon: "users",
         path: "users",
         name: "Users",
-        element: <Dashboard />,
+        element: <UsersPage />,
       },
       {
         menuType: "title",
@@ -202,7 +203,7 @@ export const items: TItem[] = [
         icon: "bell",
         path: "notifications",
         name: "Notifications",
-        element: <Dashboard />,
+        element: <Navigate to="/under-maintenance" />,
       },
     ],
   },
