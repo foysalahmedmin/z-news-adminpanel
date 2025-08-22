@@ -11,7 +11,7 @@ export async function fetchSelf(): Promise<TUserResponse> {
 export async function fetchWritersUsers(
   query?: Record<string, any>,
 ): Promise<TUsersResponse> {
-  const response = await api.get("/api/user/writers");
+  const response = await api.get("/api/user/writers", { params: query });
   return response.data as TUsersResponse;
 }
 

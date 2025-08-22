@@ -7,7 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { Card } from "@/components/ui/Card";
 import { URLS } from "@/config";
 import useSetting from "@/hooks/states/useSetting";
-import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
+import type { NewsFormData } from "@/pages/(common)/NewsArticlesEditPage";
 import { uploadNewsFile } from "@/services/news.service";
 
 const ContentEditor = () => {
@@ -37,7 +37,7 @@ const ContentEditor = () => {
       else if (file.type.startsWith("audio/")) fileType = "audio";
 
       const { data } = await uploadNewsFile(file, fileType);
-      return data?.filename ? URLS.news_images + "/" + data?.filename : "";
+      return data?.filename ? URLS.news.image + "/" + data?.filename : "";
     },
   });
 

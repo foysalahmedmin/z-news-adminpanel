@@ -46,7 +46,7 @@ const NewsArticlesDataTableSection: React.FC<
       field: "_id",
       isSortable: true,
       isSearchable: true,
-      cell: ({ cell, row }) => (
+      cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="aspect-square h-20 flex-shrink-0 rounded">
             {row.thumbnail && (
