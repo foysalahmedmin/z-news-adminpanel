@@ -16,7 +16,6 @@ export type TUser = {
   image?: string;
   name: string;
   email: string;
-  password?: string;
   password_changed_at?: Date;
   role: TRole;
   status: TStatus;

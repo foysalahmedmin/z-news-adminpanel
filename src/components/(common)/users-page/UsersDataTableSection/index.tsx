@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import type { TColumn } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import { URLS } from "@/config";
+import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
 import type { TUser } from "@/types/user.type";
@@ -27,6 +28,9 @@ const UsersDataTableSection: React.FC<UsersDataTableSectionProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { user } = useUser();
+  const { info } = user || {};
+
   const columns: TColumn<TUser>[] = [
     {
       name: "Name",
@@ -107,23 +111,30 @@ const UsersDataTableSection: React.FC<UsersDataTableSectionProps> = ({
               <Eye className="size-4" />
             </Link>
           </Button>
-          <Button
-            onClick={() => onEdit(row)}
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Edit className="size-4" />
-          </Button>
-          <Button
-            onClick={() => onDelete(row)}
-            className="[--accent:red]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
-          >
-            <Trash className="size-4" />
-          </Button>
+          {((info?.role === "super-admin" && row?.role !== "super-admin") ||
+            (info?.role === "admin" &&
+              row?.role !== "super-admin" &&
+              row?.role !== "admin")) && (
+            <>
+              <Button
+                onClick={() => onEdit(row)}
+                size={"sm"}
+                variant="outline"
+                shape={"icon"}
+              >
+                <Edit className="size-4" />
+              </Button>
+              <Button
+                onClick={() => onDelete(row)}
+                className="[--accent:red]"
+                size={"sm"}
+                variant="outline"
+                shape={"icon"}
+              >
+                <Trash className="size-4" />
+              </Button>
+            </>
+          )}
         </div>
       ),
     },

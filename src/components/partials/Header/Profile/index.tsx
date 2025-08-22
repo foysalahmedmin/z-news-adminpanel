@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
               </div>
               <Dropdown.Separator />
               <Dropdown.Item className="hover:bg-muted">
-                <Link to="/profile" className="flex items-center gap-2">
+                <Link to="/user/profile" className="flex items-center gap-2">
                   <User className="size-4" />
                   Profile
                 </Link>

@@ -31,9 +31,16 @@ export async function fetchUser(id: string): Promise<TUserResponse> {
 
 // PATCH Self
 export async function updateSelf(
-  payload: Partial<{ name: string; email: string }>,
+  payload: Partial<{ image?: File | null; name: string; email: string }>,
 ): Promise<TUserResponse> {
-  const response = await api.patch("/api/user/self", payload);
+  const formData = new FormData();
+  if (payload.name) formData.append("name", payload.name);
+  if (payload.email) formData.append("name", payload.email);
+  if (payload.image) formData.append("image", payload.image);
+  const response = await api.patch("/api/user/self", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
+  });
   return response.data as TUserResponse;
 }
 

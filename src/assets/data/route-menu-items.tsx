@@ -1,7 +1,6 @@
 import AuthWrapper from "@/components/wrappers/AuthWrapper";
 import AuthLayout from "@/layouts/AuthLayout";
 import CommonLayout from "@/layouts/CommonLayout";
-import UserLayout from "@/layouts/UserLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
 import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
@@ -50,6 +49,33 @@ export const items: TItem[] = [
         index: true,
         name: "Dashboard",
         element: <Dashboard />,
+      },
+      {
+        roles: ["supper-admin", "admin"],
+        menuType: "title",
+        name: "Management",
+      },
+      {
+        roles: ["supper-admin", "admin"],
+        icon: "users",
+        path: "users",
+        name: "Users",
+        routeType: "layout",
+        menuType: "item-without-children",
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            name: "Users",
+            element: <UsersPage />,
+            menuType: "invisible",
+          },
+          {
+            path: ":id",
+            element: <></>,
+            menuType: "invisible",
+          },
+        ],
       },
       {
         roles: ["supper-admin", "admin"],
@@ -174,27 +200,16 @@ export const items: TItem[] = [
         icon: "message-square-quote",
         path: "comments",
         name: "Comments",
-        element: <Navigate to="/under-maintenance" />,
+        element: <Navigate to="/under-maintenance" replace={true} />,
       },
       {
         roles: ["supper-admin", "admin", "author", "editor", "contributor"],
         icon: "smile",
         path: "reactions",
         name: "Reactions",
-        element: <Navigate to="/under-maintenance" />,
+        element: <Navigate to="/under-maintenance" replace={true} />,
       },
-      {
-        roles: ["supper-admin", "admin"],
-        menuType: "title",
-        name: "Management",
-      },
-      {
-        roles: ["supper-admin", "admin"],
-        icon: "users",
-        path: "users",
-        name: "Users",
-        element: <UsersPage />,
-      },
+
       {
         menuType: "title",
         name: "Settings",
@@ -203,27 +218,27 @@ export const items: TItem[] = [
         icon: "bell",
         path: "notifications",
         name: "Notifications",
-        element: <Navigate to="/under-maintenance" />,
+        element: <Navigate to="/under-maintenance" replace={true} />,
       },
-    ],
-  },
-  {
-    menuType: "invisible",
-    path: "user",
-    element: (
-      <AuthWrapper>
-        <UserLayout />
-      </AuthWrapper>
-    ),
-    routeType: "layout",
-    children: [
       {
-        path: "profile",
+        menuType: "invisible",
+        path: "user",
         element: (
           <AuthWrapper>
-            <ProfilePage />
+            <Outlet />
           </AuthWrapper>
         ),
+        routeType: "layout",
+        children: [
+          {
+            path: "profile",
+            element: (
+              <AuthWrapper>
+                <ProfilePage />
+              </AuthWrapper>
+            ),
+          },
+        ],
       },
     ],
   },
