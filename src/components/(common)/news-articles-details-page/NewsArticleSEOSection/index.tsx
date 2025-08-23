@@ -1,4 +1,4 @@
-import { URLS } from "@/config";
+import { ENV, URLS } from "@/config";
 import type { TNews } from "@/types/news.type";
 import { FileText, Globe, Image, Search, Tag } from "lucide-react";
 import React from "react";
@@ -139,7 +139,7 @@ const NewsArticleSEOSection: React.FC<TNewsArticleSEOSectionProps> = ({
             {news?.seo?.title || news?.title || "Article Title"}
           </div>
           <div className="mt-1 text-sm text-green-600 dark:text-green-400">
-            https://z-news.com/news/{news?.slug || "article-slug"}
+            {ENV.app_url}/news/{news?.slug || "article-slug"}
           </div>
           <div className="text-muted-foreground mt-2 text-sm leading-relaxed">
             {news?.seo?.description ||
