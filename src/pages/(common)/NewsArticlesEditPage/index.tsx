@@ -11,6 +11,7 @@ import CategoriesAndTags from "@/components/(common)/news-articles-add-page/Cate
 import ContentEditor from "@/components/(common)/news-articles-add-page/ContentEditor";
 import PublishSettings from "@/components/(common)/news-articles-add-page/PublishSettings";
 import SEOSection from "@/components/(common)/news-articles-add-page/SEOSection";
+import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
@@ -207,7 +208,7 @@ const NewsArticlesUpdatePage = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const news = newsData?.data;

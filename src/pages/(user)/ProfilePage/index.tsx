@@ -1,6 +1,8 @@
+import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
+import { URLS } from "@/config";
 import { changePassword } from "@/services/auth.service";
 import { fetchSelf, updateSelf } from "@/services/user.service";
 import type { ChangePasswordPayload } from "@/types/auth.type";
@@ -173,11 +175,7 @@ const ProfilePage = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
@@ -244,10 +242,9 @@ const ProfilePage = () => {
                   <div className="relative">
                     <img
                       src={
-                        user.image ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          user.name,
-                        )}&size=128`
+                        user.image
+                          ? URLS.user + "/" + user.image
+                          : "/images/avatar.png"
                       }
                       alt={user.name}
                       className="border-border h-24 w-24 rounded-full border-4 object-cover"
