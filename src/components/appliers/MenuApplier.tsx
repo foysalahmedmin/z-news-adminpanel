@@ -35,7 +35,7 @@ const MenuApplier = () => {
       dispatch(setIndexesMap(indexesMap));
       dispatch(setBreadcrumbsMap(breadcrumbsMap));
     }
-  }, [dispatch, menusData, indexesMap]);
+  }, [dispatch, menusData, indexesMap, info?.role]);
 
   useEffect(() => {
     if (pathname && indexesMap) {

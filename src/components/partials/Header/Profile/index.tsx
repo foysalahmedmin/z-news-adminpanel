@@ -82,12 +82,14 @@ const Profile: React.FC = () => {
                   Profile
                 </Link>
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={handleLogout}
-                className="flex cursor-pointer items-center gap-2 text-red-700 hover:bg-red-500/15"
-              >
-                <LogOut className="size-4" />
-                Sign out
+              <Dropdown.Item className="flex cursor-pointer items-center gap-2 text-red-700 hover:bg-red-500/15">
+                <div
+                  onClick={handleLogout}
+                  className="flex size-full items-center gap-2"
+                >
+                  <LogOut className="size-4" />
+                  Sign out
+                </div>
               </Dropdown.Item>
             </Dropdown.Content>
           </Dropdown>
