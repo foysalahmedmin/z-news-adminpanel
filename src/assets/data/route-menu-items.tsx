@@ -18,17 +18,12 @@ import { Navigate, Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
-    roles: [
-      "supper-admin",
-      "admin",
-      "author",
-      "editor",
-      "contributor",
-      "subscriber",
-      "user",
-    ],
     path: "",
-    element: <CommonLayout />,
+    element: (
+      <AuthWrapper>
+        <CommonLayout />
+      </AuthWrapper>
+    ),
     routeType: "layout",
     children: [
       {

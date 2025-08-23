@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/config";
+import { ENV } from "@/config";
 import { refreshToken } from "@/services/auth.service";
 import type { TUserState } from "@/types/state.type";
 import type {
@@ -30,7 +30,7 @@ const processQueue = (error: unknown, token: string | null) => {
 };
 
 const api: AxiosInstance = axios.create({
-  baseURL: BASE_URL || "http://localhost:3000",
+  baseURL: ENV.api_url,
 });
 
 // ✅ Request Interceptor

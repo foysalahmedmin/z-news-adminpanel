@@ -25,7 +25,7 @@ export const useNotifications = () => {
 
     if (!user?.token) return;
 
-    const socketInstance: Socket = io(import.meta.env.VITE_BASE_URL, {
+    const socketInstance: Socket = io(import.meta.env.VITE_API_URL, {
       auth: { token: user.token },
     });
 
