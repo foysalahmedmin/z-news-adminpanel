@@ -1,4 +1,3 @@
-// src/router/Router.ts
 import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
 import AuthWrapper from "@/components/wrappers/AuthWrapper";
