@@ -29,13 +29,13 @@ const MenuApplier = () => {
   }, [info?.role]);
 
   useEffect(() => {
-    if (!indexesMap || Object.keys(indexesMap).length === 0) {
+    if (menusData) {
       const { menus, indexesMap, breadcrumbsMap } = menusData;
       dispatch(setMenus(menus));
       dispatch(setIndexesMap(indexesMap));
       dispatch(setBreadcrumbsMap(breadcrumbsMap));
     }
-  }, [dispatch, menusData, indexesMap, info?.role]);
+  }, [dispatch, menusData]);
 
   useEffect(() => {
     if (pathname && indexesMap) {

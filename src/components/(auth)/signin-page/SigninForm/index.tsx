@@ -24,7 +24,7 @@ const SigninForm: React.FC = () => {
     try {
       const response = await signIn(data); // API call
       if (response?.data?.token && response?.data?.info) {
-        setUser(response.data); // store user in redux
+        setUser({ ...response.data, is_authenticated: true }); // store user in redux
         toast.success("Login successful!");
         navigate("/");
       }

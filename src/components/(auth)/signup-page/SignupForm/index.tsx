@@ -52,7 +52,7 @@ const SignupForm: React.FC = () => {
 
       const response = await signUp(payload);
       if (response?.data?.token && response?.data?.info) {
-        setUser(response.data);
+        setUser({ ...response.data, is_authenticated: true });
         toast.success("Account created successfully!");
         navigate("/");
       }

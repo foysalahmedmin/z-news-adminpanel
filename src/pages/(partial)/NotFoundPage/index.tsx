@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/Button";
+import React from "react";
 import { Link } from "react-router";
 
-const NotFoundPage = () => {
+const NotFoundPage: React.FC = () => {
   return (
     <main className="bg-background flex h-screen flex-col items-center justify-center px-4 text-center">
       <h1 className="text-accent text-9xl font-extrabold">404</h1>

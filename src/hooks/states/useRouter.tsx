@@ -1,8 +1,14 @@
 // src/router/Router.ts
 import { items } from "@/assets/data/route-menu-items";
 import { RouteMenu } from "@/builder/RouteMenu";
+import AuthWrapper from "@/components/wrappers/AuthWrapper";
+import AuthLayout from "@/layouts/AuthLayout";
+import CommonLayout from "@/layouts/CommonLayout";
 import RootLayout from "@/layouts/RootLayout";
+import SignInPage from "@/pages/(auth)/SignInPage";
+import SignUpPage from "@/pages/(auth)/SignUpPage";
 import ErrorPage from "@/pages/(partial)/ErrorPage";
+import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import { useMemo } from "react";
 import { createBrowserRouter } from "react-router";
 import useUser from "./useUser";
@@ -18,18 +24,42 @@ const useAppRouter = () => {
 
   const { routes } = routesData || {};
 
-  const router = useMemo(
-    () =>
-      createBrowserRouter([
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <ErrorPage />,
+      children: [
         {
-          path: "/",
-          element: <RootLayout />,
-          errorElement: <ErrorPage />,
+          path: "",
+          element: (
+            <AuthWrapper>
+              <CommonLayout />
+            </AuthWrapper>
+          ),
           children: routes || [],
         },
-      ]),
-    [routes],
-  );
+        {
+          path: "auth",
+          element: <AuthLayout />,
+          children: [
+            {
+              path: "signin",
+              element: <SignInPage />,
+            },
+            {
+              path: "signup",
+              element: <SignUpPage />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: "*",
+      element: <NotFoundPage />,
+    },
+  ]);
 
   return router;
 };
