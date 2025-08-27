@@ -1,17 +1,33 @@
+import NewsArticlesDataTableSection from "@/components/(user)/profile-page/ProfileNewsDataTableSection";
+import ProfileNewsFilterSection from "@/components/(user)/profile-page/ProfileNewsFilterSection";
+import ProfileOverviewSection from "@/components/(user)/profile-page/ProfileOverviewSection";
 import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
+import { Tabs } from "@/components/ui/Tabs";
 import { URLS } from "@/config";
+import useMenu from "@/hooks/states/useMenu";
+import useAlert from "@/hooks/ui/useAlert";
 import { changePassword } from "@/services/auth.service";
-import { fetchSelf, updateSelf } from "@/services/user.service";
+import { fetchCategoriesTree } from "@/services/category.service";
+import {
+  deleteNews,
+  deleteSelfNews,
+  fetchBulkNews,
+  fetchSelfBulkNews,
+  updateNews,
+  updateSelfNews,
+} from "@/services/news.service";
+import { fetchSelf, fetchUser, updateSelf } from "@/services/user.service";
 import type { ChangePasswordPayload } from "@/types/auth.type";
+import type { TNews, TUpdateNewsPayload } from "@/types/news.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import {
   AlertCircle,
-  Calendar,
   Camera,
   CheckCircle,
   Edit,
@@ -25,11 +41,12 @@ import {
   User,
   X,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router";
 import { toast } from "react-toastify";
 
-const ProfilePage = () => {
+const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -40,6 +57,8 @@ const ProfilePage = () => {
   });
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const { id } = useParams();
+
   // Fetch user data
   const {
     data: userResponse,
@@ -47,7 +66,7 @@ const ProfilePage = () => {
     error,
   } = useQuery({
     queryKey: ["user", "self"],
-    queryFn: fetchSelf,
+    queryFn: isUserView ? () => fetchUser(id || "") : fetchSelf,
   });
 
   const user = userResponse?.data;
@@ -174,6 +193,148 @@ const ProfilePage = () => {
       : "bg-red-500/10 text-red-600 dark:text-red-400";
   };
 
+  // Hooks and state initialization
+  const { activeBreadcrumbs } = useMenu();
+  const confirm = useAlert();
+
+  // Filtering and pagination state
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("-published_at");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
+  const [publishedAtGte, setPublishedAtGte] = useState("");
+  const [publishedAtLte, setPublishedAtLte] = useState("");
+
+  // API mutations
+  const updateMutation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: TUpdateNewsPayload;
+    }) =>
+      ["supper-admin", "admin", "editor"].includes(user?.role || "")
+        ? updateNews(id, payload)
+        : updateSelfNews(id, payload),
+    onSuccess: (data) => {
+      toast.success(data?.message || "News updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["news_articles"] });
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || "Failed to update news");
+      console.error("Update news error:", error);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) =>
+      ["supper-admin", "admin"].includes(user?.role || "")
+        ? deleteNews(id)
+        : deleteSelfNews(id),
+    onSuccess: (data) => {
+      toast.success(data?.message || "News deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["news_articles"] });
+    },
+    onError: (error: AxiosError<ErrorResponse>) => {
+      toast.error(error.response?.data?.message || "Failed to delete news");
+      console.error("Delete news error:", error);
+    },
+  });
+
+  // API queries
+  const newsQuery = useQuery({
+    queryKey: [
+      "bulkNews",
+      {
+        sort,
+        search,
+        page,
+        limit,
+        category,
+        publishedAtGte,
+        publishedAtLte,
+        status,
+      },
+    ],
+    queryFn: () =>
+      ["supper-admin", "admin", "editor", "author"].includes(user?.role || "")
+        ? fetchBulkNews({
+            page,
+            limit,
+            author: user?._id,
+            ...(category && { category }),
+            sort: sort || "-published_at",
+            ...(search && { search }),
+            ...(publishedAtGte && { published_at_gte: publishedAtGte }),
+            ...(publishedAtLte && { published_at_lte: publishedAtLte }),
+            ...(status && { status }),
+          })
+        : fetchSelfBulkNews({
+            page,
+            limit,
+            ...(category && { category }),
+            sort: sort || "-published_at",
+            ...(search && { search }),
+            ...(publishedAtGte && { published_at_gte: publishedAtGte }),
+            ...(publishedAtLte && { published_at_lte: publishedAtLte }),
+            ...(status && { status: "published" }),
+          }),
+  });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => fetchCategoriesTree({ sort: "sequence" }),
+  });
+
+  // Event handlers
+  const handleToggleFeatured = useCallback(
+    (news: TNews) => {
+      updateMutation.mutate({
+        id: news._id,
+        payload: { is_featured: !news.is_featured },
+      });
+    },
+    [updateMutation],
+  );
+
+  const handleToggleNewsHeadline = useCallback(
+    (news: TNews) => {
+      updateMutation.mutate({
+        id: news._id,
+        payload: { is_news_headline: !news.is_news_headline },
+      });
+    },
+    [updateMutation],
+  );
+
+  const handleToggleNewsBreak = useCallback(
+    (news: TNews) => {
+      updateMutation.mutate({
+        id: news._id,
+        payload: { is_news_break: !news.is_news_break },
+      });
+    },
+    [updateMutation],
+  );
+
+  const handleDelete = useCallback(
+    async (news: TNews) => {
+      const ok = await confirm({
+        title: "Delete news",
+        message: "Are you sure you want to delete this news?",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+      });
+      if (ok) {
+        deleteMutation.mutate(news._id);
+      }
+    },
+    [confirm, deleteMutation],
+  );
+
   if (isLoading) {
     return <Loader />;
   }
@@ -215,26 +376,28 @@ const ProfilePage = () => {
         />
 
         {/* Profile Information Card */}
-        <div className="bg-card rounded-lg border shadow-sm">
-          <div className="border-border border-b p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-foreground text-xl font-semibold">
-                Profile Information
-              </h2>
-              {!isEditing && (
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Edit className="h-4 w-4" />
-                  Edit Profile
-                </Button>
-              )}
-            </div>
-          </div>
+        <Card>
+          {!isUserView && (
+            <Card.Header className="border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-foreground text-xl font-semibold">
+                  Profile Information
+                </h2>
+                {!isEditing && (
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                )}
+              </div>
+            </Card.Header>
+          )}
 
-          <div className="p-6">
-            {!isEditing ? (
+          <Card.Content className="p-6">
+            {!isEditing || !isUserView ? (
               // View Mode
               <div className="space-y-6">
                 {/* Profile Picture and Basic Info */}
@@ -292,36 +455,6 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Additional Info */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="bg-muted rounded-lg p-4">
-                    <div className="text-muted-foreground mb-1 text-sm">
-                      User ID
-                    </div>
-                    <div className="text-foreground font-mono text-sm">
-                      {user._id}
-                    </div>
-                  </div>
-                  {user.password_changed_at && (
-                    <div className="bg-muted rounded-lg p-4">
-                      <div className="text-muted-foreground mb-1 flex items-center gap-1 text-sm">
-                        <Calendar className="h-4 w-4" />
-                        Last Password Change
-                      </div>
-                      <div className="text-foreground text-sm">
-                        {new Date(user.password_changed_at).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          },
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             ) : (
               // Edit Mode
@@ -333,10 +466,8 @@ const ProfilePage = () => {
                       <img
                         src={
                           previewImage ||
-                          user.image ||
-                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            user.name,
-                          )}&size=128`
+                          (user.image && URLS.user + "/" + user.image) ||
+                          ""
                         }
                         alt={user.name}
                         className="border-border h-24 w-24 rounded-full border-4 object-cover"
@@ -423,214 +554,286 @@ const ProfilePage = () => {
                 </div>
               </form>
             )}
-          </div>
-        </div>
+          </Card.Content>
+        </Card>
+
+        <Card>
+          <Tabs value={"overview"}>
+            <Card.Header className="pb-0">
+              <Tabs.List className="justify-start">
+                <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+                {["supper-admin", "admin", "editor", "author"].includes(
+                  user?.role || "",
+                ) && <Tabs.Trigger value="news">News Articles</Tabs.Trigger>}
+              </Tabs.List>
+            </Card.Header>
+            <Card.Content>
+              <Tabs.Content>
+                <Tabs.Item value="overview">
+                  <ProfileOverviewSection
+                    user={user}
+                    meta={newsQuery.data?.meta}
+                  />
+                </Tabs.Item>
+                {["supper-admin", "admin", "editor", "author"].includes(
+                  user?.role || "",
+                ) && (
+                  <Tabs.Item value="news">
+                    <div className="space-y-6">
+                      <ProfileNewsFilterSection
+                        state={{
+                          category,
+                          setCategory,
+                          status,
+                          setStatus,
+                          publishedAtGte,
+                          setPublishedAtGte,
+                          publishedAtLte,
+                          setPublishedAtLte,
+                          categories: categoriesData?.data || [],
+                        }}
+                      />
+                      <hr />
+                      <NewsArticlesDataTableSection
+                        data={newsQuery.data?.data || []}
+                        breadcrumbs={activeBreadcrumbs || []}
+                        isLoading={newsQuery.isLoading}
+                        isError={newsQuery.isError}
+                        onDelete={handleDelete}
+                        onToggleFeatured={handleToggleFeatured}
+                        onToggleNewsHeadline={handleToggleNewsHeadline}
+                        onToggleNewsBreak={handleToggleNewsBreak}
+                        state={{
+                          total: newsQuery.data?.meta?.total || 0,
+                          page,
+                          setPage,
+                          limit,
+                          setLimit,
+                          search,
+                          setSearch,
+                          sort,
+                          setSort,
+                        }}
+                      />
+                    </div>
+                  </Tabs.Item>
+                )}
+              </Tabs.Content>
+            </Card.Content>
+          </Tabs>
+        </Card>
 
         {/* Password Change Card */}
-        <div className="bg-card rounded-lg border shadow-sm">
-          <div className="border-border border-b p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-foreground text-xl font-semibold">
-                  Password & Security
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                  Ensure your account is using a strong password
-                </p>
+        {!isUserView && (
+          <Card>
+            <Card.Header className="border-b">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-foreground text-xl font-semibold">
+                    Password & Security
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
+                    Ensure your account is using a strong password
+                  </p>
+                </div>
+                {!isChangingPassword && (
+                  <Button
+                    onClick={() => setIsChangingPassword(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Change Password
+                  </Button>
+                )}
               </div>
-              {!isChangingPassword && (
-                <Button
-                  onClick={() => setIsChangingPassword(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Lock className="h-4 w-4" />
-                  Change Password
-                </Button>
-              )}
-            </div>
-          </div>
+            </Card.Header>
 
-          <div className="p-6">
-            {!isChangingPassword ? (
-              <div className="space-y-4">
-                <div className="bg-muted rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-foreground font-medium">
-                        Password
+            <Card.Content>
+              {!isChangingPassword ? (
+                <div className="space-y-4">
+                  <div className="bg-muted rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-foreground font-medium">
+                          Password
+                        </div>
+                        <div className="text-muted-foreground text-sm">
+                          ••••••••••••
+                        </div>
                       </div>
                       <div className="text-muted-foreground text-sm">
-                        ••••••••••••
+                        {user.password_changed_at && (
+                          <span>
+                            Changed{" "}
+                            {new Date(
+                              user.password_changed_at,
+                            ).toLocaleDateString()}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <div className="text-muted-foreground text-sm">
-                      {user.password_changed_at && (
-                        <span>
-                          Changed{" "}
-                          {new Date(
-                            user.password_changed_at,
-                          ).toLocaleDateString()}
-                        </span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    We recommend changing your password regularly to keep your
+                    account secure.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handlePasswordSubmit(onPasswordSubmit)}>
+                  <div className="space-y-4">
+                    <div>
+                      <FormControl.Label>Current Password</FormControl.Label>
+                      <div className="relative">
+                        <FormControl
+                          type={showPassword.current ? "text" : "password"}
+                          placeholder="Enter current password"
+                          {...registerPassword("current_password", {
+                            required: "Current password is required",
+                          })}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPassword((prev) => ({
+                              ...prev,
+                              current: !prev.current,
+                            }))
+                          }
+                          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                        >
+                          {showPassword.current ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      {passwordErrors.current_password && (
+                        <FormControl.Error>
+                          {passwordErrors.current_password.message}
+                        </FormControl.Error>
                       )}
                     </div>
-                  </div>
-                </div>
-                <p className="text-muted-foreground text-sm">
-                  We recommend changing your password regularly to keep your
-                  account secure.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handlePasswordSubmit(onPasswordSubmit)}>
-                <div className="space-y-4">
-                  <div>
-                    <FormControl.Label>Current Password</FormControl.Label>
-                    <div className="relative">
-                      <FormControl
-                        type={showPassword.current ? "text" : "password"}
-                        placeholder="Enter current password"
-                        {...registerPassword("current_password", {
-                          required: "Current password is required",
-                        })}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword((prev) => ({
-                            ...prev,
-                            current: !prev.current,
-                          }))
-                        }
-                        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
-                      >
-                        {showPassword.current ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    {passwordErrors.current_password && (
-                      <FormControl.Error>
-                        {passwordErrors.current_password.message}
-                      </FormControl.Error>
-                    )}
-                  </div>
 
-                  <div>
-                    <FormControl.Label>New Password</FormControl.Label>
-                    <div className="relative">
-                      <FormControl
-                        type={showPassword.new ? "text" : "password"}
-                        placeholder="Enter new password"
-                        {...registerPassword("new_password", {
-                          required: "New password is required",
-                          minLength: {
-                            value: 6,
-                            message: "Password must be at least 6 characters",
-                          },
-                        })}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword((prev) => ({
-                            ...prev,
-                            new: !prev.new,
-                          }))
-                        }
-                        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
-                      >
-                        {showPassword.new ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    {passwordErrors.new_password && (
-                      <FormControl.Error>
-                        {passwordErrors.new_password.message}
-                      </FormControl.Error>
-                    )}
-                  </div>
-
-                  <div>
-                    <FormControl.Label>Confirm New Password</FormControl.Label>
-                    <div className="relative">
-                      <FormControl
-                        type={showPassword.confirm ? "text" : "password"}
-                        placeholder="Confirm new password"
-                        {...registerPassword("confirm_password", {
-                          required: "Please confirm your password",
-                          validate: (value) =>
-                            value === watchPassword("new_password") ||
-                            "Passwords do not match",
-                        })}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowPassword((prev) => ({
-                            ...prev,
-                            confirm: !prev.confirm,
-                          }))
-                        }
-                        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
-                      >
-                        {showPassword.confirm ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    {passwordErrors.confirm_password && (
-                      <FormControl.Error>
-                        {passwordErrors.confirm_password.message}
-                      </FormControl.Error>
-                    )}
-                  </div>
-
-                  <div className="bg-muted rounded-lg p-4">
-                    <div className="text-muted-foreground text-sm">
-                      <p className="mb-2 font-medium">Password requirements:</p>
-                      <ul className="space-y-1 text-xs">
-                        <li>• At least 6 characters long</li>
-                        <li>• Must not match your current password</li>
-                        <li>
-                          • Should include a mix of letters, numbers, and
-                          symbols
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Button
-                      type="submit"
-                      disabled={changePasswordMutation.isPending}
-                    >
-                      {changePasswordMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <div>
+                      <FormControl.Label>New Password</FormControl.Label>
+                      <div className="relative">
+                        <FormControl
+                          type={showPassword.new ? "text" : "password"}
+                          placeholder="Enter new password"
+                          {...registerPassword("new_password", {
+                            required: "New password is required",
+                            minLength: {
+                              value: 6,
+                              message: "Password must be at least 6 characters",
+                            },
+                          })}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPassword((prev) => ({
+                              ...prev,
+                              new: !prev.new,
+                            }))
+                          }
+                          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                        >
+                          {showPassword.new ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      {passwordErrors.new_password && (
+                        <FormControl.Error>
+                          {passwordErrors.new_password.message}
+                        </FormControl.Error>
                       )}
-                      <Lock className="mr-2 h-4 w-4" />
-                      Change Password
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={cancelPasswordChange}
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Cancel
-                    </Button>
+                    </div>
+
+                    <div>
+                      <FormControl.Label>
+                        Confirm New Password
+                      </FormControl.Label>
+                      <div className="relative">
+                        <FormControl
+                          type={showPassword.confirm ? "text" : "password"}
+                          placeholder="Confirm new password"
+                          {...registerPassword("confirm_password", {
+                            required: "Please confirm your password",
+                            validate: (value) =>
+                              value === watchPassword("new_password") ||
+                              "Passwords do not match",
+                          })}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPassword((prev) => ({
+                              ...prev,
+                              confirm: !prev.confirm,
+                            }))
+                          }
+                          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                        >
+                          {showPassword.confirm ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                      {passwordErrors.confirm_password && (
+                        <FormControl.Error>
+                          {passwordErrors.confirm_password.message}
+                        </FormControl.Error>
+                      )}
+                    </div>
+
+                    <div className="bg-muted rounded-lg p-4">
+                      <div className="text-muted-foreground text-sm">
+                        <p className="mb-2 font-medium">
+                          Password requirements:
+                        </p>
+                        <ul className="space-y-1 text-xs">
+                          <li>• At least 6 characters long</li>
+                          <li>• Must not match your current password</li>
+                          <li>
+                            • Should include a mix of letters, numbers, and
+                            symbols
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        type="submit"
+                        disabled={changePasswordMutation.isPending}
+                      >
+                        {changePasswordMutation.isPending && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        <Lock className="mr-2 h-4 w-4" />
+                        Change Password
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={cancelPasswordChange}
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
+                </form>
+              )}
+            </Card.Content>
+          </Card>
+        )}
       </div>
     </div>
   );

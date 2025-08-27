@@ -3,30 +3,24 @@ import { Dropdown } from "@/components/ui/Dropdown";
 import { FormControl } from "@/components/ui/FormControl";
 import { cn } from "@/lib/utils";
 import type { TCategory } from "@/types/category.type";
-import type { TUser } from "@/types/user.type";
 import { Calendar, X } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import type { DateRange } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
-type NewsArticlesFilterSectionProps = {
+type ProfileNewsFilterSectionProps = {
   className?: string;
   state: {
     category: string;
     setCategory: (value: string) => void;
-    author: string;
-    setAuthor: (value: string) => void;
     status: string;
     setStatus: (value: string) => void;
-    featured: string;
-    setFeatured: (value: string) => void;
     publishedAtGte: string;
     setPublishedAtGte: (value: string) => void;
     publishedAtLte: string;
     setPublishedAtLte: (value: string) => void;
     categories: TCategory[];
-    users: TUser[];
   };
 };
 
@@ -47,25 +41,20 @@ const renderCategoryOptions = (
   );
 };
 
-const NewsArticlesFilterSection: React.FC<NewsArticlesFilterSectionProps> = ({
+const ProfileNewsFilterSection: React.FC<ProfileNewsFilterSectionProps> = ({
   className,
   state,
 }) => {
   const {
     category,
     setCategory,
-    author,
-    setAuthor,
     status,
     setStatus,
-    featured,
-    setFeatured,
     publishedAtGte,
     setPublishedAtGte,
     publishedAtLte,
     setPublishedAtLte,
     categories,
-    users,
   } = state;
 
   const selectedRange = useMemo<DateRange | undefined>(() => {
@@ -215,20 +204,6 @@ const NewsArticlesFilterSection: React.FC<NewsArticlesFilterSectionProps> = ({
         {categories?.map((cat) => renderCategoryOptions(cat))}
       </FormControl>
 
-      {/* Author Filter */}
-      <FormControl
-        as="select"
-        value={author}
-        onChange={(e) => setAuthor(e.target.value)}
-      >
-        <option value="">All authors</option>
-        {users?.map((user) => (
-          <option key={user._id} value={user._id}>
-            {user.name}
-          </option>
-        ))}
-      </FormControl>
-
       {/* Status Filter */}
       <FormControl
         as="select"
@@ -239,19 +214,8 @@ const NewsArticlesFilterSection: React.FC<NewsArticlesFilterSectionProps> = ({
         <option value="draft">Draft</option>
         <option value="published">Published</option>
       </FormControl>
-
-      {/* Featured Filter */}
-      <FormControl
-        as="select"
-        value={featured}
-        onChange={(e) => setFeatured(e.target.value || "")}
-      >
-        <option value="">All Features</option>
-        <option value="featured">Featured</option>
-        <option value="not-featured">Not Featured</option>
-      </FormControl>
     </div>
   );
 };
 
-export default NewsArticlesFilterSection;
+export default ProfileNewsFilterSection;

@@ -7,7 +7,7 @@ import ImageUpload from "../ImageUpload";
 import TagsInput from "../TagsInput";
 
 const SEOSection = () => {
-  const { register } = useFormContext<NewsFormData>();
+  const { watch, setValue } = useFormContext<NewsFormData>();
 
   return (
     <Card>
@@ -24,7 +24,8 @@ const SEOSection = () => {
               <FormControl
                 id="seo-title"
                 placeholder="SEO Title"
-                {...register("seo.title")}
+                value={watch("seo.title")}
+                onChange={(e) => setValue("seo.title", e.target.value)}
               />
             </div>
 
@@ -37,7 +38,8 @@ const SEOSection = () => {
                 placeholder="SEO Description"
                 as="textarea"
                 id="seo-description"
-                {...register("seo.description")}
+                value={watch("seo.description")}
+                onChange={(e) => setValue("seo.description", e.target.value)}
               />
             </div>
 

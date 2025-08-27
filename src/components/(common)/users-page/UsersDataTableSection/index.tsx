@@ -39,7 +39,7 @@ const UsersDataTableSection: React.FC<UsersDataTableSectionProps> = ({
       isSearchable: true,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <div className="aspect-square h-20 flex-shrink-0 rounded">
+          <div className="aspect-square h-16 flex-shrink-0 overflow-hidden rounded-full">
             {row.image && (
               <img
                 className="size-full object-cover"

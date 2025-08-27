@@ -7,10 +7,9 @@ import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
 import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
 import NewsArticlesPage from "@/pages/(common)/NewsArticlesPage";
 import UsersPage from "@/pages/(common)/UsersPage";
-import MaintenancePage from "@/pages/(partial)/MaintenancePage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { TItem } from "@/types/route-menu.type";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
@@ -59,7 +58,7 @@ export const items: TItem[] = [
         path: ":id",
         element: (
           <AuthWrapper roles={["supper-admin", "admin"]}>
-            <MaintenancePage />
+            <ProfilePage isUserView={true} />
           </AuthWrapper>
         ),
         menuType: "invisible",
@@ -179,7 +178,7 @@ export const items: TItem[] = [
       <AuthWrapper
         roles={["supper-admin", "admin", "author", "editor", "contributor"]}
       >
-        <MaintenancePage />
+        <Navigate to="/maintenance" replace />
       </AuthWrapper>
     ),
   },
@@ -192,7 +191,7 @@ export const items: TItem[] = [
       <AuthWrapper
         roles={["supper-admin", "admin", "author", "editor", "contributor"]}
       >
-        <MaintenancePage />
+        <Navigate to="/maintenance" replace />
       </AuthWrapper>
     ),
   },
@@ -206,17 +205,8 @@ export const items: TItem[] = [
     path: "notifications",
     name: "Notifications",
     element: (
-      <AuthWrapper
-        roles={[
-          "supper-admin",
-          "admin",
-          "author",
-          "editor",
-          "contributor",
-          "user",
-        ]}
-      >
-        <></>
+      <AuthWrapper>
+        <Navigate to="/maintenance" replace />
       </AuthWrapper>
     ),
   },

@@ -22,7 +22,7 @@ const ImageUpload = ({
   multiple = false,
   className,
 }: ImageUploadProps) => {
-  const { setValue, watch } = useFormContext<NewsFormData>();
+  const { watch, setValue } = useFormContext<NewsFormData>();
   const files = watch(name as any);
   const [isDragging, setIsDragging] = useState(false);
 

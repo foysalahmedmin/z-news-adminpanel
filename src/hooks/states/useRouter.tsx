@@ -7,6 +7,7 @@ import RootLayout from "@/layouts/RootLayout";
 import SignInPage from "@/pages/(auth)/SignInPage";
 import SignUpPage from "@/pages/(auth)/SignUpPage";
 import ErrorPage from "@/pages/(partial)/ErrorPage";
+import MaintenancePage from "@/pages/(partial)/MaintenancePage";
 import NotFoundPage from "@/pages/(partial)/NotFoundPage";
 import { useMemo } from "react";
 import { createBrowserRouter } from "react-router";
@@ -53,6 +54,10 @@ const useAppRouter = () => {
           ],
         },
       ],
+    },
+    {
+      path: "maintenance",
+      element: <MaintenancePage />,
     },
     {
       path: "*",

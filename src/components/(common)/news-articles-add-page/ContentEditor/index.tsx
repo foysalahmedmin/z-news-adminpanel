@@ -9,19 +9,23 @@ import { URLS } from "@/config";
 import useSetting from "@/hooks/states/useSetting";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesEditPage";
 import { uploadNewsFile } from "@/services/news.service";
+import { useEffect } from "react";
 
 const ContentEditor = () => {
   const {
+    watch,
     setValue,
     formState: { errors },
   } = useFormContext<NewsFormData>();
   const { setting } = useSetting();
 
+  const contentValue = watch("content");
+
   const blockNoteEditor = useCreateBlockNote({
     initialContent: [
       {
         type: "paragraph",
-        content: "Start writing your article...",
+        content: "",
       },
     ],
     domAttributes: {
@@ -40,6 +44,22 @@ const ContentEditor = () => {
       return data?.filename ? URLS.news.image + "/" + data?.filename : "";
     },
   });
+
+  useEffect(() => {
+    if (contentValue) {
+      blockNoteEditor
+        .blocksToHTMLLossy(blockNoteEditor.document)
+        .then((currentHtml) => {
+          if (currentHtml !== contentValue) {
+            blockNoteEditor
+              .tryParseHTMLToBlocks(contentValue)
+              .then((blocks) => {
+                blockNoteEditor.replaceBlocks(blockNoteEditor.document, blocks);
+              });
+          }
+        });
+    }
+  }, [contentValue, blockNoteEditor]);
 
   return (
     <Card>
@@ -69,5 +89,4 @@ const ContentEditor = () => {
     </Card>
   );
 };
-
 export default ContentEditor;

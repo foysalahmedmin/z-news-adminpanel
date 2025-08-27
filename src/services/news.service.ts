@@ -20,6 +20,13 @@ export async function fetchSelfBulkNews(
   return response.data;
 }
 
+export async function fetchPublicBulkNews(
+  query?: Record<string, any>,
+): Promise<TBulkNewsResponse> {
+  const response = await api.get("/api/news/public", { params: query });
+  return response.data;
+}
+
 export async function fetchBulkNews(
   query?: Record<string, any>,
 ): Promise<TBulkNewsResponse> {

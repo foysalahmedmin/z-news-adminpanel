@@ -59,7 +59,6 @@ export type TCreateNewsPayload = {
   youtube?: string;
   tags?: string[];
   category: string;
-  author: string;
   writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: "draft" | "published";
@@ -90,7 +89,7 @@ export type TUpdateNewsPayload = {
   tags?: string[];
   category?: string;
   writer?: string;
-  layout?: "draft" | "published";
+  layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_featured?: boolean;
   seo?: {

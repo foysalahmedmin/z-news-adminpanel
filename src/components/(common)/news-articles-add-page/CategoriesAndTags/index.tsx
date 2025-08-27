@@ -32,6 +32,7 @@ const CategoriesAndTags = () => {
           <FormControl
             as="select"
             id="category"
+            value={watch("category")}
             onChange={(e) => setValue("category", e.target.value)}
             className={cn(errors.category && "border-destructive")}
           >

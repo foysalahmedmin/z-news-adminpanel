@@ -1,5 +1,5 @@
 import NewsArticlesDataTableSection from "@/components/(common)/news-articles-page/NewsArticlesDataTableSection";
-import { NewsArticlesFilterSection } from "@/components/(common)/news-articles-page/NewsArticlesFilterSection";
+import NewsArticlesFilterSection from "@/components/(common)/news-articles-page/NewsArticlesFilterSection";
 import NewsArticlesStatisticsSection from "@/components/(common)/news-articles-page/NewsArticlesStatisticsSection";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +12,7 @@ import {
   deleteNews,
   deleteSelfNews,
   fetchBulkNews,
+  fetchPublicBulkNews,
   updateNews,
   updateSelfNews,
 } from "@/services/news.service";
@@ -101,20 +102,35 @@ const NewsArticlesPage = () => {
       },
     ],
     queryFn: () =>
-      fetchBulkNews({
-        page,
-        limit,
-        ...(category && { category }),
-        sort: sort || "-published_at",
-        ...(search && { search }),
-        ...(publishedAtGte && { published_at_gte: publishedAtGte }),
-        ...(publishedAtLte && { published_at_lte: publishedAtLte }),
-        ...(author && { author }),
-        ...(status && { status }),
-        ...(featured && {
-          is_featured: featured === "featured" ? true : false,
-        }),
-      }),
+      ["supper-admin", "admin", "editor"].includes(info?.role || "")
+        ? fetchBulkNews({
+            page,
+            limit,
+            ...(category && { category }),
+            sort: sort || "-published_at",
+            ...(search && { search }),
+            ...(publishedAtGte && { published_at_gte: publishedAtGte }),
+            ...(publishedAtLte && { published_at_lte: publishedAtLte }),
+            ...(author && { author }),
+            ...(status && { status }),
+            ...(featured && {
+              is_featured: featured === "featured" ? true : false,
+            }),
+          })
+        : fetchPublicBulkNews({
+            page,
+            limit,
+            ...(category && { category }),
+            sort: sort || "-published_at",
+            ...(search && { search }),
+            ...(publishedAtGte && { published_at_gte: publishedAtGte }),
+            ...(publishedAtLte && { published_at_lte: publishedAtLte }),
+            ...(author && { author }),
+            ...(status && { status: "published" }),
+            ...(featured && {
+              is_featured: featured === "featured" ? true : false,
+            }),
+          }),
   });
 
   const { data: categoriesData } = useQuery({
