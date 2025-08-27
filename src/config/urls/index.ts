@@ -5,7 +5,7 @@ export const URLS = {
   api: ENV.api_url,
   user: `${ENV.api_url}/uploads/users`,
   news: {
-    thumbnail: `${ENV.api_url}/uploads/news/thumbnails`,
+    thumbnail: `${ENV.api_url}/uploads/news/images`,
     image: `${ENV.api_url}/uploads/news/images`,
     video: `${ENV.api_url}/uploads/news/videos`,
     seo: {

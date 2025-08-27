@@ -122,6 +122,7 @@ export async function updateNews(
   id: string,
   payload: TUpdateNewsPayload,
 ): Promise<TNewsResponse> {
+  console.log(payload);
   const response = await api.patch(
     `/api/news/${id}`,
     formDataConverter.convert(payload),
