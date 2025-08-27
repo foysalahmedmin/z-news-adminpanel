@@ -15,15 +15,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        format: "es",
-      },
-    },
-  },
-  define: {
-    global: "globalThis",
-  },
-  base: "./",
 });
