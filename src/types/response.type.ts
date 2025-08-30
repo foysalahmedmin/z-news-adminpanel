@@ -8,6 +8,7 @@ export type Response<T = unknown> = {
     page?: number;
     limit?: number;
     statistics?: Record<string, number>;
+    [key: string]: unknown;
   };
 };
 

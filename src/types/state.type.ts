@@ -1,3 +1,4 @@
+import type { TNotificationRecipient } from "./notification-recipient";
 import type { TBreadcrumbs, TProcessedMenu } from "./route-menu.type";
 import type { TUser } from "./user.type";
 
@@ -23,4 +24,11 @@ export type TMenuState = {
   activeIndexes?: number[];
   openIndexes?: number[];
   activeBreadcrumbs?: TBreadcrumbs[];
+};
+
+export type NotificationsState = {
+  notifications: TNotificationRecipient[];
+  unread: number;
+  total: number;
+  isConnected: boolean;
 };
