@@ -37,6 +37,7 @@ const ErrorPage: React.FC = () => {
     <main className="bg-background flex min-h-screen items-center justify-center px-4 text-center">
       <div className="mx-auto max-w-xl space-y-6 py-6 text-center">
         <h1 className="text-accent text-9xl font-extrabold">{statusCode}</h1>
+
         <div>
           <h2 className="text-muted-foreground text-xl font-semibold uppercase md:text-2xl">
             {title}
