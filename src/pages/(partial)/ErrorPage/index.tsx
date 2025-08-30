@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { ENV } from "@/config";
 import React from "react";
 import { isRouteErrorResponse, Link, useRouteError } from "react-router";
 
@@ -33,38 +34,42 @@ const ErrorPage: React.FC = () => {
   const description = errorDescriptions[statusCode] || errorMessage;
 
   return (
-    <main className="bg-background flex h-screen flex-col items-center justify-center px-4 text-center">
-      <h1 className="text-accent text-9xl font-extrabold">{statusCode}</h1>
-      <h2 className="text-muted-foreground mt-4 text-2xl font-semibold">
-        {title}
-      </h2>
-      <p className="text-muted-foreground mt-2 max-w-md">{description}</p>
-
-      <div className="mt-6 flex gap-4">
-        <Button asChild variant="default">
-          <Link to="/">Go to Dashboard</Link>
-        </Button>
-        <Button
-          asChild
-          variant="outline"
-          onClick={() => window.location.reload()}
-        >
-          <span>Try Again</span>
-        </Button>
-      </div>
-
-      {process.env.NODE_ENV === "development" && (
-        <div className="bg-muted mt-8 max-w-xl rounded-md p-4 text-left">
-          <h3 className="text-sm font-semibold">
-            Error Details (Development Only):
-          </h3>
-          <pre className="mt-2 overflow-auto text-xs">
-            {error instanceof Error
-              ? error.stack
-              : JSON.stringify(error, null, 2)}
-          </pre>
+    <main className="bg-background flex min-h-screen items-center justify-center px-4 text-center">
+      <div className="mx-auto max-w-xl space-y-6 py-6 text-center">
+        <h1 className="text-accent text-9xl font-extrabold">{statusCode}</h1>
+        <div>
+          <h2 className="text-muted-foreground text-xl font-semibold uppercase md:text-2xl">
+            {title}
+          </h2>
+          <p className="text-muted-foreground">{description}</p>
         </div>
-      )}
+
+        <div className="flex gap-4">
+          <Button asChild variant="default">
+            <Link to="/">Go to Dashboard</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            onClick={() => window.location.reload()}
+          >
+            <span>Try Again</span>
+          </Button>
+        </div>
+
+        {ENV.environment === "development" && (
+          <div className="bg-muted mx-4 space-y-2 rounded p-4">
+            <h3 className="text-sm font-semibold">
+              Error Details (Development Only):
+            </h3>
+            <pre className="overflow-auto text-xs">
+              {error instanceof Error
+                ? error.stack
+                : JSON.stringify(error, null, 2)}
+            </pre>
+          </div>
+        )}
+      </div>
     </main>
   );
 };
