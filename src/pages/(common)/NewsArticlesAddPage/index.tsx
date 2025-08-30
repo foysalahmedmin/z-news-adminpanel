@@ -5,11 +5,11 @@ import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import ArticleDetails from "@/components/(common)/news-articles-add-page/ArticleDetails";
-import CategoriesAndTags from "@/components/(common)/news-articles-add-page/CategoriesAndTags";
-import ContentEditor from "@/components/(common)/news-articles-add-page/ContentEditor";
-import PublishSettings from "@/components/(common)/news-articles-add-page/PublishSettings";
-import SEOSection from "@/components/(common)/news-articles-add-page/SEOSection";
+import ArticleDetails from "@/components/(common)/news-articles-mutation-page/ArticleDetails";
+import CategoriesAndTags from "@/components/(common)/news-articles-mutation-page/CategoriesAndTags";
+import ContentEditor from "@/components/(common)/news-articles-mutation-page/ContentEditor";
+import PublishSettings from "@/components/(common)/news-articles-mutation-page/PublishSettings";
+import SEOSection from "@/components/(common)/news-articles-mutation-page/SEOSection";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
