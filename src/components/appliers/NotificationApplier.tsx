@@ -23,7 +23,7 @@ const NotificationApplier = () => {
 
   useEffect(() => {
     if (data?.data) {
-      setUnread(Number(data?.meta?.unread || 0));
+      setUnread(Number(data?.meta?.statistics?.unread || 0));
       setTotal(Number(data?.meta?.total || 0));
     }
   }, [data]);
