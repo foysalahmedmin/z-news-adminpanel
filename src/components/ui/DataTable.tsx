@@ -7,14 +7,6 @@ import { FormControl } from "./FormControl";
 import { Pagination } from "./Pagination";
 import { Table } from "./Table";
 
-// type DotNestedKeys<T> = T extends object
-//   ? {
-//       [K in keyof T & string]: T[K] extends object
-//         ? `${K}` | `${K}.${DotNestedKeys<T[K]>}`
-//         : `${K}`;
-//     }[keyof T & string]
-//   : "";
-
 // Types
 export type TColumn<T, K extends keyof T = keyof T> = {
   name: string;
@@ -61,7 +53,7 @@ export type TConfig = {
 export type TDataTableProps<T> = {
   title?: string;
   slot?: React.ReactNode | string | number | null | undefined;
-  status?: string;
+  status?: "loading" | "error" | "success" | string;
   columns: TColumn<T>[];
   data: T[];
   config?: TConfig;
@@ -77,6 +69,11 @@ type CellContentProps<T, K extends keyof T = keyof T> = {
     row: T;
     cell: T[K];
   }) => React.ReactNode | string | number | null | undefined;
+};
+
+type SkeletonTableRowsProps = {
+  rows: number;
+  cells: number;
 };
 
 // Columns Hook - Logic corrected!
@@ -227,6 +224,22 @@ const getSortIcon = (field: string, sort?: string) => {
   return <ChevronsUpDown className="h-4 w-4" />;
 };
 
+const SkeletonTableRows = ({ rows, cells }: SkeletonTableRowsProps) => {
+  const skeletonRows = useMemo(() => {
+    return Array.from({ length: rows }, (_, rowIndex) => (
+      <Table.Row key={`skeleton-${rowIndex}`}>
+        {Array.from({ length: cells || 1 }, (_, cellIndex) => (
+          <Table.Cell key={`skeleton-cell-${rowIndex}-${cellIndex}`}>
+            <div className="bg-muted h-4 w-full animate-pulse rounded" />
+          </Table.Cell>
+        ))}
+      </Table.Row>
+    ));
+  }, [rows, cells]);
+
+  return <>{skeletonRows}</>;
+};
+
 // Cell Content Component
 export const CellContent = <T extends Record<string, unknown>>({
   index,
@@ -280,6 +293,7 @@ const DataTable = <T extends Record<string, unknown>>({
   data,
   config,
   state,
+  status,
 }: TDataTableProps<T>) => {
   const {
     isSearchProcessed = false,
@@ -463,11 +477,13 @@ const DataTable = <T extends Record<string, unknown>>({
                       className="flex items-center gap-2"
                       onClick={() => handleSortClick(head.field as string)}
                       type="button"
+                      disabled={status === "loading"}
                     >
                       <div>
                         {head.head ? head.head({ head: head }) : head.name}
                       </div>
-                      {getSortIcon(head.field as string, currentSort)}
+                      {status !== "loading" &&
+                        getSortIcon(head.field as string, currentSort)}
                     </button>
                   ) : (
                     <>{head.head ? head.head({ head: head }) : head.name}</>
@@ -477,7 +493,32 @@ const DataTable = <T extends Record<string, unknown>>({
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {paginatedData.length === 0 ? (
+            {status === "loading" ? (
+              // Loading skeleton
+              <SkeletonTableRows
+                rows={currentLimit}
+                cells={processedColumns?.length || 1}
+              />
+            ) : status === "error" ? (
+              // Error state
+              <Table.Row>
+                <Table.Cell
+                  colSpan={processedColumns.length}
+                  className="text-destructive py-8 text-center"
+                >
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <span>Failed to load data</span>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="text-primary hover:underline"
+                    >
+                      Try again
+                    </button>
+                  </div>
+                </Table.Cell>
+              </Table.Row>
+            ) : paginatedData.length === 0 ? (
+              // Empty state
               <Table.Row>
                 <Table.Cell
                   colSpan={processedColumns.length}
@@ -487,6 +528,7 @@ const DataTable = <T extends Record<string, unknown>>({
                 </Table.Cell>
               </Table.Row>
             ) : (
+              // Normal data
               paginatedData.map((row, rowIndex) => (
                 <Table.Row key={`row-${rowIndex}`}>
                   {processedColumns.map((head, cellIndex) => (
