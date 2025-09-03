@@ -17,7 +17,7 @@ export type TColumn<T, K extends keyof T = keyof T> = {
     head: TColumn<T, K>;
   }) => React.ReactNode | string | number | null | undefined;
   cell?: (info: {
-    cell: T[K]; // 👈 Now this matches the exact field type
+    cell: T[K];
     row: T;
     index: number;
   }) => React.ReactNode | string | number | null | undefined;
