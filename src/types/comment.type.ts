@@ -6,16 +6,25 @@ export type TCommentStatus = "pending" | "approved" | "rejected";
 
 export type TComment = {
   _id: string;
-  news: string;
-  comment?: string;
+  news: {
+    _id: string;
+    title: string;
+  };
+  // user?: {
+  //   _id: string;
+  //   name: string;
+  //   email: string;
+  //   image?: string;
+  // };
   name: string;
   email: string;
   content: string;
-  status: TCommentStatus;
-  createdAt: string;
-  updatedAt: string;
-  deleted?: boolean;
-  deletedAt?: string;
+  status?: TCommentStatus;
+  is_edited?: boolean;
+  edited_at?: Date;
+  is_deleted?: boolean;
+  created_at: string;
+  updated_at?: string;
 };
 
 export type TCreateCommentPayload = {

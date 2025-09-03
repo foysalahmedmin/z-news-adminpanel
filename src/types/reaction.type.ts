@@ -5,12 +5,20 @@ export type TReactionStatus = "pending" | "approved" | "rejected";
 
 export type TReaction = {
   _id: string;
-  news: string;
-  user: string;
+  news: {
+    _id: string;
+    title: string;
+  };
+  // user?: {
+  //   _id: string;
+  //   name: string;
+  //   email: string;
+  //   image?: string;
+  // };
   type: TReactionType;
-  status: TReactionStatus;
-  createdAt: string;
-  updatedAt: string;
+  status?: TReactionStatus;
+  created_at: string;
+  updated_at?: string;
 };
 
 export type TCreateReactionPayload = {
