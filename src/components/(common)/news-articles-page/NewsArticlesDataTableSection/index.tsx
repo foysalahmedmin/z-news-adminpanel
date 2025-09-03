@@ -165,18 +165,41 @@ const NewsArticlesDataTableSection: React.FC<
       field: "_id",
       cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
-          <Button
-            asChild={true}
-            className="[--accent:green]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
+          <Link
+            to={
+              info?.role !== "admin" || row.author?._id !== info?._id
+                ? "#"
+                : `/news-articles/${row._id}`
+            }
+            state={{
+              category: row,
+              breadcrumbs: [
+                ...(breadcrumbs || []),
+                { name: row.title, path: `/news-articles/${row._id}` },
+              ],
+            }}
           >
+            <Button
+              asChild={true}
+              className={cn("[--accent:green]", {
+                disabled:
+                  info?.role !== "admin" || row.author?._id !== info?._id,
+              })}
+              size={"sm"}
+              variant="outline"
+              shape={"icon"}
+            >
+              <Eye className="flex size-4 items-center justify-center" />
+            </Button>
+          </Link>
+
+          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
+            row.author?._id === info?._id) && (
             <Link
               to={
                 info?.role !== "admin" || row.author?._id !== info?._id
                   ? "#"
-                  : `/news-articles/${row._id}`
+                  : `/news-articles/edit/${row._id}`
               }
               state={{
                 category: row,
@@ -186,36 +209,19 @@ const NewsArticlesDataTableSection: React.FC<
                 ],
               }}
             >
-              <Eye className="size-4" />
-            </Link>
-          </Button>
-
-          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
-            row.author?._id === info?._id) && (
-            <Button
-              disabled={info?.role !== "admin" || row.author?._id !== info?._id}
-              asChild={true}
-              size={"sm"}
-              variant="outline"
-              shape={"icon"}
-            >
-              <Link
-                to={
-                  info?.role !== "admin" || row.author?._id !== info?._id
-                    ? "#"
-                    : `/news-articles/edit/${row._id}`
-                }
-                state={{
-                  category: row,
-                  breadcrumbs: [
-                    ...(breadcrumbs || []),
-                    { name: row.title, path: `/news-articles/${row._id}` },
-                  ],
-                }}
+              <Button
+                className={cn("", {
+                  disabled:
+                    info?.role !== "admin" || row.author?._id !== info?._id,
+                })}
+                asChild={true}
+                size={"sm"}
+                variant="outline"
+                shape={"icon"}
               >
                 <Edit className="size-4" />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           )}
 
           {(["supper-admin", "admin"].includes(info?.role || "") ||

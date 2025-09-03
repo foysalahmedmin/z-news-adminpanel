@@ -17,7 +17,7 @@ type BaseProps<T extends ElementType = SupportedElements> = {
 } & ComponentProps<T>;
 
 const buttonVariants = cva(
-  "button animate-pop relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-none border border-transparent text-base leading-tight whitespace-nowrap transition-all duration-300 ease-in-out active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "button animate-pop relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-none border border-transparent text-base leading-tight whitespace-nowrap transition-all duration-300 ease-in-out active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.disabled]:pointer-events-none [&.disabled]:cursor-not-allowed [&.disabled]:opacity-50",
   {
     variants: {
       variant: {

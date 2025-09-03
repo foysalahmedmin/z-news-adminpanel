@@ -430,6 +430,7 @@ const DataTable = <T extends Record<string, unknown>>({
                       <div className="flex items-center gap-2">
                         <input
                           className="accent-accent size-4 cursor-pointer"
+                          placeholder="column"
                           type="checkbox"
                           checked={selected?.includes(column?.name.toString())}
                           onChange={() => {}} // Controlled by onClick above

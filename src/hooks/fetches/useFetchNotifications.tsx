@@ -1,6 +1,6 @@
 import {
   fetchNotificationRecipientsBySelf,
-  updateNotificationRecipientBySelf,
+  readAllNotificationRecipientBySelf,
 } from "@/services/notification-recipient.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -14,7 +14,7 @@ export const useMarkAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (_id: string) =>
-      updateNotificationRecipientBySelf(_id, { is_read: true }),
+      readAllNotificationRecipientBySelf(_id, { is_read: true }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications-count"] });

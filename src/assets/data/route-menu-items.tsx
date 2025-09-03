@@ -1,15 +1,18 @@
 import AuthWrapper from "@/components/wrappers/AuthWrapper";
 import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
 import CategoriesPage from "@/pages/(common)/CategoriesPage";
+import CommentsPage from "@/pages/(common)/CommentsPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import NewsArticlesAddPage from "@/pages/(common)/NewsArticlesAddPage";
 import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
 import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
 import NewsArticlesPage from "@/pages/(common)/NewsArticlesPage";
+import NotificationsPage from "@/pages/(common)/NotificationsPage";
+import ReactionsPage from "@/pages/(common)/ReactionsPage";
 import UsersPage from "@/pages/(common)/UsersPage";
 import ProfilePage from "@/pages/(user)/ProfilePage";
 import type { TItem } from "@/types/route-menu.type";
-import { Navigate, Outlet } from "react-router";
+import { Outlet } from "react-router";
 
 export const items: TItem[] = [
   {
@@ -178,7 +181,7 @@ export const items: TItem[] = [
       <AuthWrapper
         roles={["supper-admin", "admin", "author", "editor", "contributor"]}
       >
-        <Navigate to="/maintenance" replace />
+        <CommentsPage />
       </AuthWrapper>
     ),
   },
@@ -191,7 +194,7 @@ export const items: TItem[] = [
       <AuthWrapper
         roles={["supper-admin", "admin", "author", "editor", "contributor"]}
       >
-        <Navigate to="/maintenance" replace />
+        <ReactionsPage />
       </AuthWrapper>
     ),
   },
@@ -206,7 +209,7 @@ export const items: TItem[] = [
     name: "Notifications",
     element: (
       <AuthWrapper>
-        <Navigate to="/maintenance" replace />
+        <NotificationsPage />
       </AuthWrapper>
     ),
   },

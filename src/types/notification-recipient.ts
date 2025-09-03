@@ -28,3 +28,6 @@ export type TNotificationRecipientResponse = Response<TNotificationRecipient>;
 export type TNotificationRecipientsResponse = Response<
   TNotificationRecipient[]
 >;
+export type TNotificationRecipientReadAllResponse = Response<{
+  count: number;
+}>;

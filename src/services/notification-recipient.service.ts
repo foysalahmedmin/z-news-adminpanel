@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import type {
+  TNotificationRecipientReadAllResponse,
   TNotificationRecipientResponse,
   TNotificationRecipientsResponse,
 } from "@/types/notification-recipient";
@@ -27,7 +28,7 @@ export async function fetchNotificationRecipientsBySelf(query?: {
 export async function fetchNotificationRecipientBySelf(
   _id: string,
 ): Promise<TNotificationRecipientResponse> {
-  const url = `/api/notification-recipient/one/${_id}/self`;
+  const url = `/api/notification-recipient/${_id}/self`;
   const response = await api.get(url);
 
   return response.data;
@@ -35,10 +36,24 @@ export async function fetchNotificationRecipientBySelf(
 
 export async function updateNotificationRecipientBySelf(
   _id: string,
-  payload: { is_read: boolean },
+  payload: { is_read?: boolean },
 ): Promise<TNotificationRecipientResponse> {
-  const url = `/api/notification-recipient/one/${_id}/self`;
+  const url = `/api/notification-recipient/${_id}/self`;
   const response = await api.patch(url, payload);
 
+  return response.data;
+}
+
+export async function readAllNotificationRecipientBySelf(): Promise<TNotificationRecipientReadAllResponse> {
+  const url = `/api/notification-recipient/read-all/self`;
+  const response = await api.patch(url);
+
+  return response.data;
+}
+
+export async function deleteNotificationRecipientBySelf(
+  id: string,
+): Promise<TNotificationRecipientResponse> {
+  const response = await api.delete(`/api/notification-recipient/${id}/self`);
   return response.data;
 }

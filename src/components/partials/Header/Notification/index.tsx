@@ -11,12 +11,12 @@ import { Link } from "react-router";
 
 const Notification: React.FC = () => {
   const { setting } = useSetting();
-  const { unread } = useNotification();
+  const { unread, notifications } = useNotification();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const { data } = useQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications", notifications],
     queryFn: () => fetchNotificationRecipientsBySelf({ page: 1, limit: 12 }),
   });
 
@@ -43,7 +43,7 @@ const Notification: React.FC = () => {
             <div className="bg-muted text-muted-foreground mb-4 flex flex-wrap items-center gap-2 rounded p-4 text-start text-sm"></div>
 
             <div className="space-y-4">
-              {data?.data?.map((item) => {
+              {[...(data?.data || [])]?.map((item) => {
                 const timeAgo = formatDistanceToNow(new Date(item.created_at), {
                   addSuffix: true,
                 });
