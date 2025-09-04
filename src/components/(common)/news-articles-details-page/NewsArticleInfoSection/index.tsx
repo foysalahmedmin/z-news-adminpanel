@@ -1,8 +1,9 @@
-import { URLS } from "@/config";
+import { ENV, URLS } from "@/config";
 import type { TNews, TStatus } from "@/types/news.type";
 import {
   Calendar,
   Crown,
+  Earth,
   Edit2,
   Eye,
   EyeOff,
@@ -12,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import React from "react";
+import { Link } from "react-router";
 
 const getStatusColor = (status?: TStatus) => {
   switch (status) {
@@ -47,7 +49,7 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
   return (
     <div className="flex items-start space-x-4">
       {/* Thumbnail */}
-      <div className="flex-shrink-0">
+      <Link to={ENV.app_url + "/news/" + news?.slug} className="flex-shrink-0">
         <img
           src={
             news?.thumbnail
@@ -55,15 +57,20 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
               : "/images/thumbnail.png"
           }
           alt={news?.title}
-          className="size-24 rounded-md object-cover"
+          className="size-32 rounded-md object-cover"
         />
-      </div>
+      </Link>
 
       {/* Info */}
-      <div className="min-w-0 flex-1 space-y-2">
+      <div className="min-w-0 flex-1 space-y-2 space-x-2">
         {/* Title + Badges */}
         <div className="flex items-center space-x-2">
-          <h2 className="text-2xl font-bold text-gray-900">{news?.title}</h2>
+          <Link
+            to={ENV.app_url + "/news/" + news?.slug}
+            className="text-foreground text-2xl font-bold hover:underline"
+          >
+            {news?.title}
+          </Link>
           {news?.is_featured && (
             <div className="flex items-center gap-1 rounded-full bg-yellow-500/15 px-2 py-0.5 text-xs font-medium text-yellow-600">
               <Star className="size-4 fill-current" />
@@ -126,6 +133,13 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
           {getStatusIcon(news?.status)}
           <span className="ml-1 capitalize">{news?.status || "unknown"}</span>
         </div>
+        <Link
+          to={ENV.app_url + "/news/" + news?.slug}
+          className={`inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800`}
+        >
+          <Earth className="h-4 w-4" />
+          <span className="ml-1 capitalize">Preview</span>
+        </Link>
       </div>
     </div>
   );
