@@ -136,7 +136,7 @@ const NewsArticlesUpdatePage = () => {
         : updateSelfNews(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["news", id] });
-      navigate("/news-articles");
+      navigate(`/news-articles/${id}`);
     },
     onError: (error) => {
       console.error("Error updating news:", error);
