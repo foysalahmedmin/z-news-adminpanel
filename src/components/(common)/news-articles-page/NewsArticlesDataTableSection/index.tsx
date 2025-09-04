@@ -167,7 +167,7 @@ const NewsArticlesDataTableSection: React.FC<
         <div className="flex w-full items-center justify-center gap-2">
           <Link
             to={
-              info?.role !== "admin" || row.author?._id !== info?._id
+              info?.role !== "admin" && row.author?._id !== info?._id
                 ? "#"
                 : `/news-articles/${row._id}`
             }
@@ -183,7 +183,7 @@ const NewsArticlesDataTableSection: React.FC<
               asChild={true}
               className={cn("[--accent:green]", {
                 disabled:
-                  info?.role !== "admin" || row.author?._id !== info?._id,
+                  info?.role !== "admin" && row.author?._id !== info?._id,
               })}
               size={"sm"}
               variant="outline"
@@ -197,7 +197,7 @@ const NewsArticlesDataTableSection: React.FC<
             row.author?._id === info?._id) && (
             <Link
               to={
-                info?.role !== "admin" || row.author?._id !== info?._id
+                info?.role !== "admin" && row.author?._id !== info?._id
                   ? "#"
                   : `/news-articles/edit/${row._id}`
               }
@@ -212,7 +212,7 @@ const NewsArticlesDataTableSection: React.FC<
               <Button
                 className={cn("", {
                   disabled:
-                    info?.role !== "admin" || row.author?._id !== info?._id,
+                    info?.role !== "admin" && row.author?._id !== info?._id,
                 })}
                 asChild={true}
                 size={"sm"}
@@ -227,7 +227,7 @@ const NewsArticlesDataTableSection: React.FC<
           {(["supper-admin", "admin"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Button
-              disabled={info?.role !== "admin" || row.author?._id !== info?._id}
+              disabled={info?.role !== "admin" && row.author?._id !== info?._id}
               onClick={() => onDelete(row)}
               className="[--accent:red]"
               size={"sm"}

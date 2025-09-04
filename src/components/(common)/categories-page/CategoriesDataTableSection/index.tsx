@@ -86,26 +86,26 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
       field: "_id",
       cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
-          <Button
-            asChild={true}
-            className="[--accent:green]"
-            size={"sm"}
-            variant="outline"
-            shape={"icon"}
+          <Link
+            to={`/categories/${row._id}`}
+            state={{
+              category: row,
+              breadcrumbs: [
+                ...(breadcrumbs || []),
+                { name: row.name, path: `/categories/${row._id}` },
+              ],
+            }}
           >
-            <Link
-              to={`/categories/${row._id}`}
-              state={{
-                category: row,
-                breadcrumbs: [
-                  ...(breadcrumbs || []),
-                  { name: row.name, path: `/categories/${row._id}` },
-                ],
-              }}
+            <Button
+              asChild={true}
+              className="[--accent:green]"
+              size={"sm"}
+              variant="outline"
+              shape={"icon"}
             >
               <Eye className="size-4" />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <Button
             onClick={() => onEdit(row)}
             size={"sm"}

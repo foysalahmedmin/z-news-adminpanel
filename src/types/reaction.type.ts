@@ -7,7 +7,9 @@ export type TReaction = {
   _id: string;
   news: {
     _id: string;
+    slug: string;
     title: string;
+    thumbnail?: string;
   };
   // user?: {
   //   _id: string;

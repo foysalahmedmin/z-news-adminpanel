@@ -87,7 +87,7 @@ const NewsArticlesPage = () => {
   // API queries
   const newsQuery = useQuery({
     queryKey: [
-      "bulkNews",
+      "news_articles",
       {
         sort,
         search,
@@ -133,12 +133,12 @@ const NewsArticlesPage = () => {
           }),
   });
 
-  const { data: categoriesData } = useQuery({
+  const { data: categoriesResponse } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => fetchCategoriesTree({ sort: "sequence" }),
+    queryFn: () => fetchCategoriesTree({ sort: "sequence", limit: 25 }),
   });
 
-  const { data: usersData } = useQuery({
+  const { data: usersResponse } = useQuery({
     queryKey: ["users"],
     queryFn: () => fetchWritersUsers(),
   });
@@ -226,8 +226,8 @@ const NewsArticlesPage = () => {
               setPublishedAtGte,
               publishedAtLte,
               setPublishedAtLte,
-              categories: categoriesData?.data || [],
-              users: usersData?.data || [],
+              categories: categoriesResponse?.data || [],
+              users: usersResponse?.data || [],
             }}
           />
         </Card.Content>
