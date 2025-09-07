@@ -76,6 +76,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
     reset: resetProfile,
+    setValue,
     formState: { errors: profileErrors },
   } = useForm({
     defaultValues: {
@@ -134,11 +135,14 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
       const reader = new FileReader();
       reader.onload = () => setPreviewImage(reader.result as string);
       reader.readAsDataURL(file);
+
+      // important: update form value
+      setValue("image", file);
     }
   };
 
   const onProfileSubmit = (data: {
-    image?: File | null;
+    image?: File | string | null;
     name: string;
     email: string;
   }) => {
@@ -247,7 +251,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
   // API queries
   const newsQuery = useQuery({
     queryKey: [
-      "bulkNews",
+      "news_articles",
       {
         sort,
         search,
@@ -397,7 +401,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
           )}
 
           <Card.Content className="p-6">
-            {!isEditing || !isUserView ? (
+            {!isEditing && !isUserView ? (
               // View Mode
               <div className="space-y-6">
                 {/* Profile Picture and Basic Info */}

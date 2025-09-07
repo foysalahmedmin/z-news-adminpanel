@@ -31,11 +31,15 @@ export async function fetchUser(id: string): Promise<TUserResponse> {
 
 // PATCH Self
 export async function updateSelf(
-  payload: Partial<{ image?: File | null; name: string; email: string }>,
+  payload: Partial<{
+    image?: File | string | null;
+    name: string;
+    email: string;
+  }>,
 ): Promise<TUserResponse> {
   const formData = new FormData();
   if (payload.name) formData.append("name", payload.name);
-  if (payload.email) formData.append("name", payload.email);
+  if (payload.email) formData.append("email", payload.email);
   if (payload.image) formData.append("image", payload.image);
   const response = await api.patch("/api/user/self", formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -59,6 +63,7 @@ export async function updateUsers(payload: {
 export async function updateUser(
   id: string,
   payload: {
+    image?: File | string | null;
     name?: string;
     email?: string;
     status?: "in-progress" | "blocked";
@@ -66,6 +71,15 @@ export async function updateUser(
     is_verified?: boolean;
   },
 ): Promise<TUserResponse> {
+  const formData = new FormData();
+  if (payload.name) formData.append("name", payload.name);
+  if (payload.email) formData.append("email", payload.email);
+  if (payload.image) formData.append("image", payload.image);
+  if (payload.status) formData.append("status", payload.status);
+  if (payload.role) formData.append("role", payload.role);
+  if (typeof payload.is_verified === "boolean")
+    formData.append("is_verified", payload.is_verified.toString());
+
   const response = await api.patch(`/api/user/${id}`, payload);
   return response.data as TUserResponse;
 }
