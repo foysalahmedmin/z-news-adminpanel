@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/Button";
 import type { TColumn, TState } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import { Switch } from "@/components/ui/Switch";
-import { URLS } from "@/config";
+import { ENV, URLS } from "@/config";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import type { TNews, TStatus } from "@/types/news.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
-import { Edit, Eye, Tag, Trash, User } from "lucide-react";
+import { Earth, Edit, Eye, Tag, Trash, User } from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
 
@@ -165,34 +165,51 @@ const NewsArticlesDataTableSection: React.FC<
       field: "_id",
       cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
-          <Link
-            to={
-              info?.role !== "admin" && row.author?._id !== info?._id
-                ? "#"
-                : `/news-articles/${row._id}`
-            }
-            state={{
-              category: row,
-              breadcrumbs: [
-                ...(breadcrumbs || []),
-                { name: row.title, path: `/news-articles/${row._id}` },
-              ],
-            }}
-          >
-            <Button
-              asChild={true}
-              className={cn("[--accent:green]", {
-                disabled:
-                  info?.role !== "admin" && row.author?._id !== info?._id,
-              })}
-              size={"sm"}
-              variant="outline"
-              shape={"icon"}
+          {["published"].includes(row?.status || "") && (
+            <Link to={`${ENV.app_url}/news/${row._id}`} target="_blank">
+              <Button
+                asChild={true}
+                className={cn("[--accent:blue]", {
+                  disabled: row?.status !== "published",
+                })}
+                size={"sm"}
+                variant="outline"
+                shape={"icon"}
+              >
+                <Earth className="flex size-4 items-center justify-center" />
+              </Button>
+            </Link>
+          )}
+          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
+            row.author?._id === info?._id) && (
+            <Link
+              to={
+                info?.role !== "admin" && row.author?._id !== info?._id
+                  ? "#"
+                  : `/news-articles/${row._id}`
+              }
+              state={{
+                category: row,
+                breadcrumbs: [
+                  ...(breadcrumbs || []),
+                  { name: row.title, path: `/news-articles/${row._id}` },
+                ],
+              }}
             >
-              <Eye className="flex size-4 items-center justify-center" />
-            </Button>
-          </Link>
-
+              <Button
+                asChild={true}
+                className={cn("[--accent:green]", {
+                  disabled:
+                    info?.role !== "admin" && row.author?._id !== info?._id,
+                })}
+                size={"sm"}
+                variant="outline"
+                shape={"icon"}
+              >
+                <Eye className="flex size-4 items-center justify-center" />
+              </Button>
+            </Link>
+          )}
           {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Link
@@ -223,7 +240,6 @@ const NewsArticlesDataTableSection: React.FC<
               </Button>
             </Link>
           )}
-
           {(["supper-admin", "admin"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Button

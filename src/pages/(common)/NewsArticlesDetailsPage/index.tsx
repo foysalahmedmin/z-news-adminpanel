@@ -5,6 +5,7 @@ import NewsArticleInfoSection from "@/components/(common)/news-articles-details-
 import NewsArticleMediaSection from "@/components/(common)/news-articles-details-page/NewsArticleMediaSection";
 import NewsArticleOverviewSection from "@/components/(common)/news-articles-details-page/NewsArticleOverviewSection";
 import NewsArticleSEOSection from "@/components/(common)/news-articles-details-page/NewsArticleSEOSection";
+import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -39,8 +40,8 @@ const NewsArticleDetailsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="text-lg">Loading news article...</div>
+      <div>
+        <Loader />
       </div>
     );
   }
@@ -91,10 +92,12 @@ const NewsArticleDetailsPage = () => {
           <Card.Title>Content</Card.Title>
         </Card.Header>
         <Card.Content className="py-6">
-          <div
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: news.content }}
-          />
+          <div className="prose prose-lg max-w-none">
+            <div
+              className="mx-auto whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: news.content }}
+            />
+          </div>
         </Card.Content>
       </Card>
 
