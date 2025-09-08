@@ -6,7 +6,25 @@ import { FormControl } from "@/components/ui/FormControl";
 import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
 import { fetchCategoriesTree } from "@/services/category.service";
+import type { TCategory } from "@/types/category.type";
 import TagsInput from "../TagsInput";
+
+const renderCategoryOptions = (
+  category?: TCategory,
+  prefix = "",
+): React.ReactNode => {
+  if (!category) return null;
+  return (
+    <>
+      <option key={category._id} value={category._id}>
+        {prefix + category.name}
+      </option>
+      {category.children?.map((child) =>
+        renderCategoryOptions(child, prefix + "-- "),
+      )}
+    </>
+  );
+};
 
 const CategoriesAndTags = () => {
   const {
@@ -18,7 +36,7 @@ const CategoriesAndTags = () => {
 
   const { data } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => fetchCategoriesTree({ sort: "sequence" }),
+    queryFn: () => fetchCategoriesTree({ sort: "sequence", limit: 25 }),
   });
 
   return (
@@ -37,11 +55,7 @@ const CategoriesAndTags = () => {
             className={cn(errors.category && "border-destructive")}
           >
             <option value="">Select a category</option>
-            {data?.data?.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
+            {data?.data?.map((category) => renderCategoryOptions(category))}
           </FormControl>
           {errors.category && (
             <p className="text-destructive mt-1 text-sm">

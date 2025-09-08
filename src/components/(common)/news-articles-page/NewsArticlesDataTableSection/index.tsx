@@ -166,7 +166,7 @@ const NewsArticlesDataTableSection: React.FC<
       cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
           {["published"].includes(row?.status || "") && (
-            <Link to={`${ENV.app_url}/news/${row._id}`} target="_blank">
+            <Link to={`${ENV.app_url}/news/${row?.slug}`} target="_blank">
               <Button
                 asChild={true}
                 className={cn("[--accent:blue]", {
