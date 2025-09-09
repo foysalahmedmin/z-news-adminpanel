@@ -17,9 +17,9 @@ A modern, feature-rich admin panel for managing news articles, categories, users
 - **Media Support**: Upload and manage images, videos, and files
 - **SEO Optimization**: Built-in SEO fields for better search visibility
 - **Status Management**: Draft, pending, published, and archived states
-- **Bulk Operations**: Mass update, delete, and restore articles
 - **Content Layouts**: Multiple layout options (default, standard, featured, minimal)
 - **YouTube Integration**: Embed YouTube videos directly in articles
+<!-- - **Bulk Operations**: Mass update, delete, and restore articles -->
 
 ### 🏷️ Category Management
 
