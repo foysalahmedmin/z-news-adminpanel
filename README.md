@@ -1,4 +1,4 @@
-# Z-News Admin Panel
+# Z-NEWS ADMINPANEL (<a href="https://admin.dainikeidin.com/">LIVE</a>)
 
 A modern, feature-rich admin panel for managing news articles, categories, users, and content for the Z-News platform. Built with React, TypeScript, and modern web technologies.
 
