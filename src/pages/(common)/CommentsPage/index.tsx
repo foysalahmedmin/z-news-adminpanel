@@ -23,7 +23,9 @@ const CommentsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
 
   const queryParams = useMemo(() => {
     return {
@@ -186,11 +188,11 @@ const CommentsPage: React.FC = () => {
                     key={item._id}
                     className={cn(
                       "rounded border p-4 transition-colors",
-                      item.status === "approved" 
-                        ? "bg-card" 
+                      item.status === "approved"
+                        ? "bg-card"
                         : item.status === "rejected"
-                        ? "border-red-200 bg-red-50/50"
-                        : "border-yellow-200 bg-yellow-50/50",
+                          ? "border-red-200 bg-red-50/50"
+                          : "border-yellow-200 bg-yellow-50/50",
                     )}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -198,7 +200,7 @@ const CommentsPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <FileText className="text-muted-foreground size-4" />
                           <p
-                            className="truncate font-semibold text-foreground"
+                            className="text-foreground truncate font-semibold"
                             title={item.news?.title}
                           >
                             {item.news?.title}
@@ -206,15 +208,16 @@ const CommentsPage: React.FC = () => {
                           <span
                             className={cn(
                               "rounded-full border px-2 py-1 text-xs font-medium",
-                              getStatusColor(item.status)
+                              getStatusColor(item.status),
                             )}
                           >
                             {item.status || "pending"}
                           </span>
                         </div>
                         <div className="mt-2 space-y-1">
-                          <p className="text-sm text-muted-foreground">
-                            <span className="font-medium">By:</span> {item.name} ({item.email})
+                          <p className="text-muted-foreground text-sm">
+                            <span className="font-medium">By:</span> {item.name}{" "}
+                            ({item.email})
                           </p>
                           <p className="text-foreground leading-relaxed">
                             {item.content}
