@@ -12,7 +12,14 @@ import {
 import type { TReaction } from "@/types/reaction.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCheck, FileText, Heart, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
+import {
+  CheckCheck,
+  FileText,
+  Heart,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -23,14 +30,19 @@ const ReactionsPage: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [filter, setFilter] = useState<"all" | "like" | "dislike" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<
+    "all" | "like" | "dislike" | "pending" | "approved" | "rejected"
+  >("all");
 
   const queryParams = useMemo(() => {
     return {
       page,
       limit,
       type: filter === "like" || filter === "dislike" ? filter : undefined,
-      status: filter === "pending" || filter === "approved" || filter === "rejected" ? filter : undefined,
+      status:
+        filter === "pending" || filter === "approved" || filter === "rejected"
+          ? filter
+          : undefined,
     } as { page: number; limit: number; type?: string; status?: string };
   }, [page, limit, filter]);
 
@@ -231,11 +243,11 @@ const ReactionsPage: React.FC = () => {
                     key={item._id}
                     className={cn(
                       "rounded border p-4 transition-colors",
-                      item.status === "approved" 
-                        ? "bg-card" 
+                      item.status === "approved"
+                        ? "bg-card"
                         : item.status === "rejected"
-                        ? "border-red-200 bg-red-50/50"
-                        : "border-yellow-200 bg-yellow-50/50",
+                          ? "border-red-200 bg-red-50/50"
+                          : "border-yellow-200 bg-yellow-50/50",
                     )}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -243,7 +255,7 @@ const ReactionsPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           {getReactionIcon(item.type)}
                           <p
-                            className="truncate font-semibold text-foreground"
+                            className="text-foreground truncate font-semibold"
                             title={item.news?.title}
                           >
                             {item.news?.title}
@@ -251,7 +263,7 @@ const ReactionsPage: React.FC = () => {
                           <span
                             className={cn(
                               "rounded-full border px-2 py-1 text-xs font-medium",
-                              getReactionColor(item.type)
+                              getReactionColor(item.type),
                             )}
                           >
                             {item.type}
@@ -260,7 +272,7 @@ const ReactionsPage: React.FC = () => {
                             <span
                               className={cn(
                                 "rounded-full border px-2 py-1 text-xs font-medium",
-                                getStatusColor(item.status)
+                                getStatusColor(item.status),
                               )}
                             >
                               {item.status}
