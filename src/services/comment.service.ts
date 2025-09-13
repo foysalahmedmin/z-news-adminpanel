@@ -34,7 +34,7 @@ export async function fetchSelfComments(
 export async function fetchComments(
   query?: Record<string, any>,
 ): Promise<TCommentsResponse> {
-  const response = await api.get("/api/comments", {
+  const response = await api.get("/api/comment", {
     params: query,
     withCredentials: true,
   });
@@ -59,7 +59,7 @@ export async function fetchComment(id: string): Promise<TCommentResponse> {
 export async function createComment(
   payload: TCreateCommentPayload,
 ): Promise<TCommentResponse> {
-  const response = await api.post("/api/comments", payload, {
+  const response = await api.post("/api/comment", payload, {
     withCredentials: true,
   });
   return response.data;

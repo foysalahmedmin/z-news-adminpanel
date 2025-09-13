@@ -24,7 +24,7 @@ export async function fetchSelfReactions(
 export async function fetchReactions(
   query?: Record<string, any>,
 ): Promise<TReactionsResponse> {
-  const response = await api.get("/api/reactions", {
+  const response = await api.get("/api/reaction", {
     params: query,
     withCredentials: true,
   });
@@ -136,7 +136,7 @@ export async function deleteReaction(id: string): Promise<TReactionResponse> {
 export async function createReaction(
   payload: TCreateReactionPayload,
 ): Promise<TReactionResponse> {
-  const response = await api.post("/api/reactions", payload, {
+  const response = await api.post("/api/reaction", payload, {
     withCredentials: true,
   });
   return response.data;

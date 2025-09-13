@@ -26,7 +26,11 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
             "logo flex h-full min-w-0 items-center gap-4 px-2 lg:px-1",
           )}
         >
-          <div className={cn("logo-icon size-8 flex-shrink-0 lg:size-10")}>
+          <div
+            className={cn(
+              "logo-icon bg-muted size-8 flex-shrink-0 overflow-hidden rounded-md lg:size-10",
+            )}
+          >
             <img
               className="size-full rounded-md object-contain"
               src="/logo.png"
@@ -36,11 +40,11 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
           </div>
           <h1
             className={cn(
-              "text-foreground logo-text text-lg font-bold tracking-wide",
+              "text-foreground logo-text font-bold tracking-wide",
               "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
             )}
           >
-            Z-NEWS
+            DAINIK EIDIN
           </h1>
         </div>
 
