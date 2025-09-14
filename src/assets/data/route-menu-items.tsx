@@ -1,4 +1,5 @@
 import AuthWrapper from "@/components/wrappers/AuthWrapper";
+import BinPage from "@/pages/(common)/BinPage";
 import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
 import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import CommentsPage from "@/pages/(common)/CommentsPage";
@@ -210,6 +211,16 @@ export const items: TItem[] = [
     element: (
       <AuthWrapper>
         <NotificationsPage />
+      </AuthWrapper>
+    ),
+  },
+  {
+    icon: "trash",
+    path: "bin",
+    name: "Recycle Bin",
+    element: (
+      <AuthWrapper>
+        <BinPage />
       </AuthWrapper>
     ),
   },
