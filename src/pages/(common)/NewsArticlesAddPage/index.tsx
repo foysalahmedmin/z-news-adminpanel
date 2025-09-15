@@ -21,6 +21,7 @@ import { useNavigate } from "react-router";
 const newsSchema = z.object({
   sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
+  sub_title: z.string().optional(),
   slug: z.string().min(1, "Slug is required"),
   caption: z.string().optional(),
   description: z.string().optional(),
@@ -61,6 +62,7 @@ const NewsArticlesAddPage = () => {
     resolver: zodResolver(newsSchema),
     defaultValues: {
       title: "",
+      sub_title: "",
       slug: "",
       description: "",
       content: "",

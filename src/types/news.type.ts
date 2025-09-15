@@ -6,6 +6,7 @@ export type TNews = {
   _id: string;
   sequence: number;
   title: string;
+  sub_title?: string;
   slug: string;
   caption?: string;
   description?: string;
@@ -49,6 +50,7 @@ export type TNews = {
 export type TCreateNewsPayload = {
   sequence?: number;
   title: string;
+  sub_title?: string;
   slug: string;
   caption?: string;
   description?: string;
@@ -78,6 +80,7 @@ export type TCreateNewsPayload = {
 export type TUpdateNewsPayload = {
   sequence?: number;
   title?: string;
+  sub_title?: string;
   slug?: string;
   caption?: string;
   description?: string;

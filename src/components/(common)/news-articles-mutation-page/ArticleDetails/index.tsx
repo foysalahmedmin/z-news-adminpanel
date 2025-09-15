@@ -21,7 +21,7 @@ const ArticleDetails = () => {
 
   const generateSlug = (title: string): string => {
     if (!title) return "";
-    const base = `${title.trim().toLowerCase()}-${Date.now()}`;
+    const base = `${title.trim().toLowerCase()}-${Date.now().toString(36)}`;
     return base.toString().trim().replace(/\s+/g, "-");
   };
 
@@ -33,6 +33,18 @@ const ArticleDetails = () => {
       <Card.Content className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-4 self-stretch">
+            <div>
+              <FormControl.Label htmlFor="sub_title">
+                Head Title
+              </FormControl.Label>
+              <FormControl
+                id="sub_title"
+                placeholder="Enter head title"
+                value={watch("sub_title")}
+                onChange={(e) => setValue("sub_title", e.target.value)}
+              />
+            </div>
+
             <div>
               <FormControl.Label htmlFor="title">Title *</FormControl.Label>
               <FormControl
