@@ -151,7 +151,7 @@ function parseStartParam(u: URL): number {
 function buildThumbnails(id: string) {
   const base = `https://i.ytimg.com/vi/${id}`;
   return {
-    default: `${base}/default.jpg`,
+    default: `${base}/hqdefault.jpg`,
     mq: `${base}/mqdefault.jpg`,
     hq: `${base}/hqdefault.jpg`,
     sd: `${base}/sddefault.jpg`,

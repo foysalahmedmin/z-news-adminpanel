@@ -1,5 +1,6 @@
-import { ENV, URLS } from "@/config";
+import { ENV } from "@/config";
 import type { TNews, TStatus } from "@/types/news.type";
+import { getThumbnail } from "@/utils/getThumbnail";
 import {
   Calendar,
   Crown,
@@ -51,11 +52,7 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
       {/* Thumbnail */}
       <Link to={ENV.app_url + "/news/" + news?.slug} className="flex-shrink-0">
         <img
-          src={
-            news?.thumbnail
-              ? URLS.news.thumbnail + "/" + news.thumbnail
-              : "/images/thumbnail.png"
-          }
+          src={getThumbnail(news?.thumbnail, news?.youtube)}
           alt={news?.title}
           className="size-32 rounded-md object-cover"
         />

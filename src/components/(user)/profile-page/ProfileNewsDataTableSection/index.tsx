@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/Button";
 import type { TColumn, TState } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import { Switch } from "@/components/ui/Switch";
-import { ENV, URLS } from "@/config";
+import { ENV } from "@/config";
 import useUser from "@/hooks/states/useUser";
 import { cn } from "@/lib/utils";
 import type { TNews, TStatus } from "@/types/news.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
+import { getThumbnail } from "@/utils/getThumbnail";
 import { Earth, Edit, Eye, Tag, Trash, User } from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
@@ -49,13 +50,11 @@ const NewsArticlesDataTableSection: React.FC<
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <div className="aspect-square h-20 flex-shrink-0 overflow-hidden rounded">
-            {row.thumbnail && (
-              <img
-                className="size-full object-cover"
-                src={URLS.news.thumbnail + "/" + row.thumbnail}
-                alt=""
-              />
-            )}
+            <img
+              className="size-full object-cover"
+              src={getThumbnail(row?.thumbnail, row?.youtube)}
+              alt=""
+            />
           </div>
           <div className="flex-1 space-y-1">
             <h3 className="text-base font-bold">{row.title}</h3>
