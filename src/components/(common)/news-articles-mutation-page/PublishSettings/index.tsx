@@ -51,7 +51,7 @@ const PublishSettings = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div>
               <FormControl.Label htmlFor="is_news_break">
                 News Break
@@ -65,7 +65,7 @@ const PublishSettings = () => {
               checked={watch("is_news_break")}
               onChange={(checked) => setValue("is_news_break", checked)}
             />
-          </div>
+          </div> */}
 
           {/* <div className="flex items-center justify-between">
             <div>
@@ -98,27 +98,29 @@ const PublishSettings = () => {
               onChange={(checked) => setValue("is_featured", checked)}
             />
           </div>
-          <div className="grid grid-cols-2 items-center justify-between gap-4">
-            <div>
-              <FormControl.Label htmlFor="sequence">
-                Lead Order
-              </FormControl.Label>
-              <p className="text-muted-foreground text-sm">
-                Display order for featured articles
-              </p>
+          {watch("is_featured") && (
+            <div className="grid grid-cols-2 items-center justify-between gap-4">
+              <div>
+                <FormControl.Label htmlFor="sequence">
+                  Lead Order
+                </FormControl.Label>
+                <p className="text-muted-foreground text-sm">
+                  Display order for featured articles
+                </p>
+              </div>
+              <FormControl
+                className="flex items-center justify-center px-0 text-center placeholder:px-2 placeholder:text-xs"
+                min={0}
+                max={7}
+                as="input"
+                type="number"
+                id="sequence"
+                placeholder="SEQUENCE"
+                value={watch("sequence")}
+                onChange={(e) => setValue("sequence", Number(e.target.value))}
+              />
             </div>
-            <FormControl
-              className="flex items-center justify-center px-0 text-center placeholder:px-2 placeholder:text-xs"
-              min={0}
-              max={8}
-              as="input"
-              type="number"
-              id="sequence"
-              placeholder="SEQUENCE"
-              value={watch("sequence")}
-              onChange={(e) => setValue("sequence", Number(e.target.value))}
-            />
-          </div>
+          )}
         </div>
         <hr />
         <div className="grid grid-cols-2 gap-4">

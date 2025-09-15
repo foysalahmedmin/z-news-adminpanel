@@ -35,7 +35,7 @@ const ArticleDetails = () => {
           <div className="space-y-4 self-stretch">
             <div>
               <FormControl.Label htmlFor="sub_title">
-                Head Title
+                Sub Head
               </FormControl.Label>
               <FormControl
                 id="sub_title"
