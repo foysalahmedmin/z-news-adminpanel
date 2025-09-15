@@ -100,7 +100,9 @@ const PublishSettings = () => {
           </div>
           <div className="grid grid-cols-2 items-center justify-between gap-4">
             <div>
-              <FormControl.Label htmlFor="sequence">Sequence</FormControl.Label>
+              <FormControl.Label htmlFor="sequence">
+                Lead Order
+              </FormControl.Label>
               <p className="text-muted-foreground text-sm">
                 Display order for featured articles
               </p>
