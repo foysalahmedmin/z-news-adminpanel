@@ -169,32 +169,28 @@ export const items: TItem[] = [
     ],
   },
   {
-    roles: ["supper-admin", "admin", "author", "editor", "contributor"],
+    roles: ["supper-admin", "admin"],
     menuType: "title",
     name: "Activities",
   },
   {
-    roles: ["supper-admin", "admin", "author", "editor", "contributor"],
+    roles: ["supper-admin", "admin"],
     icon: "message-square-quote",
     path: "comments",
     name: "Comments",
     element: (
-      <AuthWrapper
-        roles={["supper-admin", "admin", "author", "editor", "contributor"]}
-      >
+      <AuthWrapper roles={["supper-admin", "admin"]}>
         <CommentsPage />
       </AuthWrapper>
     ),
   },
   {
-    roles: ["supper-admin", "admin", "author", "editor", "contributor"],
+    roles: ["supper-admin", "admin"],
     icon: "smile",
     path: "reactions",
     name: "Reactions",
     element: (
-      <AuthWrapper
-        roles={["supper-admin", "admin", "author", "editor", "contributor"]}
-      >
+      <AuthWrapper roles={["supper-admin", "admin"]}>
         <ReactionsPage />
       </AuthWrapper>
     ),
@@ -215,6 +211,7 @@ export const items: TItem[] = [
     ),
   },
   {
+    roles: ["supper-admin", "admin"],
     icon: "trash",
     path: "bin",
     name: "Recycle Bin",
