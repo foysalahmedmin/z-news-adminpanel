@@ -225,7 +225,9 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
         : updateSelfNews(id, payload),
     onSuccess: (data) => {
       toast.success(data?.message || "News updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["news_articles"] });
+      queryClient.invalidateQueries({
+        queryKey: ["news_articles", "self_news_articles"],
+      });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error.response?.data?.message || "Failed to update news");
@@ -240,7 +242,9 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
         : deleteSelfNews(id),
     onSuccess: (data) => {
       toast.success(data?.message || "News deleted successfully!");
-      queryClient.invalidateQueries({ queryKey: ["news_articles"] });
+      queryClient.invalidateQueries({
+        queryKey: ["news_articles", "self_news_articles"],
+      });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       toast.error(error.response?.data?.message || "Failed to delete news");
@@ -251,7 +255,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
   // API queries
   const newsQuery = useQuery({
     queryKey: [
-      "news_articles",
+      "self_news_articles",
       {
         sort,
         search,
