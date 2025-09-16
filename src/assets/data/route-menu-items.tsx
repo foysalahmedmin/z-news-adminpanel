@@ -4,6 +4,7 @@ import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
 import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import CommentsPage from "@/pages/(common)/CommentsPage";
 import Dashboard from "@/pages/(common)/Dashboard";
+import EventsPage from "@/pages/(common)/EventsPage";
 import NewsArticlesAddPage from "@/pages/(common)/NewsArticlesAddPage";
 import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
 import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
@@ -72,7 +73,7 @@ export const items: TItem[] = [
   {
     roles: ["supper-admin", "admin", "editor", "author"],
     menuType: "title",
-    name: "Categories",
+    name: "Categories & Events",
   },
   {
     roles: ["supper-admin", "admin", "editor", "author"],
@@ -102,6 +103,31 @@ export const items: TItem[] = [
         element: (
           <AuthWrapper roles={["supper-admin", "admin", "editor", "author"]}>
             <CategoriesDetailsPage />
+          </AuthWrapper>
+        ),
+        menuType: "invisible",
+      },
+    ],
+  },
+  {
+    roles: ["supper-admin", "admin", "editor", "author"],
+    icon: "calendar",
+    path: "events",
+    name: "Events",
+    routeType: "layout",
+    menuType: "item-without-children",
+    element: (
+      <AuthWrapper roles={["supper-admin", "admin", "editor", "author"]}>
+        <Outlet />
+      </AuthWrapper>
+    ),
+    children: [
+      {
+        index: true,
+        name: "Events",
+        element: (
+          <AuthWrapper roles={["supper-admin", "admin", "editor", "author"]}>
+            <EventsPage />
           </AuthWrapper>
         ),
         menuType: "invisible",

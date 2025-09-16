@@ -57,8 +57,19 @@ const NewsArticlesDataTableSection: React.FC<
             />
           </div>
           <div className="flex-1 space-y-1">
-            <h3 className="text-base font-bold">{row.title}</h3>
-            <p className="text-sm">{row.slug}</p>
+            <Link
+              className="group block"
+              to={
+                row.status === "published"
+                  ? `${ENV.app_url}/news/${row.slug}`
+                  : "#"
+              }
+            >
+              <h3 className="text-base font-bold group-hover:underline">
+                {row.title}
+              </h3>
+              <p className="text-sm">{row.slug}</p>
+            </Link>
             <div className="flex items-center">
               <Badge className="bg-muted text-foreground flex w-fit items-center gap-2 px-2 py-1 text-xs">
                 <Tag className="size-4" />

@@ -1,5 +1,14 @@
 import type { TNews } from "@/types/news.type";
-import { Calendar, Edit, Edit2, FileText, Tag, User } from "lucide-react";
+import {
+  Calendar,
+  CalendarCheck,
+  CalendarPlus,
+  CalendarSync,
+  Edit2,
+  FileText,
+  Tag,
+  User,
+} from "lucide-react";
 import React from "react";
 
 export type TNewsArticleOverviewSectionProps = {
@@ -74,6 +83,16 @@ const NewsArticleOverviewSection: React.FC<
 
           <div className="bg-muted rounded-lg p-4">
             <div className="text-muted-foreground mb-1 flex items-center text-sm">
+              <Calendar className="mr-1 h-4 w-4" />
+              Event
+            </div>
+            <div className="text-foreground text-sm">
+              {news?.event?.name || "None"}
+            </div>
+          </div>
+
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 flex items-center text-sm">
               <FileText className="mr-1 h-4 w-4" />
               Layout Type
             </div>
@@ -82,46 +101,10 @@ const NewsArticleOverviewSection: React.FC<
             </div>
           </div>
 
-          {news?.created_at && (
-            <div className="bg-muted rounded-lg p-4">
-              <div className="text-muted-foreground mb-1 flex items-center text-sm">
-                <Calendar className="mr-1 h-4 w-4" />
-                Created Date
-              </div>
-              <div className="text-foreground text-sm">
-                {new Date(news.created_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-            </div>
-          )}
-
-          {news?.updated_at && (
-            <div className="bg-muted rounded-lg p-4">
-              <div className="text-muted-foreground mb-1 flex items-center text-sm">
-                <Edit className="mr-1 h-4 w-4" />
-                Updated Date
-              </div>
-              <div className="text-foreground text-sm">
-                {new Date(news.updated_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-            </div>
-          )}
-
           {news?.published_at && (
             <div className="bg-muted rounded-lg p-4">
               <div className="text-muted-foreground mb-1 flex items-center text-sm">
-                <Calendar className="mr-1 h-4 w-4" />
+                <CalendarCheck className="mr-1 h-4 w-4" />
                 Published Date
               </div>
               <div className="text-foreground text-sm">
@@ -139,7 +122,7 @@ const NewsArticleOverviewSection: React.FC<
           {/* {news?.expired_at && (
             <div className="bg-muted rounded-lg p-4">
               <div className="text-muted-foreground mb-1 flex items-center text-sm">
-                <Calendar className="mr-1 h-4 w-4" />
+                <CalendarX className="mr-1 h-4 w-4" />
                 Expiry Date
               </div>
               <div className="text-foreground text-sm">
@@ -151,6 +134,42 @@ const NewsArticleOverviewSection: React.FC<
               </div>
             </div>
           )} */}
+
+          {news?.created_at && (
+            <div className="bg-muted rounded-lg p-4">
+              <div className="text-muted-foreground mb-1 flex items-center text-sm">
+                <CalendarPlus className="mr-1 h-4 w-4" />
+                Created Date
+              </div>
+              <div className="text-foreground text-sm">
+                {new Date(news.created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            </div>
+          )}
+
+          {news?.updated_at && (
+            <div className="bg-muted rounded-lg p-4">
+              <div className="text-muted-foreground mb-1 flex items-center text-sm">
+                <CalendarSync className="mr-1 h-4 w-4" />
+                Updated Date
+              </div>
+              <div className="text-foreground text-sm">
+                {new Date(news.updated_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            </div>
+          )}
 
           {news?.edited_at && (
             <div className="bg-muted rounded-lg p-4">

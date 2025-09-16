@@ -4,7 +4,10 @@ export type TStatus = "active" | "inactive";
 
 export type TEvent = {
   _id: string;
-  category?: string;
+  category?: {
+    _id: string;
+    name: string;
+  };
   icon?: string;
   thumbnail?: string;
   name: string;
@@ -13,7 +16,8 @@ export type TEvent = {
   is_featured?: boolean;
   status: TStatus;
   layout?: "default" | "standard" | "featured" | "minimal";
-  children?: TEvent[];
+  published_at?: string;
+  expire_at?: string;
 };
 
 export type TEventCreatePayload = {
@@ -25,7 +29,9 @@ export type TEventCreatePayload = {
   description?: string;
   is_featured?: boolean;
   status: TStatus;
-  layout?: string;
+  layout?: "default" | "standard" | "featured" | "minimal";
+  published_at?: string;
+  expire_at?: string;
 };
 
 export type TEventUpdatePayload = {
@@ -37,6 +43,8 @@ export type TEventUpdatePayload = {
   is_featured?: boolean;
   status?: TStatus;
   layout?: "default" | "standard" | "featured" | "minimal";
+  published_at?: string;
+  expire_at?: string;
 };
 
 export type TEventResponse = Response<TEvent>;

@@ -4,27 +4,25 @@ import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
 import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib/utils";
-import type { TCategory } from "@/types/category.type";
+import type { TEvent } from "@/types/event.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
 import { Edit, Eye, Trash } from "lucide-react";
 import React from "react";
-import { Link } from "react-router";
 
-type CategoriesDataTableSectionProps = {
-  data?: TCategory[];
+type EventsDataTableSectionProps = {
+  data?: TEvent[];
   breadcrumbs: TBreadcrumbs[];
   isLoading: boolean;
   isError: boolean;
   onAdd: () => void;
-  onEdit: (row: TCategory) => void;
-  onDelete: (row: TCategory) => void;
-  onToggleFeatured: (row: TCategory) => void;
+  onEdit: (row: TEvent) => void;
+  onDelete: (row: TEvent) => void;
+  onToggleFeatured: (row: TEvent) => void;
   state: TState;
 };
 
-const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
+const EventsDataTableSection: React.FC<EventsDataTableSectionProps> = ({
   data = [],
-  breadcrumbs,
   isLoading,
   isError,
   onEdit,
@@ -32,8 +30,7 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
   onToggleFeatured,
   state,
 }) => {
-  const columns: TColumn<TCategory>[] = [
-    { name: "Sequence", field: "sequence", isSortable: true },
+  const columns: TColumn<TEvent>[] = [
     {
       name: "Icon",
       field: "icon",
@@ -88,26 +85,15 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
       field: "_id",
       cell: ({ row }) => (
         <div className="flex w-full items-center justify-center gap-2">
-          <Link
-            to={`/categories/${row._id}`}
-            state={{
-              category: row,
-              breadcrumbs: [
-                ...(breadcrumbs || []),
-                { name: row.name, path: `/categories/${row._id}` },
-              ],
-            }}
+          <Button
+            asChild={true}
+            className="[--accent:green]"
+            size={"sm"}
+            variant="outline"
+            shape={"icon"}
           >
-            <Button
-              asChild={true}
-              className="[--accent:green]"
-              size={"sm"}
-              variant="outline"
-              shape={"icon"}
-            >
-              <Eye className="size-4" />
-            </Button>
-          </Link>
+            <Eye className="size-4" />
+          </Button>
           <Button
             onClick={() => onEdit(row)}
             size={"sm"}
@@ -146,4 +132,4 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
   );
 };
 
-export default CategoriesDataTableSection;
+export default EventsDataTableSection;

@@ -4,7 +4,7 @@ import {
 } from "@/components/cards/StatisticCard";
 import React from "react";
 
-type CategoriesStatisticsSectionProps = {
+type EventsStatisticsSectionProps = {
   meta?: {
     total?: number;
     page?: number;
@@ -13,9 +13,9 @@ type CategoriesStatisticsSectionProps = {
   };
 };
 
-const CategoriesStatisticsSection: React.FC<
-  CategoriesStatisticsSectionProps
-> = ({ meta }) => {
+const EventsStatisticsSection: React.FC<EventsStatisticsSectionProps> = ({
+  meta,
+}) => {
   const { total, statistics: dataStatistics } = meta || {};
 
   const {
@@ -27,30 +27,30 @@ const CategoriesStatisticsSection: React.FC<
   const statistics: TStatistic[] = [
     {
       value: total || 0,
-      title: "Total Categories",
-      subtitle: "Includes all categories",
-      description: "Overall count of categories in the system.",
+      title: "Total Events",
+      subtitle: "Includes all Events",
+      description: "Overall count of events in the system.",
       icon: "folder-open",
     },
     {
       value: totalActive || 0,
-      title: "Active Categories",
+      title: "Active Events",
       subtitle: "Currently active",
-      description: "Categories that are active and visible to users.",
+      description: "Events that are active and visible to users.",
       icon: "check-circle",
     },
     {
       value: totalInactive || 0,
-      title: "Inactive Categories",
+      title: "Inactive Events",
       subtitle: "Currently inactive",
-      description: "Categories that are disabled or hidden from users.",
+      description: "Events that are disabled or hidden from users.",
       icon: "x-circle",
     },
     {
       value: totalFeatured || 0,
-      title: "Featured Categories",
+      title: "Featured Events",
       subtitle: "Highlighted selection",
-      description: "Special categories marked as featured for promotion.",
+      description: "Special events marked as featured for promotion.",
       icon: "star",
     },
   ];
@@ -63,4 +63,4 @@ const CategoriesStatisticsSection: React.FC<
   );
 };
 
-export default CategoriesStatisticsSection;
+export default EventsStatisticsSection;
