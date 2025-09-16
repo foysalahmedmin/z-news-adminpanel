@@ -25,6 +25,11 @@ const CategoriesPage = () => {
   const queryClient = useQueryClient();
   const confirm = useAlert();
 
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("sequence");
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditAddModalOpen] = useState(false);
 
@@ -89,8 +94,22 @@ const CategoriesPage = () => {
   };
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => fetchCategories({ sort: "sequence" }),
+    queryKey: [
+      "categories",
+      {
+        sort,
+        search,
+        page,
+        limit,
+      },
+    ],
+    queryFn: () =>
+      fetchCategories({
+        page,
+        limit,
+        sort: sort || "sequence",
+        ...(search && { search }),
+      }),
   });
 
   return (
@@ -115,6 +134,17 @@ const CategoriesPage = () => {
             onEdit={onOpenEditModal}
             onDelete={onDelete}
             onToggleFeatured={onToggleFeatured}
+            state={{
+              total: data?.meta?.total || 0,
+              page,
+              setPage,
+              limit,
+              setLimit,
+              search,
+              setSearch,
+              sort,
+              setSort,
+            }}
           />
         </Card.Content>
       </Card>

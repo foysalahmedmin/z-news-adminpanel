@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/Button";
-import type { TColumn } from "@/components/ui/DataTable";
+import type { TColumn, TState } from "@/components/ui/DataTable";
 import DataTable from "@/components/ui/DataTable";
 import Icon from "@/components/ui/Icon";
 import { Switch } from "@/components/ui/Switch";
@@ -19,6 +19,7 @@ type CategoriesDataTableSectionProps = {
   onEdit: (row: TCategory) => void;
   onDelete: (row: TCategory) => void;
   onToggleFeatured: (row: TCategory) => void;
+  state: TState;
 };
 
 const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
@@ -29,6 +30,7 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
   onEdit,
   onDelete,
   onToggleFeatured,
+  state,
 }) => {
   const columns: TColumn<TCategory>[] = [
     { name: "Sequence", field: "sequence", isSortable: true },
@@ -134,10 +136,11 @@ const CategoriesDataTableSection: React.FC<CategoriesDataTableSectionProps> = ({
         columns={columns}
         data={data || []}
         config={{
-          isSearchProcessed: false,
-          isSortProcessed: false,
-          isPaginationProcessed: false,
+          isSearchProcessed: true,
+          isSortProcessed: true,
+          isPaginationProcessed: true,
         }}
+        state={state}
       />
     </div>
   );
