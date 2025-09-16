@@ -85,8 +85,12 @@ const NewsArticlesAddPage = () => {
   // TanStack Query mutation
   const createNewsMutation = useMutation({
     mutationFn: (data: TCreateNewsPayload) => createNews(data),
-    onSuccess: () => {
-      navigate("/news-articles");
+    onSuccess: (news) => {
+      navigate(
+        news?.data?._id
+          ? `/news-articles/${news?.data?._id}`
+          : `/news-articles`,
+      );
     },
     onError: (error) => {
       console.error("Error creating news:", error);
