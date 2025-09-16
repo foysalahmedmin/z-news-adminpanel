@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import { Modal } from "@/components/ui/Modal";
-import { createCategory } from "@/services/category.service";
-import type { TCategory, TCategoryCreatePayload } from "@/types/category.type";
+import { updateCategory } from "@/services/category.service";
+import type { TCategory, TCategoryUpdatePayload } from "@/types/category.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -11,15 +11,15 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-type CategoryAddModalProps = {
-  default?: Partial<TCategory>;
+type CategoryEditModalProps = {
+  default: Partial<TCategory>;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
   mutationKey?: string[];
 };
 
-const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
+const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
   isOpen,
   setIsOpen,
   default: category,
@@ -34,9 +34,9 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<TCategoryCreatePayload>({
+  } = useForm<TCategoryUpdatePayload>({
     defaultValues: {
-      icon: category?.icon || "blocks",
+      icon: category.icon || "",
       name: category?.name || "",
       slug: category?.slug || "",
       sequence: category?.sequence || 0,
@@ -47,32 +47,63 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     },
   });
 
+  React.useEffect(() => {
+    reset({
+      icon: category.icon || "",
+      name: category.name || "",
+      slug: category.slug || "",
+      sequence: category.sequence || 0,
+      status: category.status || "active",
+      description: category.description || "",
+      is_featured: category.is_featured || false,
+      layout: category.layout || "default",
+    });
+  }, [category, reset]);
+
   const mutation = useMutation({
-    mutationFn: createCategory,
+    mutationFn: (data: TCategoryUpdatePayload) =>
+      updateCategory(category._id!, data),
     onSuccess: (data) => {
-      toast.success(data?.message || "Category created successfully!");
+      toast.success(data?.message || "Category updated successfully!");
       queryClient.invalidateQueries({ queryKey: key || [] });
-      reset();
       setIsOpen(false);
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || "Failed to create category");
-      console.error("Create Category Error:", error);
+      toast.error(error.response?.data?.message || "Failed to update category");
+      console.error("Update Category Error:", error);
     },
   });
 
-  const onSubmit = (data: TCategoryCreatePayload) => {
-    mutation.mutate({
-      ...(category?.category ? { category: category.category } : {}),
-      ...data,
-    });
+  const onSubmit = (data: TCategoryUpdatePayload) => {
+    const updatedFields = Object.entries(data).reduce<
+      Partial<TCategoryUpdatePayload>
+    >((acc, [key, value]) => {
+      const fieldKey = key as keyof TCategoryUpdatePayload;
+
+      // Compare with current category value
+      if (value !== category[fieldKey as keyof TCategory]) {
+        (acc as any)[fieldKey] = value;
+      }
+
+      return acc;
+    }, {});
+
+    if (Object.keys(updatedFields).length === 0) {
+      toast.info("No changes detected");
+      return;
+    }
+
+    mutation.mutate(updatedFields);
   };
 
-  // Auto-generate slug from name
   const nameValue = watch("name");
   React.useEffect(() => {
-    const slugValue = nameValue.toString().trim().replace(/\s+/g, "-");
-    setValue("slug", slugValue);
+    const slugValue = nameValue
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+
+    setValue("slug", slugValue || category?.slug || "");
   }, [nameValue, setValue]);
 
   return (
@@ -80,20 +111,17 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
       <Modal.Backdrop>
         <Modal.Content>
           <Modal.Header>
-            <Modal.Title>
-              {category ? "Add Subcategory" : "Add Category"}
-            </Modal.Title>
+            <Modal.Title>Edit Category</Modal.Title>
             <Modal.Close />
           </Modal.Header>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Modal.Body className="grid gap-4">
-              {/* Icon (Optional) */}
               <div>
                 <FormControl.Label>Icon (Optional)</FormControl.Label>
                 <FormControl
                   type="text"
-                  placeholder="e.g. blocks, home"
+                  placeholder="e.g. Home, Settings"
                   {...register("icon")}
                 />
                 <FormControl.Helper>
@@ -101,7 +129,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 </FormControl.Helper>
               </div>
 
-              {/* Name */}
               <div>
                 <FormControl.Label>Name</FormControl.Label>
                 <FormControl
@@ -114,7 +141,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 )}
               </div>
 
-              {/* Slug */}
               <div>
                 <FormControl.Label>Slug</FormControl.Label>
                 <FormControl
@@ -127,7 +153,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 )}
               </div>
 
-              {/* Description (Optional) - Added */}
               <div>
                 <FormControl.Label>Description (Optional)</FormControl.Label>
                 <FormControl
@@ -138,7 +163,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 />
               </div>
 
-              {/* Sequence */}
               <div>
                 <FormControl.Label>Sequence</FormControl.Label>
                 <FormControl
@@ -156,7 +180,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 )}
               </div>
 
-              {/* Status */}
               <div>
                 <FormControl.Label>Status</FormControl.Label>
                 <FormControl
@@ -172,7 +195,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 )}
               </div>
 
-              {/* Layout - Added */}
+              {/* Add Layout field */}
               <div>
                 <FormControl.Label>Layout</FormControl.Label>
                 <FormControl
@@ -198,7 +221,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 )}
               </div>
 
-              {/* Featured - Added */}
+              {/* Add Featured field */}
               <div>
                 <label className="inline-flex items-center gap-2">
                   <input
@@ -226,7 +249,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                 {mutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Save
+                Update
               </Button>
             </Modal.Footer>
           </form>
@@ -236,4 +259,4 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
   );
 };
 
-export default CategoryAddModal;
+export default CategoryEditModal;

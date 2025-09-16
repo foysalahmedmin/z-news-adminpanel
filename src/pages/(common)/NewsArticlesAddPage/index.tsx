@@ -30,6 +30,7 @@ const newsSchema = z.object({
   youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
   category: z.string().min(1, "Category is required"),
+  categories: z.array(z.string()).optional(),
   writer: z.string().optional(),
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
   status: z.enum(["draft", "published"]).optional(),

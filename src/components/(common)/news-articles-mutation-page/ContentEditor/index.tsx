@@ -5,7 +5,6 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { useFormContext } from "react-hook-form";
 
 import { Card } from "@/components/ui/Card";
-import { URLS } from "@/config";
 import useSetting from "@/hooks/states/useSetting";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesEditPage";
 import { uploadNewsFile } from "@/services/news.service";
@@ -41,7 +40,7 @@ const ContentEditor = () => {
       else if (file.type.startsWith("audio/")) fileType = "audio";
 
       const { data } = await uploadNewsFile(file, fileType);
-      return data?.filename ? URLS.news.image + "/" + data?.filename : "";
+      return data?.url || "";
     },
   });
 

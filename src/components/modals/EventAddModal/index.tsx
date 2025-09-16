@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import { Modal } from "@/components/ui/Modal";
-import { createCategory } from "@/services/category.service";
-import type { TCategory, TCategoryCreatePayload } from "@/types/category.type";
+import { createEvent } from "@/services/event.service";
+import type { TEvent, TEventCreatePayload } from "@/types/event.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type CategoryAddModalProps = {
-  default?: Partial<TCategory>;
+  default?: Partial<TEvent>;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   className?: string;
@@ -34,12 +34,11 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<TCategoryCreatePayload>({
+  } = useForm<TEventCreatePayload>({
     defaultValues: {
       icon: category?.icon || "blocks",
       name: category?.name || "",
       slug: category?.slug || "",
-      sequence: category?.sequence || 0,
       status: category?.status || "active",
       description: category?.description || "",
       is_featured: category?.is_featured || false,
@@ -48,7 +47,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
   });
 
   const mutation = useMutation({
-    mutationFn: createCategory,
+    mutationFn: createEvent,
     onSuccess: (data) => {
       toast.success(data?.message || "Category created successfully!");
       queryClient.invalidateQueries({ queryKey: key || [] });
@@ -61,7 +60,7 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
     },
   });
 
-  const onSubmit = (data: TCategoryCreatePayload) => {
+  const onSubmit = (data: TEventCreatePayload) => {
     mutation.mutate({
       ...(category?.category ? { category: category.category } : {}),
       ...data,
@@ -136,24 +135,6 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
                   placeholder="Category description"
                   {...register("description")}
                 />
-              </div>
-
-              {/* Sequence */}
-              <div>
-                <FormControl.Label>Sequence</FormControl.Label>
-                <FormControl
-                  type="number"
-                  placeholder="0"
-                  {...register("sequence", {
-                    required: "Sequence is required",
-                    valueAsNumber: true,
-                  })}
-                />
-                {errors.sequence && (
-                  <FormControl.Error>
-                    {errors.sequence.message}
-                  </FormControl.Error>
-                )}
               </div>
 
               {/* Status */}

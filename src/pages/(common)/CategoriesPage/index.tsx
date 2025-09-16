@@ -122,7 +122,7 @@ const CategoriesPage = () => {
           </Button>
         }
       />
-      <CategoriesStatisticsSection data={data?.data || []} />
+      <CategoriesStatisticsSection meta={data?.meta} />
       <Card>
         <Card.Content>
           <CategoriesDataTableSection

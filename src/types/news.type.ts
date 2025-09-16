@@ -20,6 +20,10 @@ export type TNews = {
     _id: string;
     name: string;
   };
+  categories?: {
+    _id: string;
+    name: string;
+  }[];
   author: {
     _id: string;
     name: string;
@@ -61,6 +65,7 @@ export type TCreateNewsPayload = {
   youtube?: string;
   tags?: string[];
   category: string;
+  categories?: string[];
   writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: "draft" | "published";
@@ -91,6 +96,7 @@ export type TUpdateNewsPayload = {
   youtube?: string;
   tags?: string[];
   category?: string;
+  categories?: string[];
   writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;

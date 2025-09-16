@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
 import { fetchCategoriesTree } from "@/services/category.service";
 import type { TCategory } from "@/types/category.type";
+import AdditionalCategoriesInput from "../AdditionalCategoriesInput";
 import TagsInput from "../TagsInput";
 
 const renderCategoryOptions = (
@@ -63,6 +64,8 @@ const CategoriesAndTags = () => {
             </p>
           )}
         </div>
+
+        <AdditionalCategoriesInput />
 
         <TagsInput name="tags" label="Tags" placeholder="Add tag" />
 
