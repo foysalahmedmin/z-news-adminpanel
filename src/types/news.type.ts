@@ -16,6 +16,10 @@ export type TNews = {
   video?: string;
   youtube?: string;
   tags?: string[];
+  event?: {
+    _id: string;
+    name: string;
+  };
   category: {
     _id: string;
     name: string;
@@ -64,6 +68,7 @@ export type TCreateNewsPayload = {
   video?: File | null;
   youtube?: string;
   tags?: string[];
+  event?: string;
   category: string;
   categories?: string[];
   writer?: string;
@@ -95,6 +100,7 @@ export type TUpdateNewsPayload = {
   video?: File | null | string;
   youtube?: string;
   tags?: string[];
+  event?: string;
   category?: string;
   categories?: string[];
   writer?: string;

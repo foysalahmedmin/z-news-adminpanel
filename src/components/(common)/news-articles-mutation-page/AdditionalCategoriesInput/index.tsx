@@ -17,7 +17,8 @@ const AdditionalCategoriesInput = () => {
 
   const { data: options } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => fetchCategoriesTree({ sort: "sequence", limit: 25 }),
+    queryFn: () =>
+      fetchCategoriesTree({ sort: "sequence", limit: 25, status: "active" }),
   });
   const createCategoryMap = (
     categories: TCategory[],

@@ -6,8 +6,8 @@ import { FormControl } from "@/components/ui/FormControl";
 import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
 import { fetchCategoriesTree } from "@/services/category.service";
+import { fetchEvents } from "@/services/event.service";
 import type { TCategory } from "@/types/category.type";
-import AdditionalCategoriesInput from "../AdditionalCategoriesInput";
 import TagsInput from "../TagsInput";
 
 const renderCategoryOptions = (
@@ -35,15 +35,22 @@ const CategoriesAndTags = () => {
   } = useFormContext<NewsFormData>();
   const layout = watch("layout");
 
+  const { data: eventData } = useQuery({
+    queryKey: ["events"],
+    queryFn: () =>
+      fetchEvents({ sort: "-published_at", limit: 25, status: "active" }),
+  });
+
   const { data } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => fetchCategoriesTree({ sort: "sequence", limit: 25 }),
+    queryFn: () =>
+      fetchCategoriesTree({ sort: "sequence", limit: 25, status: "active" }),
   });
 
   return (
     <Card>
       <Card.Header className="border-b">
-        <Card.Title>Categories & Tags</Card.Title>
+        <Card.Title>Categories, Events & Tags</Card.Title>
       </Card.Header>
       <Card.Content className="space-y-4">
         <div>
@@ -65,7 +72,22 @@ const CategoriesAndTags = () => {
           )}
         </div>
 
-        <AdditionalCategoriesInput />
+        {/* <AdditionalCategoriesInput /> */}
+
+        <div>
+          <FormControl.Label htmlFor="category">Event</FormControl.Label>
+          <FormControl
+            as="select"
+            id="event"
+            value={watch("event")}
+            onChange={(e) => setValue("event", e.target.value)}
+          >
+            <option value="">Select a event</option>
+            {eventData?.data?.map((event) => (
+              <option value={event._id}>{event.name}</option>
+            ))}
+          </FormControl>
+        </div>
 
         <TagsInput name="tags" label="Tags" placeholder="Add tag" />
 

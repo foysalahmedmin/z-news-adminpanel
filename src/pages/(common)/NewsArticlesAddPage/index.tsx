@@ -29,6 +29,7 @@ const newsSchema = z.object({
   thumbnail: z.instanceof(File).nullable().optional(),
   youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  event: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   categories: z.array(z.string()).optional(),
   writer: z.string().optional(),
