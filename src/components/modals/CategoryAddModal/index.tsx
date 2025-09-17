@@ -71,7 +71,12 @@ const CategoryAddModal: React.FC<CategoryAddModalProps> = ({
   // Auto-generate slug from name
   const nameValue = watch("name");
   React.useEffect(() => {
-    const slugValue = nameValue.toString().trim().replace(/\s+/g, "-");
+    const slugValue = nameValue
+      ?.toLowerCase()
+      .toString()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[?#&=/\\]/g, "");
     setValue("slug", slugValue);
   }, [nameValue, setValue]);
 

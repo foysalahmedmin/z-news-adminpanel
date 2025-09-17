@@ -100,8 +100,10 @@ const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
   React.useEffect(() => {
     const slugValue = nameValue
       ?.toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
+      .toString()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[?#&=/\\]/g, "");
 
     setValue("slug", slugValue || category?.slug || "");
   }, [nameValue, setValue]);

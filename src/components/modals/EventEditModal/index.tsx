@@ -136,8 +136,10 @@ const EventEditModal: React.FC<EventEditModalProps> = ({
   React.useEffect(() => {
     const slugValue = nameValue
       ?.toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
+      .toString()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[?#&=/\\]/g, "");
 
     setValue("slug", slugValue || event?.slug || "");
   }, [nameValue, setValue]);

@@ -21,8 +21,15 @@ const ArticleDetails = () => {
 
   const generateSlug = (title: string): string => {
     if (!title) return "";
-    const base = `${title.trim().toLowerCase()}-${Date.now().toString(36)}`;
-    return base.toString().trim().replace(/\s+/g, "-");
+    const base = `${title
+      .trim()
+      .toLowerCase()
+      .replace(/[?#&=/\\]/g, "")}-${Date.now().toString(36)}`;
+    return base
+      .toString()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[?#&=/\\]/g, "");
   };
 
   return (

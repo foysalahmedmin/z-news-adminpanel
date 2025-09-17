@@ -18,8 +18,6 @@ const TagsInput = ({ name, label, placeholder }: TagsInputProps) => {
   const [inputValue, setInputValue] = useState("");
   const tags = (watch(name as "tags" | "seo.keywords") as string[]) || [];
 
-  console.log(tags);
-
   const addTag = () => {
     if (inputValue.trim() && !tags.includes(inputValue.trim())) {
       setValue(name as "tags" | "seo.keywords", [...tags, inputValue.trim()]);

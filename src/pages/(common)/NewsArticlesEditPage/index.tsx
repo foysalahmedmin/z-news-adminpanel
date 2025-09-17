@@ -80,6 +80,8 @@ const NewsArticlesUpdatePage = () => {
     enabled: !!id,
   });
 
+  console.log("newsData", newsData);
+
   const methods = useForm<NewsFormData>({
     resolver: zodResolver(newsSchema),
     defaultValues: {

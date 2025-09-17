@@ -68,8 +68,6 @@ const NewsArticlesFilterSection: React.FC<NewsArticlesFilterSectionProps> = ({
     users,
   } = state;
 
-  console.log("categories", categories);
-
   const selectedRange = useMemo<DateRange | undefined>(() => {
     if (publishedAtGte && publishedAtLte) {
       return { from: new Date(publishedAtGte), to: new Date(publishedAtLte) };

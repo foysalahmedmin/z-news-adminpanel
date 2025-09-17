@@ -111,7 +111,7 @@ const PublishSettings = () => {
               <FormControl
                 className="flex items-center justify-center px-0 text-center placeholder:px-2 placeholder:text-xs"
                 min={0}
-                max={7}
+                max={5}
                 as="input"
                 type="number"
                 id="sequence"
