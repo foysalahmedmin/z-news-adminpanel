@@ -135,7 +135,8 @@ const NewsArticlesPage = () => {
 
   const { data: categoriesResponse } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => fetchCategoriesTree({ sort: "sequence", limit: 25 }),
+    queryFn: () =>
+      fetchCategoriesTree({ sort: "sequence", status: "active", limit: 25 }),
   });
 
   const { data: usersResponse } = useQuery({
