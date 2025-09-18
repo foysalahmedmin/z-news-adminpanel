@@ -405,7 +405,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
           )}
 
           <Card.Content className="p-6">
-            {!isEditing && !isUserView ? (
+            {!isEditing || isUserView ? (
               // View Mode
               <div className="space-y-6">
                 {/* Profile Picture and Basic Info */}
