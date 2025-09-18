@@ -53,6 +53,8 @@ const AdditionalCategoriesInput = () => {
       // Add category
       setValue("categories", [...categories, categoryId]);
     }
+
+    setIsDropdownOpen(false);
   };
 
   const removeCategory = (categoryToRemove: string) => {
@@ -113,7 +115,7 @@ const AdditionalCategoriesInput = () => {
         </div>
 
         {isDropdownOpen && (
-          <div className="bg-card absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-md border shadow-lg">
+          <div className="bg-card absolute z-10 mt-1 max-h-96 w-full overflow-y-auto rounded-md border shadow-lg">
             {options?.data
               ?.map((category) => renderCategoryOptions(category))
               .flat()}

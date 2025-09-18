@@ -149,7 +149,10 @@ const NewsArticlesPage = () => {
     (news: TNews) => {
       updateMutation.mutate({
         id: news._id,
-        payload: { is_featured: !news.is_featured },
+        payload: {
+          is_featured: !news.is_featured,
+          ...(news.thumbnail && { thumbnail: news.thumbnail }),
+        },
       });
     },
     [updateMutation],
@@ -159,7 +162,10 @@ const NewsArticlesPage = () => {
     (news: TNews) => {
       updateMutation.mutate({
         id: news._id,
-        payload: { is_news_headline: !news.is_news_headline },
+        payload: {
+          is_news_headline: !news.is_news_headline,
+          ...(news.thumbnail && { thumbnail: news.thumbnail }),
+        },
       });
     },
     [updateMutation],
@@ -169,7 +175,10 @@ const NewsArticlesPage = () => {
     (news: TNews) => {
       updateMutation.mutate({
         id: news._id,
-        payload: { is_news_break: !news.is_news_break },
+        payload: {
+          is_news_break: !news.is_news_break,
+          ...(news.thumbnail && { thumbnail: news.thumbnail }),
+        },
       });
     },
     [updateMutation],

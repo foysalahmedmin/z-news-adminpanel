@@ -4,7 +4,7 @@ import { StatisticCard } from "@/components/cards/StatisticCard";
 const statistics: TStatistic[] = [
   {
     title: "Total Revenue",
-    value: "$1,250.00",
+    value: "1,250.00",
     subtitle: "Trending up this month",
     description: "Visitors for the last 6 months",
     icon: "trending-up",
@@ -20,8 +20,8 @@ const statistics: TStatistic[] = [
     description: "Acquisition needs attention",
     icon: "trending-down",
     trend: {
-      type: "down",
-      value: "-20%",
+      type: "up",
+      value: "+15%",
     },
   },
   {

@@ -69,7 +69,7 @@ const NewsArticlesAddPage = () => {
       description: "",
       content: "",
       category: "",
-      status: "draft",
+      status: "published",
       layout: "default",
       is_featured: false,
       published_at: new Date(),

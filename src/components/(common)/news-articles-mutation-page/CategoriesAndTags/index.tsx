@@ -8,6 +8,7 @@ import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
 import { fetchCategoriesTree } from "@/services/category.service";
 import { fetchEvents } from "@/services/event.service";
 import type { TCategory } from "@/types/category.type";
+import AdditionalCategoriesInput from "../AdditionalCategoriesInput";
 import TagsInput from "../TagsInput";
 
 const renderCategoryOptions = (
@@ -72,10 +73,10 @@ const CategoriesAndTags = () => {
           )}
         </div>
 
-        {/* <AdditionalCategoriesInput /> */}
+        <AdditionalCategoriesInput />
 
         <div>
-          <FormControl.Label htmlFor="category">Event</FormControl.Label>
+          <FormControl.Label htmlFor="event">Event</FormControl.Label>
           <FormControl
             as="select"
             id="event"

@@ -1,3 +1,4 @@
+import { ENV } from "@/config";
 import useMenu from "@/hooks/states/useMenu";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
@@ -38,14 +39,16 @@ const Sidebar: React.FC<SidebarProps> = memo(({ className, onClose }) => {
               loading="lazy"
             />
           </div>
-          <h1
+          <a
+            href={ENV?.app_url || "/"}
+            target="_blank"
             className={cn(
-              "text-foreground logo-text font-bold tracking-wide",
+              "text-foreground logo-text inline-block font-bold tracking-wide",
               "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
             )}
           >
             DAINIK EIDIN
-          </h1>
+          </a>
         </div>
 
         {/* Mobile Close Button */}

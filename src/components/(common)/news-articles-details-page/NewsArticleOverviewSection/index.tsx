@@ -76,8 +76,15 @@ const NewsArticleOverviewSection: React.FC<
               <User className="mr-1 h-4 w-4" />
               Category
             </div>
-            <div className="text-foreground text-sm">
-              {news?.category?.name || "None"}
+            <div className="flex items-center gap-2">
+              <div className="text-foreground text-sm">
+                {news?.category?.name || "None"}
+              </div>
+              {news?.categories?.length && (
+                <div className="text-muted-foreground border-foreground inline-block border-s ps-2 text-sm">
+                  {news.categories.map((category) => category.name).join(", ")}
+                </div>
+              )}
             </div>
           </div>
 

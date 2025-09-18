@@ -35,7 +35,6 @@ const NewsArticlesDataTableSection: React.FC<
   onDelete,
   onToggleFeatured,
   onToggleNewsHeadline,
-  onToggleNewsBreak,
   state,
 }) => {
   const { user } = useUser();
@@ -150,20 +149,6 @@ const NewsArticlesDataTableSection: React.FC<
           <Switch
             disabled={isLoading}
             onChange={() => onToggleNewsHeadline(row)}
-            checked={cell === true}
-          />
-        </div>
-      ),
-    },
-    {
-      name: "News Break",
-      field: "is_news_break",
-      isSortable: true,
-      cell: ({ cell, row }) => (
-        <div>
-          <Switch
-            disabled={isLoading}
-            onChange={() => onToggleNewsBreak(row)}
             checked={cell === true}
           />
         </div>
