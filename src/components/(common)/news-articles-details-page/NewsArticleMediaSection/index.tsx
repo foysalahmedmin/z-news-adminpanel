@@ -1,6 +1,6 @@
 import { URLS } from "@/config";
 import type { TNews } from "@/types/news.type";
-import { Eye, Image, Play, Video, Youtube } from "lucide-react";
+import { Eye, Image, Youtube } from "lucide-react";
 import React from "react";
 
 // Media Section
@@ -96,7 +96,7 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
       </div>
 
       {/* Video */}
-      <div>
+      {/* <div>
         <h3 className="text-foreground mb-3 flex items-center text-lg font-semibold">
           <Video className="mr-2 h-5 w-5" />
           Video Content
@@ -127,7 +127,7 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* YouTube Video */}
       <div>
