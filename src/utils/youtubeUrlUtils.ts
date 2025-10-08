@@ -34,7 +34,22 @@ export function parseYouTubeUrl(
 ): YouTubeParseResult {
   const url = inputUrl.trim();
   const id = extractYouTubeId(url);
-  if (!id) throw new Error("Invalid YouTube URL or video ID not found.");
+
+  if (!id) {
+    return {
+      id: "",
+      iframe: "",
+      url: "",
+      thumbnails: {
+        default: ``,
+        mq: ``,
+        hq: ``,
+        sd: ``,
+        hd: ``,
+        max: ``,
+      },
+    };
+  }
 
   // figure out start time
   const urlObj = safeURL(url);
