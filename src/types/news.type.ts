@@ -4,16 +4,21 @@ export type TStatus = "draft" | "pending" | "published" | "archived";
 
 export type TNews = {
   _id: string;
-  sequence: number;
   title: string;
   sub_title?: string;
   slug: string;
-  caption?: string;
   description?: string;
   content: string;
-  thumbnail?: string;
-  images?: string[];
-  video?: string;
+  thumbnail?: {
+    _id: string;
+    url: string;
+    name: string;
+  };
+  video?: {
+    _id: string;
+    url: string;
+    name: string;
+  };
   youtube?: string;
   tags?: string[];
   event?: {
@@ -36,36 +41,22 @@ export type TNews = {
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_featured: boolean;
-  is_premium: boolean;
-  seo?: {
-    image?: string;
-    title?: string;
-    description?: string;
-    keywords?: string[];
-  };
   published_at?: Date;
   expired_at?: Date;
   is_edited?: boolean;
   edited_at?: Date;
-  is_news_headline?: boolean;
-  is_news_break?: boolean;
-  // news_headline?: Partial<TNewsHeadline>;
-  // news_break?: Partial<TNewsBreak>;
   created_at?: string;
   updated_at?: string;
 };
 
 export type TCreateNewsPayload = {
-  sequence?: number;
   title: string;
   sub_title?: string;
   slug: string;
-  caption?: string;
   description?: string;
   content: string; // html string
-  thumbnail?: File | null;
-  images?: File[] | null;
-  video?: File | null;
+  thumbnail?: string; // File ObjectId
+  video?: string; // File ObjectId
   youtube?: string;
   tags?: string[];
   event?: string;
@@ -75,29 +66,18 @@ export type TCreateNewsPayload = {
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: "draft" | "published";
   is_featured: boolean;
-  seo?: {
-    image?: File | null;
-    title?: string;
-    description?: string;
-    keywords?: string[];
-  };
   published_at?: Date;
   expired_at?: Date;
-  is_news_headline?: boolean;
-  is_news_break?: boolean;
 };
 
 export type TUpdateNewsPayload = {
-  sequence?: number;
   title?: string;
   sub_title?: string;
   slug?: string;
-  caption?: string;
   description?: string;
   content?: string;
-  thumbnail?: File | null | string;
-  images?: File[] | null | string[];
-  video?: File | null | string;
+  thumbnail?: string | null; // File ObjectId
+  video?: string | null; // File ObjectId
   youtube?: string;
   tags?: string[];
   event?: string;
@@ -107,16 +87,8 @@ export type TUpdateNewsPayload = {
   layout?: "default" | "standard" | "featured" | "minimal";
   status?: TStatus;
   is_featured?: boolean;
-  seo?: {
-    image?: File | null | string;
-    title?: string;
-    description?: string;
-    keywords?: string[];
-  };
   published_at?: string | Date;
   expired_at?: string | Date;
-  is_news_headline?: boolean;
-  is_news_break?: boolean;
 };
 
 export type TBulkUpdatePayload = {

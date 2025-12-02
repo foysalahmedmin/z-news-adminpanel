@@ -5,6 +5,10 @@ import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import CommentsPage from "@/pages/(common)/CommentsPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import EventsPage from "@/pages/(common)/EventsPage";
+import FilesAddPage from "@/pages/(common)/FilesAddPage";
+import FilesEditPage from "@/pages/(common)/FilesEditPage";
+import FilesPage from "@/pages/(common)/FilesPage";
+import FilesViewPage from "@/pages/(common)/FilesViewPage";
 import NewsArticlesAddPage from "@/pages/(common)/NewsArticlesAddPage";
 import NewsArticlesDetailsPage from "@/pages/(common)/NewsArticlesDetailsPage";
 import NewsArticlesEditPage from "@/pages/(common)/NewsArticlesEditPage";
@@ -128,6 +132,66 @@ export const items: TItem[] = [
         element: (
           <AuthWrapper roles={["supper-admin", "admin", "editor", "author"]}>
             <EventsPage />
+          </AuthWrapper>
+        ),
+        menuType: "invisible",
+      },
+    ],
+  },
+  {
+    roles: ["supper-admin", "admin", "editor", "author", "contributor"],
+    menuType: "title",
+    name: "Media",
+  },
+  {
+    roles: ["supper-admin", "admin", "editor", "author", "contributor"],
+    icon: "file",
+    path: "files",
+    name: "Files",
+    routeType: "layout",
+    menuType: "item-without-children",
+    element: (
+      <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+        <Outlet />
+      </AuthWrapper>
+    ),
+    children: [
+      {
+        index: true,
+        name: "Files",
+        element: (
+          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+            <FilesPage />
+          </AuthWrapper>
+        ),
+        menuType: "invisible",
+      },
+      {
+        roles: ["supper-admin", "admin", "editor", "author", "contributor"],
+        path: ":id",
+        element: (
+          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+            <FilesViewPage />
+          </AuthWrapper>
+        ),
+        menuType: "invisible",
+      },
+      {
+        roles: ["supper-admin", "admin", "editor", "author", "contributor"],
+        path: "add",
+        element: (
+          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+            <FilesAddPage />
+          </AuthWrapper>
+        ),
+        menuType: "invisible",
+      },
+      {
+        roles: ["supper-admin", "admin", "editor", "author"],
+        path: "edit/:id",
+        element: (
+          <AuthWrapper roles={["supper-admin", "admin", "editor", "author"]}>
+            <FilesEditPage />
           </AuthWrapper>
         ),
         menuType: "invisible",

@@ -41,11 +41,7 @@ export async function fetchNewsBreak(id: string): Promise<TNewsBreakResponse> {
 // Create News Break
 export async function createNewsBreak(payload: {
   sequence?: number;
-  title: string;
-  summary?: string;
-  tags?: string[];
-  category?: string;
-  news?: string;
+  news: string;
   status?: "draft" | "pending" | "published" | "archived";
   published_at?: string | Date;
   expired_at?: string | Date;
@@ -102,10 +98,6 @@ export async function updateSelfNewsBreak(
   id: string,
   payload: {
     sequence?: number;
-    title: string;
-    summary?: string;
-    tags?: string[];
-    category?: string;
     news?: string;
     status?: "draft" | "pending" | "published" | "archived";
     published_at?: string | Date;
@@ -130,10 +122,6 @@ export async function updateNewsBreak(
   id: string,
   payload: {
     sequence?: number;
-    title: string;
-    summary?: string;
-    tags?: string[];
-    category?: string;
     news?: string;
     status?: "draft" | "pending" | "published" | "archived";
     published_at?: string | Date;
