@@ -4,7 +4,6 @@ export type TStatus = "draft" | "pending" | "published" | "archived";
 
 export type TNewsBreak = {
   _id: string;
-  sequence: number;
   news: string;
   status: TStatus;
   published_at?: Date;

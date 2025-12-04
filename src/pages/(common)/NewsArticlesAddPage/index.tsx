@@ -9,24 +9,31 @@ import ArticleDetails from "@/components/(common)/news-articles-mutation-page/Ar
 import CategoriesAndTags from "@/components/(common)/news-articles-mutation-page/CategoriesAndTags";
 import ContentEditor from "@/components/(common)/news-articles-mutation-page/ContentEditor";
 import PublishSettings from "@/components/(common)/news-articles-mutation-page/PublishSettings";
-import SEOSection from "@/components/(common)/news-articles-mutation-page/SEOSection";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
-import { createNews } from "@/services/news.service";
+import {
+  createNews,
+} from "@/services/news.service";
+import {
+  createNewsHeadline,
+} from "@/services/news-headline.service";
+import {
+  createNewsBreak,
+} from "@/services/news-break.service";
 import type { TCreateNewsPayload } from "@/types/news.type";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
-// Updated schema with proper File types and consistent defaults
+// Updated schema matching backend validation
 const newsSchema = z.object({
-  sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   sub_title: z.string().optional(),
   slug: z.string().min(1, "Slug is required"),
-  caption: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().max(3000).optional(),
   content: z.string().min(1, "Content is required"),
-  thumbnail: z.instanceof(File).nullable().optional(),
+  thumbnail: z.string().nullable().optional(),
+  video: z.string().nullable().optional(),
   youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
   event: z.string().optional(),
@@ -34,20 +41,19 @@ const newsSchema = z.object({
   categories: z.array(z.string()).optional(),
   writer: z.string().optional(),
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
-  status: z.enum(["draft", "published"]).optional(),
+  status: z.enum(["draft", "pending", "published", "archived"]).optional(),
   is_featured: z.boolean(),
-  seo: z
-    .object({
-      image: z.instanceof(File).nullable().optional(),
-      title: z.string().optional(),
-      description: z.string().optional(),
-      keywords: z.array(z.string()).optional(),
-    })
-    .optional(),
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
-  is_news_headline: z.coerce.boolean().optional(),
-  is_news_break: z.coerce.boolean().optional(),
+  // Headline and Break fields (for separate collections)
+  is_headline: z.coerce.boolean().optional(),
+  is_break: z.coerce.boolean().optional(),
+  headline_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  headline_published_at: z.date().optional(),
+  headline_expired_at: z.date().optional(),
+  break_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  break_published_at: z.date().optional(),
+  break_expired_at: z.date().optional(),
 });
 
 export type NewsFormData = z.infer<typeof newsSchema>;
@@ -74,18 +80,58 @@ const NewsArticlesAddPage = () => {
       is_featured: false,
       published_at: new Date(),
       tags: [],
-      seo: {
-        title: "",
-        description: "",
-        keywords: [],
-      },
+      thumbnail: null,
+      video: null,
+      is_headline: false,
+      is_break: false,
     },
   });
 
   // TanStack Query mutation
   const createNewsMutation = useMutation({
-    mutationFn: (data: TCreateNewsPayload) => createNews(data),
+    mutationFn: async (data: TCreateNewsPayload) => {
+      // Create news first
+      const newsResponse = await createNews(data);
+      const newsId = newsResponse?.data?._id;
+
+      if (!newsId) {
+        throw new Error("Failed to create news");
+      }
+
+      // Handle headline creation
+      if (data.is_headline) {
+        try {
+          await createNewsHeadline({
+            news: newsId,
+            status: data.headline_status || "draft",
+            published_at: data.headline_published_at,
+            expired_at: data.headline_expired_at,
+          });
+        } catch (error) {
+          console.error("Error creating headline:", error);
+          toast.error("News created but failed to create headline");
+        }
+      }
+
+      // Handle break creation
+      if (data.is_break) {
+        try {
+          await createNewsBreak({
+            news: newsId,
+            status: data.break_status || "draft",
+            published_at: data.break_published_at,
+            expired_at: data.break_expired_at,
+          });
+        } catch (error) {
+          console.error("Error creating break:", error);
+          toast.error("News created but failed to create break");
+        }
+      }
+
+      return newsResponse;
+    },
     onSuccess: (news) => {
+      toast.success("News article created successfully");
       navigate(
         news?.data?._id
           ? `/news-articles/${news?.data?._id}`
@@ -94,19 +140,50 @@ const NewsArticlesAddPage = () => {
     },
     onError: (error) => {
       console.error("Error creating news:", error);
-      // Add toast notification here if needed
+      toast.error("Failed to create news article");
     },
   });
 
   const onSubmit = async (data: NewsFormData) => {
     try {
-      const payload: TCreateNewsPayload = {
-        ...data,
+      // Extract headline/break data before creating payload
+      const {
+        is_headline,
+        is_break,
+        headline_status,
+        headline_published_at,
+        headline_expired_at,
+        break_status,
+        break_published_at,
+        break_expired_at,
+        ...newsPayload
+      } = data;
+
+      const payload: TCreateNewsPayload & {
+        is_headline?: boolean;
+        is_break?: boolean;
+        headline_status?: string;
+        headline_published_at?: Date;
+        headline_expired_at?: Date;
+        break_status?: string;
+        break_published_at?: Date;
+        break_expired_at?: Date;
+      } = {
+        ...newsPayload,
+        is_headline,
+        is_break,
+        headline_status,
+        headline_published_at,
+        headline_expired_at,
+        break_status,
+        break_published_at,
+        break_expired_at,
       };
 
       createNewsMutation.mutate(payload);
     } catch (error) {
       console.error("Error creating news:", error);
+      toast.error("Failed to create news article");
     }
   };
 
@@ -125,7 +202,6 @@ const NewsArticlesAddPage = () => {
           <div className="grid gap-6">
             <ArticleDetails />
             <ContentEditor />
-            <SEOSection />
             <CategoriesAndTags />
             <PublishSettings />
           </div>

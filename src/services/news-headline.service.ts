@@ -42,7 +42,6 @@ export async function fetchNewsHeadline(
 
 // Create News Headline
 export async function createNewsHeadline(payload: {
-  sequence?: number;
   news: string;
   status?: "draft" | "pending" | "published" | "archived";
   published_at?: string | Date;
@@ -102,7 +101,6 @@ export async function updateSelfNewsHeadlines(payload: {
 export async function updateSelfNewsHeadline(
   id: string,
   payload: {
-    sequence?: number;
     news?: string;
     status?: "draft" | "pending" | "published" | "archived";
     published_at?: string | Date;
@@ -126,7 +124,6 @@ export async function updateNewsHeadlines(payload: {
 export async function updateNewsHeadline(
   id: string,
   payload: {
-    sequence?: number;
     news?: string;
     status?: "draft" | "pending" | "published" | "archived";
     published_at?: string | Date;

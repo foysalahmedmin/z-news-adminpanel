@@ -3,7 +3,7 @@ import { FormControl } from "@/components/ui/FormControl";
 import FileSelectionModal from "@/components/ui/FileSelectionModal";
 import { fetchFile } from "@/services/file.service";
 import type { TFile } from "@/types/file.type";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
 import { Image, File, Video, X, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";

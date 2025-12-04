@@ -220,7 +220,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
       id: string;
       payload: TUpdateNewsPayload;
     }) =>
-      ["supper-admin", "admin", "editor"].includes(user?.role || "")
+      ["super-admin", "admin", "editor"].includes(user?.role || "")
         ? updateNews(id, payload)
         : updateSelfNews(id, payload),
     onSuccess: (data) => {
@@ -228,16 +228,21 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
       queryClient.invalidateQueries({
         queryKey: ["news_articles", "self_news_articles"],
       });
+      queryClient.refetchQueries({
+        queryKey: ["news_articles", "self_news_articles"],
+      });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || "Failed to update news");
+      const errorMessage =
+        error.response?.data?.message || "Failed to update news";
+      toast.error(errorMessage);
       console.error("Update news error:", error);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      ["supper-admin", "admin"].includes(user?.role || "")
+      ["super-admin", "admin"].includes(user?.role || "")
         ? deleteNews(id)
         : deleteSelfNews(id),
     onSuccess: (data) => {
@@ -268,7 +273,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
       },
     ],
     queryFn: () =>
-      ["supper-admin", "admin", "editor", "author"].includes(user?.role || "")
+      ["super-admin", "admin", "editor", "author"].includes(user?.role || "")
         ? fetchBulkNews({
             page,
             limit,
@@ -300,30 +305,24 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
   // Event handlers
   const handleToggleFeatured = useCallback(
     (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: { is_featured: !news.is_featured },
-      });
-    },
-    [updateMutation],
-  );
-
-  const handleToggleNewsHeadline = useCallback(
-    (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: { is_news_headline: !news.is_news_headline },
-      });
-    },
-    [updateMutation],
-  );
-
-  const handleToggleNewsBreak = useCallback(
-    (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: { is_news_break: !news.is_news_break },
-      });
+      try {
+        const payload: TUpdateNewsPayload = {
+          is_featured: !news.is_featured,
+        };
+        
+        // Only include thumbnail if it exists
+        if (news.thumbnail?._id) {
+          payload.thumbnail = news.thumbnail._id;
+        }
+        
+        updateMutation.mutate({
+          id: news._id,
+          payload,
+        });
+      } catch (error) {
+        console.error("Error in handleToggleFeatured:", error);
+        toast.error("Failed to toggle featured status");
+      }
     },
     [updateMutation],
   );
@@ -570,7 +569,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
             <Card.Header className="pb-0">
               <Tabs.List className="justify-start">
                 <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-                {["supper-admin", "admin", "editor", "author"].includes(
+                {["super-admin", "admin", "editor", "author"].includes(
                   user?.role || "",
                 ) && <Tabs.Trigger value="news">News Articles</Tabs.Trigger>}
               </Tabs.List>
@@ -583,7 +582,7 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
                     meta={newsQuery.data?.meta}
                   />
                 </Tabs.Item>
-                {["supper-admin", "admin", "editor", "author"].includes(
+                {["super-admin", "admin", "editor", "author"].includes(
                   user?.role || "",
                 ) && (
                   <Tabs.Item value="news">
@@ -609,8 +608,6 @@ const ProfilePage = ({ isUserView }: { isUserView?: boolean }) => {
                         isError={newsQuery.isError}
                         onDelete={handleDelete}
                         onToggleFeatured={handleToggleFeatured}
-                        onToggleNewsHeadline={handleToggleNewsHeadline}
-                        onToggleNewsBreak={handleToggleNewsBreak}
                         state={{
                           total: newsQuery.data?.meta?.total || 0,
                           page,

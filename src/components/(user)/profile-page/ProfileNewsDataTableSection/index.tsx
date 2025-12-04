@@ -20,8 +20,6 @@ type NewsArticlesDataTableSectionProps = {
   isError: boolean;
   onDelete: (row: TNews) => void;
   onToggleFeatured: (row: TNews) => void;
-  onToggleNewsHeadline: (row: TNews) => void;
-  onToggleNewsBreak: (row: TNews) => void;
   state: TState;
 };
 
@@ -34,8 +32,6 @@ const NewsArticlesDataTableSection: React.FC<
   isError,
   onDelete,
   onToggleFeatured,
-  onToggleNewsHeadline,
-  onToggleNewsBreak,
   state,
 }) => {
   const { user } = useUser();
@@ -52,13 +48,24 @@ const NewsArticlesDataTableSection: React.FC<
           <div className="aspect-square h-20 flex-shrink-0 overflow-hidden rounded">
             <img
               className="size-full object-cover"
-              src={getThumbnail(row?.thumbnail, row?.youtube)}
+              src={getThumbnail(row?.thumbnail?.url, row?.youtube)}
               alt=""
             />
           </div>
           <div className="flex-1 space-y-1">
-            <h3 className="text-base font-bold">{row.title}</h3>
-            <p className="text-sm">{row.slug}</p>
+            <Link
+              className="group block"
+              to={
+                row.status === "published"
+                  ? `${ENV.app_url}/news/${row.slug}`
+                  : "#"
+              }
+            >
+              <h3 className="text-base font-bold group-hover:underline">
+                {row.title}
+              </h3>
+              <p className="text-sm">{row.slug}</p>
+            </Link>
             <div className="flex items-center">
               <Badge className="bg-muted text-foreground flex w-fit items-center gap-2 px-2 py-1 text-xs">
                 <Tag className="size-4" />
@@ -77,20 +84,35 @@ const NewsArticlesDataTableSection: React.FC<
       name: "Published At",
       field: "published_at",
       isSortable: true,
-      cell: ({ cell }) => (
-        <div>
-          {new Date((cell as string) || "").toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </div>
-      ),
+      cell: ({ cell }) => {
+        if (!cell) return <div>-</div>;
+        try {
+          return (
+            <div>
+              {new Date(cell as string).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </div>
+          );
+        } catch {
+          return <div>-</div>;
+        }
+      },
     },
     {
       name: "Layout",
       field: "layout",
       isSortable: true,
+      cell: ({ cell }) => {
+        if (cell == null || cell === undefined) return <div>-</div>;
+        try {
+          return <div>{String(cell)}</div>;
+        } catch {
+          return <div>-</div>;
+        }
+      },
     },
     {
       name: "Status",
@@ -104,14 +126,17 @@ const NewsArticlesDataTableSection: React.FC<
           archived: "bg-red-100 text-red-800",
         };
 
+        const status = cell as TStatus | null | undefined;
+        if (!status) return null;
+
         return (
           <span
             className={cn(
               "rounded-full px-2 py-1 text-xs font-medium",
-              statusStyles[cell as TStatus],
+              statusStyles[status] || "bg-gray-100 text-gray-800",
             )}
           >
-            {cell?.toString()}
+            {status}
           </span>
         );
       },
@@ -120,43 +145,23 @@ const NewsArticlesDataTableSection: React.FC<
       name: "Featured",
       field: "is_featured",
       isSortable: true,
-      cell: ({ cell, row }) => (
-        <div>
-          <Switch
-            disabled={isLoading}
-            onChange={() => onToggleFeatured(row)}
-            checked={cell === true}
-          />
-        </div>
-      ),
-    },
-    {
-      name: "News Headline",
-      field: "is_news_headline",
-      isSortable: true,
-      cell: ({ cell, row }) => (
-        <div>
-          <Switch
-            disabled={isLoading}
-            onChange={() => onToggleNewsHeadline(row)}
-            checked={cell === true}
-          />
-        </div>
-      ),
-    },
-    {
-      name: "News Break",
-      field: "is_news_break",
-      isSortable: true,
-      cell: ({ cell, row }) => (
-        <div>
-          <Switch
-            disabled={isLoading}
-            onChange={() => onToggleNewsBreak(row)}
-            checked={cell === true}
-          />
-        </div>
-      ),
+      cell: ({ cell, row }) => {
+        // Handle various possible values for is_featured
+        const isChecked =
+          cell === true ||
+          cell === "true" ||
+          (typeof cell === "number" && cell === 1) ||
+          (typeof cell === "string" && cell.toLowerCase() === "true");
+        return (
+          <div>
+            <Switch
+              disabled={isLoading}
+              onChange={() => onToggleFeatured(row)}
+              checked={!!isChecked}
+            />
+          </div>
+        );
+      },
     },
     {
       style: { width: "150px", textAlign: "center" },
@@ -179,7 +184,7 @@ const NewsArticlesDataTableSection: React.FC<
               </Button>
             </Link>
           )}
-          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
+          {(["super-admin", "admin", "editor"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Link
               to={
@@ -209,7 +214,7 @@ const NewsArticlesDataTableSection: React.FC<
               </Button>
             </Link>
           )}
-          {(["supper-admin", "admin", "editor"].includes(info?.role || "") ||
+          {(["super-admin", "admin", "editor"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Link
               to={
@@ -239,7 +244,7 @@ const NewsArticlesDataTableSection: React.FC<
               </Button>
             </Link>
           )}
-          {(["supper-admin", "admin"].includes(info?.role || "") ||
+          {(["super-admin", "admin"].includes(info?.role || "") ||
             row.author?._id === info?._id) && (
             <Button
               disabled={info?.role !== "admin" && row.author?._id !== info?._id}

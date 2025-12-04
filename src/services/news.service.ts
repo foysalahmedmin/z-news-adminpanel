@@ -62,13 +62,7 @@ export async function uploadNewsFile(
 export async function createNews(
   payload: TCreateNewsPayload,
 ): Promise<TNewsResponse> {
-  const response = await api.post(
-    "/api/news",
-    formDataConverter.convert(payload),
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  const response = await api.post("/api/news", payload);
   return response.data;
 }
 
@@ -108,13 +102,7 @@ export async function updateSelfNews(
   id: string,
   payload: TUpdateNewsPayload,
 ): Promise<TNewsResponse> {
-  const response = await api.patch(
-    `/api/news/${id}/self`,
-    formDataConverter.convert(payload),
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  const response = await api.patch(`/api/news/${id}/self`, payload);
   return response.data;
 }
 
@@ -129,13 +117,7 @@ export async function updateNews(
   id: string,
   payload: TUpdateNewsPayload,
 ): Promise<TNewsResponse> {
-  const response = await api.patch(
-    `/api/news/${id}`,
-    formDataConverter.convert(payload),
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  const response = await api.patch(`/api/news/${id}`, payload);
   return response.data;
 }
 

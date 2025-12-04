@@ -2,6 +2,16 @@ import type { Response } from "./response.type";
 
 export type TStatus = "draft" | "pending" | "published" | "archived";
 
+export type TFile = {
+  _id: string;
+  url: string;
+  name: string;
+  path: string;
+  file_name: string;
+  type: string;
+  caption?: string;
+};
+
 export type TNews = {
   _id: string;
   title: string;
@@ -9,33 +19,30 @@ export type TNews = {
   slug: string;
   description?: string;
   content: string;
-  thumbnail?: {
-    _id: string;
-    url: string;
-    name: string;
-  };
-  video?: {
-    _id: string;
-    url: string;
-    name: string;
-  };
+  thumbnail?: TFile;
+  video?: TFile;
   youtube?: string;
   tags?: string[];
   event?: {
     _id: string;
     name: string;
+    slug: string;
   };
   category: {
     _id: string;
     name: string;
+    slug: string;
   };
   categories?: {
     _id: string;
     name: string;
+    slug: string;
   }[];
   author: {
     _id: string;
     name: string;
+    email: string;
+    image?: string;
   };
   writer?: string;
   layout?: "default" | "standard" | "featured" | "minimal";
@@ -47,6 +54,18 @@ export type TNews = {
   edited_at?: Date;
   created_at?: string;
   updated_at?: string;
+  news_headline?: {
+    _id: string;
+    status: TStatus;
+    published_at?: Date;
+    expired_at?: Date;
+  };
+  news_break?: {
+    _id: string;
+    status: TStatus;
+    published_at?: Date;
+    expired_at?: Date;
+  };
 };
 
 export type TCreateNewsPayload = {
@@ -60,12 +79,12 @@ export type TCreateNewsPayload = {
   youtube?: string;
   tags?: string[];
   event?: string;
-  category: string;
+  category?: string;
   categories?: string[];
   writer?: string;
-  layout?: "default" | "standard" | "featured" | "minimal";
-  status?: "draft" | "published";
-  is_featured: boolean;
+  layout?: string;
+  status?: TStatus;
+  is_featured?: boolean;
   published_at?: Date;
   expired_at?: Date;
 };
@@ -84,7 +103,7 @@ export type TUpdateNewsPayload = {
   category?: string;
   categories?: string[];
   writer?: string;
-  layout?: "default" | "standard" | "featured" | "minimal";
+  layout?: string;
   status?: TStatus;
   is_featured?: boolean;
   published_at?: string | Date;

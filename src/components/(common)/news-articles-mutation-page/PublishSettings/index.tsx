@@ -37,35 +37,155 @@ const PublishSettings = () => {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_news_headline">
-                News Headline
+              <FormControl.Label htmlFor="is_headline">
+                Headline
               </FormControl.Label>
               <p className="text-muted-foreground text-sm">
                 Display at the top of news headline section
               </p>
             </div>
             <Switch
-              id="is_news_headline"
-              checked={watch("is_news_headline")}
-              onChange={(checked) => setValue("is_news_headline", checked)}
+              id="is_headline"
+              checked={watch("is_headline") || false}
+              onChange={(checked) => setValue("is_headline", checked)}
             />
           </div>
 
-          {/* <div className="flex items-center justify-between">
+          {watch("is_headline") && (
+            <div className="ml-4 space-y-3 border-l-2 pl-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <FormControl.Label htmlFor="headline_status">
+                    Status
+                  </FormControl.Label>
+                  <FormControl
+                    as="select"
+                    id="headline_status"
+                    value={watch("headline_status") || "draft"}
+                    onChange={(e) =>
+                      setValue("headline_status", e.target.value as any)
+                    }
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="pending">Pending</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </FormControl>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <FormControl.Label htmlFor="headline_published_at">
+                    Publish Date
+                  </FormControl.Label>
+                  <FormControl
+                    as="input"
+                    type="datetime-local"
+                    id="headline_published_at"
+                    value={formatDateTimeLocal(watch("headline_published_at"))}
+                    onChange={(e) =>
+                      setValue(
+                        "headline_published_at",
+                        e.target.value ? new Date(e.target.value) : undefined,
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <FormControl.Label htmlFor="headline_expired_at">
+                    Expiry Date
+                  </FormControl.Label>
+                  <FormControl
+                    as="input"
+                    type="datetime-local"
+                    id="headline_expired_at"
+                    value={formatDateTimeLocal(watch("headline_expired_at"))}
+                    min={formatDateTimeLocal(watch("headline_published_at"))}
+                    onChange={(e) =>
+                      setValue(
+                        "headline_expired_at",
+                        e.target.value ? new Date(e.target.value) : undefined,
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_news_break">
-                News Break
-              </FormControl.Label>
+              <FormControl.Label htmlFor="is_break">Break</FormControl.Label>
               <p className="text-muted-foreground text-sm">
                 Display as news break
               </p>
             </div>
             <Switch
-              id="is_news_break"
-              checked={watch("is_news_break")}
-              onChange={(checked) => setValue("is_news_break", checked)}
+              id="is_break"
+              checked={watch("is_break") || false}
+              onChange={(checked) => setValue("is_break", checked)}
             />
-          </div> */}
+          </div>
+
+          {watch("is_break") && (
+            <div className="ml-4 space-y-3 border-l-2 pl-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <FormControl.Label htmlFor="break_status">Status</FormControl.Label>
+                  <FormControl
+                    as="select"
+                    id="break_status"
+                    value={watch("break_status") || "draft"}
+                    onChange={(e) =>
+                      setValue("break_status", e.target.value as any)
+                    }
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="pending">Pending</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </FormControl>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <FormControl.Label htmlFor="break_published_at">
+                    Publish Date
+                  </FormControl.Label>
+                  <FormControl
+                    as="input"
+                    type="datetime-local"
+                    id="break_published_at"
+                    value={formatDateTimeLocal(watch("break_published_at"))}
+                    onChange={(e) =>
+                      setValue(
+                        "break_published_at",
+                        e.target.value ? new Date(e.target.value) : undefined,
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <FormControl.Label htmlFor="break_expired_at">
+                    Expiry Date
+                  </FormControl.Label>
+                  <FormControl
+                    as="input"
+                    type="datetime-local"
+                    id="break_expired_at"
+                    value={formatDateTimeLocal(watch("break_expired_at"))}
+                    min={formatDateTimeLocal(watch("break_published_at"))}
+                    onChange={(e) =>
+                      setValue(
+                        "break_expired_at",
+                        e.target.value ? new Date(e.target.value) : undefined,
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* <div className="flex items-center justify-between">
             <div>
@@ -98,29 +218,6 @@ const PublishSettings = () => {
               onChange={(checked) => setValue("is_featured", checked)}
             />
           </div>
-          {watch("is_featured") && (
-            <div className="grid grid-cols-2 items-center justify-between gap-4">
-              <div>
-                <FormControl.Label htmlFor="sequence">
-                  Lead Order
-                </FormControl.Label>
-                <p className="text-muted-foreground text-sm">
-                  Display order for featured articles
-                </p>
-              </div>
-              <FormControl
-                className="flex items-center justify-center px-0 text-center placeholder:px-2 placeholder:text-xs"
-                min={0}
-                max={5}
-                as="input"
-                type="number"
-                id="sequence"
-                placeholder="SEQUENCE"
-                value={watch("sequence")}
-                onChange={(e) => setValue("sequence", Number(e.target.value))}
-              />
-            </div>
-          )}
         </div>
         <hr />
         <div className="grid grid-cols-2 gap-4">
@@ -154,8 +251,8 @@ const PublishSettings = () => {
         </div>
         <div>
           <FormControl.Label htmlFor="status">Status</FormControl.Label>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {["draft", "published"].map((statusOption) => (
+          <div className="mt-2 grid grid-cols-4 gap-2">
+            {["draft", "pending", "published", "archived"].map((statusOption) => (
               <div
                 key={statusOption}
                 className={cn(

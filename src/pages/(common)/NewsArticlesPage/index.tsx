@@ -56,22 +56,26 @@ const NewsArticlesPage = () => {
       id: string;
       payload: TUpdateNewsPayload;
     }) =>
-      ["supper-admin", "admin", "editor"].includes(info?.role || "")
+      ["super-admin", "admin", "editor"].includes(info?.role || "")
         ? updateNews(id, payload)
         : updateSelfNews(id, payload),
     onSuccess: (data) => {
       toast.success(data?.message || "News updated successfully!");
+      // Invalidate and refetch to get updated data
       queryClient.invalidateQueries({ queryKey: ["news_articles"] });
+      queryClient.refetchQueries({ queryKey: ["news_articles"] });
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(error.response?.data?.message || "Failed to update news");
+      const errorMessage =
+        error.response?.data?.message || "Failed to update news";
+      toast.error(errorMessage);
       console.error("Update news error:", error);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      ["supper-admin", "admin"].includes(info?.role || "")
+      ["super-admin", "admin"].includes(info?.role || "")
         ? deleteNews(id)
         : deleteSelfNews(id),
     onSuccess: (data) => {
@@ -102,7 +106,7 @@ const NewsArticlesPage = () => {
       },
     ],
     queryFn: () =>
-      ["supper-admin", "admin", "editor"].includes(info?.role || "")
+      ["super-admin", "admin", "editor"].includes(info?.role || "")
         ? fetchBulkNews({
             page,
             limit,
@@ -147,39 +151,24 @@ const NewsArticlesPage = () => {
   // Event handlers
   const handleToggleFeatured = useCallback(
     (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: {
+      try {
+        const payload: TUpdateNewsPayload = {
           is_featured: !news.is_featured,
-          ...(news.thumbnail && { thumbnail: news.thumbnail }),
-        },
-      });
-    },
-    [updateMutation],
-  );
-
-  const handleToggleNewsHeadline = useCallback(
-    (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: {
-          is_news_headline: !news.is_news_headline,
-          ...(news.thumbnail && { thumbnail: news.thumbnail }),
-        },
-      });
-    },
-    [updateMutation],
-  );
-
-  const handleToggleNewsBreak = useCallback(
-    (news: TNews) => {
-      updateMutation.mutate({
-        id: news._id,
-        payload: {
-          is_news_break: !news.is_news_break,
-          ...(news.thumbnail && { thumbnail: news.thumbnail }),
-        },
-      });
+        };
+        
+        // Only include thumbnail if it exists
+        if (news.thumbnail?._id) {
+          payload.thumbnail = news.thumbnail._id;
+        }
+        
+        updateMutation.mutate({
+          id: news._id,
+          payload,
+        });
+      } catch (error) {
+        console.error("Error in handleToggleFeatured:", error);
+        toast.error("Failed to toggle featured status");
+      }
     },
     [updateMutation],
   );
@@ -252,8 +241,6 @@ const NewsArticlesPage = () => {
             isError={newsQuery.isError}
             onDelete={handleDelete}
             onToggleFeatured={handleToggleFeatured}
-            onToggleNewsHeadline={handleToggleNewsHeadline}
-            onToggleNewsBreak={handleToggleNewsBreak}
             state={{
               total: newsQuery.data?.meta?.total || 0,
               page,

@@ -10,29 +10,39 @@ import ArticleDetails from "@/components/(common)/news-articles-mutation-page/Ar
 import CategoriesAndTags from "@/components/(common)/news-articles-mutation-page/CategoriesAndTags";
 import ContentEditor from "@/components/(common)/news-articles-mutation-page/ContentEditor";
 import PublishSettings from "@/components/(common)/news-articles-mutation-page/PublishSettings";
-import SEOSection from "@/components/(common)/news-articles-mutation-page/SEOSection";
 import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
-import { fetchNews, updateNews, updateSelfNews } from "@/services/news.service";
+import {
+  fetchNews,
+  updateNews,
+  updateSelfNews,
+} from "@/services/news.service";
+import {
+  createNewsHeadline,
+  updateNewsHeadline,
+  deleteNewsHeadline,
+} from "@/services/news-headline.service";
+import {
+  createNewsBreak,
+  updateNewsBreak,
+  deleteNewsBreak,
+} from "@/services/news-break.service";
 import type { TUpdateNewsPayload } from "@/types/news.type";
 import { ArrowLeft, Eye } from "lucide-react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
-// Updated schema with proper File types and consistent defaults
+// Updated schema matching backend validation
 const newsSchema = z.object({
-  sequence: z.coerce.number().optional(),
   title: z.string().min(1, "Title is required"),
   sub_title: z.string().optional(),
   slug: z.string().min(1, "Slug is required"),
-  caption: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().max(3000).optional(),
   content: z.string().min(1, "Content is required"),
-  thumbnail: z
-    .union([z.instanceof(File), z.string()])
-    .nullable()
-    .optional(),
+  thumbnail: z.string().nullable().optional(),
+  video: z.string().nullable().optional(),
   youtube: z.string().optional(),
   tags: z.array(z.string()).optional(),
   event: z.string().optional(),
@@ -42,21 +52,17 @@ const newsSchema = z.object({
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
   status: z.enum(["draft", "pending", "published", "archived"]).optional(),
   is_featured: z.boolean(),
-  seo: z
-    .object({
-      image: z
-        .union([z.instanceof(File), z.string()])
-        .nullable()
-        .optional(),
-      title: z.string().optional(),
-      description: z.string().optional(),
-      keywords: z.array(z.string()).optional(),
-    })
-    .optional(),
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
-  is_news_headline: z.coerce.boolean().optional(),
-  is_news_break: z.coerce.boolean().optional(),
+  // Headline and Break fields (for separate collections)
+  is_headline: z.coerce.boolean().optional(),
+  is_break: z.coerce.boolean().optional(),
+  headline_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  headline_published_at: z.date().optional(),
+  headline_expired_at: z.date().optional(),
+  break_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  break_published_at: z.date().optional(),
+  break_expired_at: z.date().optional(),
 });
 
 export type NewsFormData = z.infer<typeof newsSchema>;
@@ -96,11 +102,10 @@ const NewsArticlesUpdatePage = () => {
       is_featured: false,
       published_at: new Date(),
       tags: [],
-      seo: {
-        title: "",
-        description: "",
-        keywords: [],
-      },
+      thumbnail: null,
+      video: null,
+      is_headline: false,
+      is_break: false,
     },
   });
 
@@ -109,14 +114,13 @@ const NewsArticlesUpdatePage = () => {
     if (newsData) {
       const { data } = newsData;
       methods.reset({
-        sequence: data?.sequence,
         title: data?.title,
         sub_title: data?.sub_title,
         slug: data?.slug,
-        caption: data?.caption,
         description: data?.description,
         content: data?.content,
-        thumbnail: data?.thumbnail,
+        thumbnail: data?.thumbnail?._id || null,
+        video: data?.video?._id || null,
         youtube: data?.youtube,
         tags: data?.tags,
         event: data?.event?._id,
@@ -126,38 +130,181 @@ const NewsArticlesUpdatePage = () => {
         layout: data?.layout,
         status: data?.status,
         is_featured: data?.is_featured,
-        seo: data?.seo,
         published_at: data?.published_at
           ? new Date(data?.published_at)
           : undefined,
         expired_at: data?.expired_at ? new Date(data?.expired_at) : undefined,
-        is_news_headline: data?.is_news_headline,
-        is_news_break: data?.is_news_break,
+        // Headline and Break data will be populated separately
+        is_headline: !!data?.news_headline,
+        is_break: !!data?.news_break,
+        headline_status: data?.news_headline?.status,
+        headline_published_at: data?.news_headline?.published_at
+          ? new Date(data?.news_headline.published_at)
+          : undefined,
+        headline_expired_at: data?.news_headline?.expired_at
+          ? new Date(data?.news_headline.expired_at)
+          : undefined,
+        break_status: data?.news_break?.status,
+        break_published_at: data?.news_break?.published_at
+          ? new Date(data?.news_break.published_at)
+          : undefined,
+        break_expired_at: data?.news_break?.expired_at
+          ? new Date(data?.news_break.expired_at)
+          : undefined,
       });
     }
   }, [newsData, methods]);
 
   // TanStack Query mutation for update
   const updateNewsMutation = useMutation({
-    mutationFn: (data: TUpdateNewsPayload) =>
-      ["super-admin", "admin"].includes(info?.role || "")
-        ? updateNews(id!, data)
-        : updateSelfNews(id!, data),
+    mutationFn: async (data: TUpdateNewsPayload & {
+      is_headline?: boolean;
+      is_break?: boolean;
+      headline_status?: string;
+      headline_published_at?: Date;
+      headline_expired_at?: Date;
+      break_status?: string;
+      break_published_at?: Date;
+      break_expired_at?: Date;
+    }) => {
+      // Update news first
+      const newsResponse =
+        ["super-admin", "admin"].includes(info?.role || "")
+          ? await updateNews(id!, data)
+          : await updateSelfNews(id!, data);
+
+      const existingHeadline = newsData?.data?.news_headline;
+      const existingBreak = newsData?.data?.news_break;
+
+      // Handle headline update/create/delete
+      if (data.is_headline) {
+        const headlinePayload = {
+          status: data.headline_status || "draft",
+          published_at: data.headline_published_at,
+          expired_at: data.headline_expired_at,
+        };
+
+        if (existingHeadline?._id) {
+          // Update existing headline
+          try {
+            await updateNewsHeadline(existingHeadline._id, headlinePayload);
+          } catch (error) {
+            console.error("Error updating headline:", error);
+            toast.error("News updated but failed to update headline");
+          }
+        } else {
+          // Create new headline
+          try {
+            await createNewsHeadline({
+              news: id!,
+              ...headlinePayload,
+            });
+          } catch (error) {
+            console.error("Error creating headline:", error);
+            toast.error("News updated but failed to create headline");
+          }
+        }
+      } else if (existingHeadline?._id) {
+        // Delete headline if checkbox is unchecked
+        try {
+          await deleteNewsHeadline(existingHeadline._id);
+        } catch (error) {
+          console.error("Error deleting headline:", error);
+          toast.error("News updated but failed to delete headline");
+        }
+      }
+
+      // Handle break update/create/delete
+      if (data.is_break) {
+        const breakPayload = {
+          status: data.break_status || "draft",
+          published_at: data.break_published_at,
+          expired_at: data.break_expired_at,
+        };
+
+        if (existingBreak?._id) {
+          // Update existing break
+          try {
+            await updateNewsBreak(existingBreak._id, breakPayload);
+          } catch (error) {
+            console.error("Error updating break:", error);
+            toast.error("News updated but failed to update break");
+          }
+        } else {
+          // Create new break
+          try {
+            await createNewsBreak({
+              news: id!,
+              ...breakPayload,
+            });
+          } catch (error) {
+            console.error("Error creating break:", error);
+            toast.error("News updated but failed to create break");
+          }
+        }
+      } else if (existingBreak?._id) {
+        // Delete break if checkbox is unchecked
+        try {
+          await deleteNewsBreak(existingBreak._id);
+        } catch (error) {
+          console.error("Error deleting break:", error);
+          toast.error("News updated but failed to delete break");
+        }
+      }
+
+      return newsResponse;
+    },
     onSuccess: () => {
+      toast.success("News article updated successfully");
       queryClient.invalidateQueries({ queryKey: ["news", id] });
       navigate(`/news-articles/${id}`);
     },
     onError: (error) => {
       console.error("Error updating news:", error);
-      // Add toast notification here if needed
+      toast.error("Failed to update news article");
     },
   });
 
   const onSubmit = async (data: NewsFormData) => {
     try {
-      updateNewsMutation.mutate(data);
+      // Extract headline/break data
+      const {
+        is_headline,
+        is_break,
+        headline_status,
+        headline_published_at,
+        headline_expired_at,
+        break_status,
+        break_published_at,
+        break_expired_at,
+        ...newsPayload
+      } = data;
+
+      const payload: TUpdateNewsPayload & {
+        is_headline?: boolean;
+        is_break?: boolean;
+        headline_status?: string;
+        headline_published_at?: Date;
+        headline_expired_at?: Date;
+        break_status?: string;
+        break_published_at?: Date;
+        break_expired_at?: Date;
+      } = {
+        ...newsPayload,
+        is_headline,
+        is_break,
+        headline_status,
+        headline_published_at,
+        headline_expired_at,
+        break_status,
+        break_published_at,
+        break_expired_at,
+      };
+
+      updateNewsMutation.mutate(payload);
     } catch (error) {
       console.error("Error updating news:", error);
+      toast.error("Failed to update news article");
     }
   };
 
@@ -194,7 +341,6 @@ const NewsArticlesUpdatePage = () => {
           <div className="grid gap-6">
             <ArticleDetails />
             <ContentEditor />
-            <SEOSection />
             <CategoriesAndTags />
             <PublishSettings />
           </div>

@@ -2,9 +2,9 @@ import { useFormContext } from "react-hook-form";
 
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
+import FileFieldSelector from "@/components/ui/FileFieldSelector";
 import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
-import ImageUpload from "../ImageUpload";
 
 const ArticleDetails = () => {
   const {
@@ -98,20 +98,8 @@ const ArticleDetails = () => {
               />
             </div>
 
-            <div>
-              <FormControl.Label htmlFor="caption">Caption</FormControl.Label>
-              <FormControl
-                id="caption"
-                placeholder="Enter caption"
-                value={watch("caption")}
-                onChange={(e) => setValue("caption", e.target.value)}
-              />
-            </div>
-
             <div className="!mb-0">
-              <FormControl.Label htmlFor="description">
-                Writer
-              </FormControl.Label>
+              <FormControl.Label htmlFor="writer">Writer</FormControl.Label>
               <FormControl
                 placeholder="Enter writer"
                 id="writer"
@@ -122,9 +110,20 @@ const ArticleDetails = () => {
           </div>
           <div className="flex flex-col space-y-4 self-stretch">
             <div className="h-full flex-1">
-              <ImageUpload
-                name="thumbnail"
+              <FileFieldSelector
+                value={watch("thumbnail")}
+                onChange={(value) => setValue("thumbnail", value as string | null)}
                 label="Thumbnail"
+                type="image"
+                className="h-full"
+              />
+            </div>
+            <div className="h-full flex-1">
+              <FileFieldSelector
+                value={watch("video")}
+                onChange={(value) => setValue("video", value as string | null)}
+                label="Video"
+                type="video"
                 className="h-full"
               />
             </div>
