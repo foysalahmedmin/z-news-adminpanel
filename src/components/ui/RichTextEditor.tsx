@@ -1,21 +1,18 @@
+import { BlockNoteSchema, defaultBlockSpecs } from "@blocknote/core";
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import {
-  BlockNoteSchema,
-  defaultBlockSpecs,
-} from "@blocknote/core";
-import {
-  useCreateBlockNote,
   createReactBlockSpec,
-  SuggestionMenuController,
   getDefaultReactSlashMenuItems,
+  SuggestionMenuController,
+  useCreateBlockNote,
   type BlockNoteEditor,
 } from "@blocknote/react";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import FileSelectionModal from "@/components/modals/FileSelectionModal";
 import { Button } from "@/components/ui/Button";
-import FileSelectionModal from "@/components/ui/FileSelectionModal";
 import useSetting from "@/hooks/states/useSetting";
 import { createFile, fetchFile } from "@/services/file.service";
 import { parseYouTubeUrl } from "@/utils/youtubeUrlUtils";
@@ -40,10 +37,10 @@ const fileSelectBlock = createReactBlockSpec(
       const fileId = (block.props as { fileId: string }).fileId;
       if (!fileId) {
         return (
-          <div className="flex items-center justify-center p-8 border-2 border-dashed rounded-lg bg-muted/50">
+          <div className="bg-muted/50 flex items-center justify-center rounded-lg border-2 border-dashed p-8">
             <div className="text-center">
-              <File className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
+              <File className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
+              <p className="text-muted-foreground text-sm">
                 No file selected. Click to select a file.
               </p>
             </div>
@@ -73,10 +70,10 @@ const youtubeEmbedBlock = createReactBlockSpec(
       const url = (block.props as { url: string }).url;
       if (!url) {
         return (
-          <div className="flex items-center justify-center p-8 border-2 border-dashed rounded-lg bg-muted/50">
+          <div className="bg-muted/50 flex items-center justify-center rounded-lg border-2 border-dashed p-8">
             <div className="text-center">
-              <Youtube className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
+              <Youtube className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
+              <p className="text-muted-foreground text-sm">
                 No YouTube URL provided
               </p>
             </div>
@@ -87,8 +84,8 @@ const youtubeEmbedBlock = createReactBlockSpec(
       const parsed = parseYouTubeUrl(url);
       if (!parsed.id) {
         return (
-          <div className="flex items-center justify-center p-8 border-2 border-dashed rounded-lg bg-destructive/10">
-            <p className="text-sm text-destructive">
+          <div className="bg-destructive/10 flex items-center justify-center rounded-lg border-2 border-dashed p-8">
+            <p className="text-destructive text-sm">
               Invalid YouTube URL: {url}
             </p>
           </div>
@@ -102,7 +99,7 @@ const youtubeEmbedBlock = createReactBlockSpec(
           <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
             <iframe
               src={embedUrl}
-              className="absolute top-0 left-0 w-full h-full rounded-lg"
+              className="absolute top-0 left-0 h-full w-full rounded-lg"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -264,11 +261,14 @@ const RichTextEditor = ({
               "after",
             );
             const videoHtml = `<video controls src="${fileUrl}" style="max-width: 100%; height: auto;"></video>`;
-            const htmlBlocks = await blockNoteEditor.tryParseHTMLToBlocks(
-              videoHtml,
-            );
+            const htmlBlocks =
+              await blockNoteEditor.tryParseHTMLToBlocks(videoHtml);
             if (htmlBlocks.length > 0) {
-              blockNoteEditor.insertBlocks(htmlBlocks, lastFileSelect.id, "after");
+              blockNoteEditor.insertBlocks(
+                htmlBlocks,
+                lastFileSelect.id,
+                "after",
+              );
             }
           } else {
             blockNoteEditor.insertBlocks(
@@ -318,11 +318,14 @@ const RichTextEditor = ({
               "after",
             );
             const videoHtml = `<video controls src="${fileUrl}" style="max-width: 100%; height: auto;"></video>`;
-            const htmlBlocks = await blockNoteEditor.tryParseHTMLToBlocks(
-              videoHtml,
-            );
+            const htmlBlocks =
+              await blockNoteEditor.tryParseHTMLToBlocks(videoHtml);
             if (htmlBlocks.length > 0) {
-              blockNoteEditor.insertBlocks(htmlBlocks, currentBlock.id, "after");
+              blockNoteEditor.insertBlocks(
+                htmlBlocks,
+                currentBlock.id,
+                "after",
+              );
             }
           } else {
             blockNoteEditor.insertBlocks(
@@ -356,7 +359,9 @@ const RichTextEditor = ({
     if (!youtubeUrl.trim()) {
       const blocks = blockNoteEditor.document;
       const youtubeBlocks = blocks.filter(
-        (block) => block.type === "youtubeEmbed" && !(block.props as { url: string }).url,
+        (block) =>
+          block.type === "youtubeEmbed" &&
+          !(block.props as { url: string }).url,
       );
       if (youtubeBlocks.length > 0) {
         const lastYoutube = youtubeBlocks[youtubeBlocks.length - 1];
@@ -375,7 +380,8 @@ const RichTextEditor = ({
 
     const blocks = blockNoteEditor.document;
     const youtubeBlocks = blocks.filter(
-      (block) => block.type === "youtubeEmbed" && !(block.props as { url: string }).url,
+      (block) =>
+        block.type === "youtubeEmbed" && !(block.props as { url: string }).url,
     );
 
     if (youtubeBlocks.length > 0) {
@@ -478,11 +484,9 @@ const RichTextEditor = ({
         .blocksToHTMLLossy(blockNoteEditor.document)
         .then((currentHtml) => {
           if (currentHtml !== value) {
-            blockNoteEditor
-              .tryParseHTMLToBlocks(value)
-              .then((blocks) => {
-                blockNoteEditor.replaceBlocks(blockNoteEditor.document, blocks);
-              });
+            blockNoteEditor.tryParseHTMLToBlocks(value).then((blocks) => {
+              blockNoteEditor.replaceBlocks(blockNoteEditor.document, blocks);
+            });
           }
         });
     }
@@ -565,9 +569,7 @@ const RichTextEditor = ({
           />
         </BlockNoteView>
       </div>
-      {error && (
-        <p className="text-destructive mt-1 text-sm">{error}</p>
-      )}
+      {error && <p className="text-destructive mt-1 text-sm">{error}</p>}
 
       <FileSelectionModal
         isOpen={isFileModalOpen}
@@ -581,14 +583,14 @@ const RichTextEditor = ({
       {/* YouTube Embed Modal */}
       {isYoutubeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-background rounded-lg border p-6 w-full max-w-md">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="bg-background w-full max-w-md rounded-lg border p-6">
+            <div className="mb-4 flex items-center gap-2">
               <Youtube className="h-5 w-5" />
               <h3 className="text-lg font-semibold">Embed YouTube Video</h3>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">
+                <label className="mb-2 block text-sm font-medium">
                   YouTube URL
                 </label>
                 <input
@@ -596,14 +598,14 @@ const RichTextEditor = ({
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                   placeholder="https://www.youtube.com/watch?v=..."
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full rounded-md border px-3 py-2"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleYoutubeEmbed();
                     }
                   }}
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-muted-foreground mt-1 text-xs">
                   Paste a YouTube video URL or video ID
                 </p>
               </div>
@@ -635,4 +637,3 @@ const RichTextEditor = ({
 };
 
 export default RichTextEditor;
-

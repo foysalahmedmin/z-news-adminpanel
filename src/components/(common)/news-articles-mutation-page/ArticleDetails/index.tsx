@@ -2,9 +2,9 @@ import { useFormContext } from "react-hook-form";
 
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
-import FileFieldSelector from "@/components/ui/FileFieldSelector";
 import { cn } from "@/lib/utils";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesAddPage";
+import FileFieldSelector from "./FileFieldSelector";
 
 const ArticleDetails = () => {
   const {
@@ -112,7 +112,9 @@ const ArticleDetails = () => {
             <div className="h-full flex-1">
               <FileFieldSelector
                 value={watch("thumbnail")}
-                onChange={(value) => setValue("thumbnail", value as string | null)}
+                onChange={(value) =>
+                  setValue("thumbnail", value as string | null)
+                }
                 label="Thumbnail"
                 type="image"
                 className="h-full"

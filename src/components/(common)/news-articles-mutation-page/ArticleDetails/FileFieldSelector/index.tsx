@@ -1,12 +1,12 @@
+import FileSelectionModal from "@/components/modals/FileSelectionModal";
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
-import FileSelectionModal from "@/components/ui/FileSelectionModal";
+import { cn } from "@/lib/utils";
 import { fetchFile } from "@/services/file.service";
 import type { TFile } from "@/types/file.type";
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { Image, File, Video, Music, X, FolderOpen } from "lucide-react";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { File, FolderOpen, Image, Music, Video, X } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface FileFieldSelectorProps {
   value?: string | string[] | null; // File _id or array of _ids
@@ -92,27 +92,27 @@ const FileFieldSelector = ({
       <div className={cn("flex flex-col", className)}>
         <FormControl.Label>{label}</FormControl.Label>
         {selectedFile ? (
-          <div className="relative group border-2 border-dashed rounded-lg p-4">
+          <div className="group relative rounded-lg border-2 border-dashed p-4">
             <div className="flex items-center gap-4">
               {selectedFile.type === "image" ? (
                 <img
                   src={selectedFile.url}
                   alt={selectedFile.name}
-                  className="w-20 h-20 object-cover rounded"
+                  className="h-20 w-20 rounded object-cover"
                 />
               ) : (
-                <div className="w-20 h-20 flex items-center justify-center bg-muted rounded">
+                <div className="bg-muted flex h-20 w-20 items-center justify-center rounded">
                   {(() => {
                     const Icon = getFileIcon(selectedFile.type);
-                    return <Icon className="h-8 w-8 text-muted-foreground" />;
+                    return <Icon className="text-muted-foreground h-8 w-8" />;
                   })()}
                 </div>
               )}
               <div className="flex-1">
                 <p className="font-medium">{selectedFile.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedFile.type} •{" "}
-                  {(selectedFile.size / 1024).toFixed(2)} KB
+                <p className="text-muted-foreground text-sm">
+                  {selectedFile.type} • {(selectedFile.size / 1024).toFixed(2)}{" "}
+                  KB
                 </p>
               </div>
               <Button
@@ -139,7 +139,7 @@ const FileFieldSelector = ({
             onClick={() => setIsModalOpen(true)}
             className="w-full"
           >
-            <FolderOpen className="h-4 w-4 mr-2" />
+            <FolderOpen className="mr-2 h-4 w-4" />
             Select File
           </Button>
         )}
@@ -163,7 +163,7 @@ const FileFieldSelector = ({
       <FormControl.Label>{label}</FormControl.Label>
       {selectedFileIds.length > 0 ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
             {selectedFileIds.map((fileId) => {
               const file = multipleFiles.find((f) => f._id === fileId);
               const Icon = getFileIcon(file?.type);
@@ -171,7 +171,7 @@ const FileFieldSelector = ({
               return (
                 <div
                   key={fileId}
-                  className="relative group border rounded-lg p-2"
+                  className="group relative rounded-lg border p-2"
                 >
                   {file ? (
                     <>
@@ -179,21 +179,21 @@ const FileFieldSelector = ({
                         <img
                           src={file.url}
                           alt={file.name}
-                          className="w-full aspect-square object-cover rounded"
+                          className="aspect-square w-full rounded object-cover"
                         />
                       ) : (
-                        <div className="w-full aspect-square flex items-center justify-center bg-muted rounded">
-                          <Icon className="h-8 w-8 text-muted-foreground" />
+                        <div className="bg-muted flex aspect-square w-full items-center justify-center rounded">
+                          <Icon className="text-muted-foreground h-8 w-8" />
                         </div>
                       )}
-                      <p className="text-xs mt-1 truncate">{file.name}</p>
+                      <p className="mt-1 truncate text-xs">{file.name}</p>
                     </>
                   ) : (
                     <>
-                      <div className="w-full aspect-square flex items-center justify-center bg-muted rounded">
-                        <File className="h-8 w-8 text-muted-foreground" />
+                      <div className="bg-muted flex aspect-square w-full items-center justify-center rounded">
+                        <File className="text-muted-foreground h-8 w-8" />
                       </div>
-                      <p className="text-xs mt-1 truncate">
+                      <p className="mt-1 truncate text-xs">
                         {fileId.substring(0, 8)}...
                       </p>
                     </>
@@ -201,7 +201,7 @@ const FileFieldSelector = ({
                   <button
                     type="button"
                     onClick={() => handleRemoveMultiple(fileId)}
-                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="bg-destructive text-destructive-foreground absolute top-1 right-1 rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -215,14 +215,10 @@ const FileFieldSelector = ({
               variant="outline"
               onClick={() => setIsModalOpen(true)}
             >
-              <FolderOpen className="h-4 w-4 mr-2" />
+              <FolderOpen className="mr-2 h-4 w-4" />
               Add More Files
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleRemove}
-            >
+            <Button type="button" variant="outline" onClick={handleRemove}>
               Clear All
             </Button>
           </div>
@@ -234,7 +230,7 @@ const FileFieldSelector = ({
           onClick={() => setIsModalOpen(true)}
           className="w-full"
         >
-          <FolderOpen className="h-4 w-4 mr-2" />
+          <FolderOpen className="mr-2 h-4 w-4" />
           Select Files
         </Button>
       )}
@@ -254,4 +250,3 @@ const FileFieldSelector = ({
 };
 
 export default FileFieldSelector;
-

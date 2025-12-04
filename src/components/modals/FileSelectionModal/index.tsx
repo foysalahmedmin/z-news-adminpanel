@@ -2,28 +2,28 @@ import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import { Modal } from "@/components/ui/Modal";
 import useAlert from "@/hooks/ui/useAlert";
+import { cn } from "@/lib/utils";
 import { createFile, deleteFile, fetchFiles } from "@/services/file.service";
 import type { TFile } from "@/types/file.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import {
+  Check,
   ChevronLeft,
   ChevronRight,
-  Image,
   File,
   FileText,
-  Video,
+  Image,
+  Loader2,
   Music,
   Search,
-  X,
-  Upload,
   Trash,
-  Check,
-  Loader2,
+  Upload,
+  Video,
+  X,
 } from "lucide-react";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 // Custom debounce function with cancel support
@@ -174,9 +174,7 @@ const FileSelectionModal = ({
       setIsUploading(false);
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(
-        error.response?.data?.message || "Failed to upload file",
-      );
+      toast.error(error.response?.data?.message || "Failed to upload file");
       setIsUploading(false);
     },
   });
@@ -194,9 +192,7 @@ const FileSelectionModal = ({
       }
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(
-        error.response?.data?.message || "Failed to delete file",
-      );
+      toast.error(error.response?.data?.message || "Failed to delete file");
     },
   });
 
@@ -218,18 +214,15 @@ const FileSelectionModal = ({
     [isMultiple, selectedFiles, onChange, setIsOpen],
   );
 
-  const handleToggleSelection = useCallback(
-    (fileId: string) => {
-      setSelectedFiles((prev) => {
-        if (prev.includes(fileId)) {
-          return prev.filter((id) => id !== fileId);
-        } else {
-          return [...prev, fileId];
-        }
-      });
-    },
-    [],
-  );
+  const handleToggleSelection = useCallback((fileId: string) => {
+    setSelectedFiles((prev) => {
+      if (prev.includes(fileId)) {
+        return prev.filter((id) => id !== fileId);
+      } else {
+        return [...prev, fileId];
+      }
+    });
+  }, []);
 
   // Handle file upload
   const handleFileUpload = useCallback(
@@ -323,10 +316,10 @@ const FileSelectionModal = ({
       className={className}
     >
       <Modal.Backdrop>
-        <Modal.Content className="max-w-6xl w-full max-h-[90vh] flex flex-col">
+        <Modal.Content className="flex max-h-[90vh] w-full max-w-6xl flex-col">
           {/* Header */}
           <Modal.Header>
-            <div className="flex items-center justify-between w-full">
+            <div className="flex w-full items-center justify-between">
               <Modal.Title>{modalTitle}</Modal.Title>
               <div className="flex items-center gap-2">
                 <input
@@ -347,12 +340,12 @@ const FileSelectionModal = ({
                     <span className="cursor-pointer">
                       {isUploading ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Uploading...
                         </>
                       ) : (
                         <>
-                          <Upload className="h-4 w-4 mr-2" />
+                          <Upload className="mr-2 h-4 w-4" />
                           Upload
                         </>
                       )}
@@ -365,12 +358,12 @@ const FileSelectionModal = ({
           </Modal.Header>
 
           {/* Body */}
-          <Modal.Body className="flex-1 overflow-y-auto space-y-4">
+          <Modal.Body className="flex-1 space-y-4 overflow-y-auto">
             {/* Search and Filters */}
             <div className="space-y-4">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <FormControl
                   type="text"
                   placeholder="Search files..."
@@ -381,9 +374,9 @@ const FileSelectionModal = ({
               </div>
 
               {/* Filters Row */}
-              <div className="flex gap-4 flex-wrap">
+              <div className="flex flex-wrap gap-4">
                 {/* Type Filter */}
-                <div className="flex-1 min-w-[150px]">
+                <div className="min-w-[150px] flex-1">
                   <FormControl
                     as="select"
                     className="w-full"
@@ -405,7 +398,7 @@ const FileSelectionModal = ({
                 </div>
 
                 {/* Category Filter */}
-                <div className="flex-1 min-w-[150px]">
+                <div className="min-w-[150px] flex-1">
                   <FormControl
                     type="text"
                     placeholder="Category filter..."
@@ -418,7 +411,7 @@ const FileSelectionModal = ({
                 </div>
 
                 {/* Sort */}
-                <div className="flex-1 min-w-[150px]">
+                <div className="min-w-[150px] flex-1">
                   <FormControl
                     as="select"
                     className="w-full"
@@ -438,8 +431,8 @@ const FileSelectionModal = ({
 
             {/* Selected Files Section (Multiple mode only) */}
             {isMultiple && selectedFiles.length > 0 && (
-              <div className="border rounded-lg p-4 bg-muted/50">
-                <div className="flex items-center justify-between mb-2">
+              <div className="bg-muted/50 rounded-lg border p-4">
+                <div className="mb-2 flex items-center justify-between">
                   <h3 className="text-sm font-medium">
                     Selected ({selectedFiles.length})
                   </h3>
@@ -455,7 +448,7 @@ const FileSelectionModal = ({
                     Clear All
                   </Button>
                 </div>
-                <div className="flex gap-2 flex-wrap max-h-32 overflow-y-auto">
+                <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto">
                   {selectedFiles.map((fileId) => {
                     const file = files.find((f) => f._id === fileId);
                     // If file not in current page, show placeholder
@@ -463,12 +456,12 @@ const FileSelectionModal = ({
                       return (
                         <div
                           key={fileId}
-                          className="relative group flex items-center gap-2 bg-background border rounded p-2"
+                          className="group bg-background relative flex items-center gap-2 rounded border p-2"
                         >
-                          <div className="w-12 h-12 flex items-center justify-center bg-muted rounded">
-                            <File className="h-6 w-6 text-muted-foreground" />
+                          <div className="bg-muted flex h-12 w-12 items-center justify-center rounded">
+                            <File className="text-muted-foreground h-6 w-6" />
                           </div>
-                          <span className="text-sm max-w-[100px] truncate text-muted-foreground">
+                          <span className="text-muted-foreground max-w-[100px] truncate text-sm">
                             {fileId.substring(0, 8)}...
                           </span>
                           <button
@@ -484,23 +477,23 @@ const FileSelectionModal = ({
                     return (
                       <div
                         key={fileId}
-                        className="relative group flex items-center gap-2 bg-background border rounded p-2"
+                        className="group bg-background relative flex items-center gap-2 rounded border p-2"
                       >
                         {file.type === "image" ? (
                           <img
                             src={file.url}
                             alt={file.name}
-                            className="w-12 h-12 object-cover rounded"
+                            className="h-12 w-12 rounded object-cover"
                           />
                         ) : (
-                          <div className="w-12 h-12 flex items-center justify-center bg-muted rounded">
+                          <div className="bg-muted flex h-12 w-12 items-center justify-center rounded">
                             {(() => {
                               const Icon = getFileIcon(file.type);
                               return <Icon className="h-6 w-6" />;
                             })()}
                           </div>
                         )}
-                        <span className="text-sm max-w-[100px] truncate">
+                        <span className="max-w-[100px] truncate text-sm">
                           {file.name}
                         </span>
                         <button
@@ -520,23 +513,23 @@ const FileSelectionModal = ({
             {/* File Grid */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
               </div>
             ) : isError ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="flex flex-col items-center justify-center space-y-4 py-12">
                 <p className="text-muted-foreground">Failed to load files</p>
                 <Button variant="outline" onClick={() => refetch()}>
                   Retry
                 </Button>
               </div>
             ) : files.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <File className="h-12 w-12 text-muted-foreground" />
+              <div className="flex flex-col items-center justify-center space-y-4 py-12">
+                <File className="text-muted-foreground h-12 w-12" />
                 <p className="text-muted-foreground">No files found</p>
                 <label htmlFor="file-upload-input">
                   <Button variant="outline" asChild>
                     <span className="cursor-pointer">
-                      <Upload className="h-4 w-4 mr-2" />
+                      <Upload className="mr-2 h-4 w-4" />
                       Upload Files
                     </span>
                   </Button>
@@ -544,7 +537,7 @@ const FileSelectionModal = ({
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {files.map((file) => {
                     const Icon = getFileIcon(file.type);
                     const preview = getFilePreview(file);
@@ -554,9 +547,9 @@ const FileSelectionModal = ({
                       <div
                         key={file._id}
                         className={cn(
-                          "relative group aspect-square rounded-lg border-2 overflow-hidden cursor-pointer transition-all",
+                          "group relative aspect-square cursor-pointer overflow-hidden rounded-lg border-2 transition-all",
                           isSelected
-                            ? "border-primary ring-2 ring-primary bg-primary/10"
+                            ? "border-primary ring-primary bg-primary/10 ring-2"
                             : "border-muted hover:border-primary/50",
                         )}
                         onClick={() => handleSelectFile(file._id)}
@@ -566,20 +559,20 @@ const FileSelectionModal = ({
                           <img
                             src={preview}
                             alt={file.name}
-                            className="w-full h-full object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-muted">
-                            <Icon className="h-12 w-12 text-muted-foreground" />
+                          <div className="bg-muted flex h-full w-full items-center justify-center">
+                            <Icon className="text-muted-foreground h-12 w-12" />
                           </div>
                         )}
 
                         {/* Overlay */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                        <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
 
                         {/* Selection Indicator */}
                         {isSelected && (
-                          <div className="absolute top-2 left-2 bg-primary text-primary-foreground rounded-full p-1">
+                          <div className="bg-primary text-primary-foreground absolute top-2 left-2 rounded-full p-1">
                             <Check className="h-4 w-4" />
                           </div>
                         )}
@@ -587,16 +580,16 @@ const FileSelectionModal = ({
                         {/* Delete Button (on hover) */}
                         <button
                           type="button"
-                          className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="bg-destructive text-destructive-foreground absolute top-2 right-2 rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100"
                           onClick={(e) => handleDeleteFile(file._id, e)}
                         >
                           <Trash className="h-4 w-4" />
                         </button>
 
                         {/* File Info */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-xs">
-                          <p className="font-medium truncate">{file.name}</p>
-                          <div className="flex items-center justify-between mt-1">
+                        <div className="absolute right-0 bottom-0 left-0 bg-black/70 p-2 text-xs text-white">
+                          <p className="truncate font-medium">{file.name}</p>
+                          <div className="mt-1 flex items-center justify-between">
                             <span className="capitalize">{file.type}</span>
                             <span>{formatFileSize(file.size)}</span>
                           </div>
@@ -608,7 +601,7 @@ const FileSelectionModal = ({
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex items-center justify-between border-t pt-4">
                     <Button
                       type="button"
                       variant="outline"
@@ -616,10 +609,10 @@ const FileSelectionModal = ({
                       onClick={() => setPage(page - 1)}
                       disabled={page === 0}
                     >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      <ChevronLeft className="mr-1 h-4 w-4" />
                       Previous
                     </Button>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-muted-foreground text-sm">
                       Page {page + 1} of {totalPages} ({data?.meta?.total || 0}{" "}
                       files)
                     </span>
@@ -631,7 +624,7 @@ const FileSelectionModal = ({
                       disabled={page >= totalPages - 1}
                     >
                       Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
+                      <ChevronRight className="ml-1 h-4 w-4" />
                     </Button>
                   </div>
                 )}
@@ -649,7 +642,8 @@ const FileSelectionModal = ({
                 onClick={handleConfirmSelection}
                 disabled={selectedFiles.length === 0}
               >
-                Select {selectedFiles.length} file{selectedFiles.length !== 1 ? "s" : ""}
+                Select {selectedFiles.length} file
+                {selectedFiles.length !== 1 ? "s" : ""}
               </Button>
             ) : (
               <Button onClick={handleCancel}>Close</Button>
@@ -662,4 +656,3 @@ const FileSelectionModal = ({
 };
 
 export default FileSelectionModal;
-
