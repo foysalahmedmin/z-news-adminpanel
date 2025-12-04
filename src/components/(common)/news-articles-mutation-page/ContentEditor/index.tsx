@@ -8,6 +8,8 @@ import {
 import {
   useCreateBlockNote,
   createReactBlockSpec,
+  SuggestionMenuController,
+  getDefaultReactSlashMenuItems,
 } from "@blocknote/react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -133,6 +135,8 @@ const youtubeEmbedBlock = createReactBlockSpec(
 );
 
 // Create schema with custom blocks
+// Note: Custom blocks will automatically appear in slash menu
+// To group them under "Customs", we'll handle it via useEffect
 const schema = BlockNoteSchema.create({
   blockSpecs: {
     ...defaultBlockSpecs,
@@ -157,6 +161,7 @@ const ContentEditor = () => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [isYoutubeModalOpen, setIsYoutubeModalOpen] = useState(false);
 
+  // Create editor first to get its type for slash menu
   const blockNoteEditor = useCreateBlockNote({
     schema,
     initialContent: [
@@ -195,6 +200,7 @@ const ContentEditor = () => {
       }
     },
   });
+
 
   const handleFileSelect = async (fileId: string | string[] | null) => {
     if (!fileId || Array.isArray(fileId)) {
@@ -409,6 +415,64 @@ const ContentEditor = () => {
     setIsYoutubeModalOpen(false);
   };
 
+  // Custom Slash Menu items
+  const insertFileSelectItem = (editor: typeof blockNoteEditor) => ({
+    title: "File Select",
+    onItemClick: () => {
+      setFileModalType("all");
+      setIsFileModalOpen(true);
+      const currentBlock = editor.getTextCursorPosition().block;
+      editor.insertBlocks(
+        [
+          {
+            type: "fileSelect",
+            props: {
+              fileId: "",
+              fileType: "all",
+            },
+          },
+        ],
+        currentBlock.id,
+        "after",
+      );
+    },
+    aliases: ["file", "select file", "file select"],
+    group: "Customs",
+    icon: <File size={18} />,
+    subtext: "Select a file from your library",
+  });
+
+  const insertYouTubeItem = (editor: typeof blockNoteEditor) => ({
+    title: "YouTube",
+    onItemClick: () => {
+      setIsYoutubeModalOpen(true);
+      const currentBlock = editor.getTextCursorPosition().block;
+      editor.insertBlocks(
+        [
+          {
+            type: "youtubeEmbed",
+            props: {
+              url: "",
+            },
+          },
+        ],
+        currentBlock.id,
+        "after",
+      );
+    },
+    aliases: ["youtube", "video", "embed", "youtube embed"],
+    group: "Customs",
+    icon: <Youtube size={18} />,
+    subtext: "Embed a YouTube video",
+  });
+
+  // List containing all default Slash Menu Items, as well as our custom ones
+  const getCustomSlashMenuItems = () => [
+    ...getDefaultReactSlashMenuItems(blockNoteEditor),
+    insertFileSelectItem(blockNoteEditor),
+    insertYouTubeItem(blockNoteEditor),
+  ];
+
   useEffect(() => {
     if (contentValue) {
       blockNoteEditor
@@ -424,6 +488,7 @@ const ContentEditor = () => {
         });
     }
   }, [contentValue, blockNoteEditor]);
+
 
   // Listen for block changes to detect fileSelect or youtubeEmbed blocks
   useEffect(() => {
@@ -522,6 +587,7 @@ const ContentEditor = () => {
           <BlockNoteView
             theme={setting?.theme === "dark" ? "dark" : "light"}
             editor={blockNoteEditor}
+            slashMenu={false}
             onChange={() => {
               blockNoteEditor
                 .blocksToHTMLLossy(blockNoteEditor.document)
@@ -529,7 +595,34 @@ const ContentEditor = () => {
                   setValue("content", html);
                 });
             }}
-          />
+          >
+            <SuggestionMenuController
+              triggerCharacter="/"
+              getItems={async (query: string) => {
+                const allItems = getCustomSlashMenuItems();
+                // Simple filter - filter items based on query
+                if (!query) return allItems;
+                const lowerQuery = query.toLowerCase();
+                return allItems.filter((item) => {
+                  const title = (item as any).title?.toLowerCase() || "";
+                  const subtext = (item as any).subtext?.toLowerCase() || "";
+                  const aliases = (item as any).aliases || [];
+                  return (
+                    title.includes(lowerQuery) ||
+                    subtext.includes(lowerQuery) ||
+                    aliases.some((alias: string) =>
+                      alias.toLowerCase().includes(lowerQuery),
+                    )
+                  );
+                });
+              }}
+              onItemClick={(item) => {
+                if ((item as any).onItemClick) {
+                  (item as any).onItemClick();
+                }
+              }}
+            />
+          </BlockNoteView>
         </div>
         {errors.content && (
           <p className="text-destructive mt-1 text-sm">
