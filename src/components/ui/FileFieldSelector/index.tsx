@@ -4,7 +4,7 @@ import FileSelectionModal from "@/components/ui/FileSelectionModal";
 import { fetchFile } from "@/services/file.service";
 import type { TFile } from "@/types/file.type";
 import { useQuery, useQueries } from "@tanstack/react-query";
-import { Image, File, Video, X, FolderOpen } from "lucide-react";
+import { Image, File, Video, Music, X, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -68,6 +68,8 @@ const FileFieldSelector = ({
         return Image;
       case "video":
         return Video;
+      case "audio":
+        return Music;
       default:
         return File;
     }

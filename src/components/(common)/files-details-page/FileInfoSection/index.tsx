@@ -6,6 +6,7 @@ import {
   File,
   Image,
   Video,
+  Music,
   FileText,
   Archive,
 } from "lucide-react";
@@ -43,6 +44,8 @@ const getFileTypeIcon = (type?: string) => {
       return <Image className="h-8 w-8" />;
     case "video":
       return <Video className="h-8 w-8" />;
+    case "audio":
+      return <Music className="h-8 w-8" />;
     case "pdf":
     case "doc":
     case "txt":

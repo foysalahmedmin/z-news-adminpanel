@@ -160,7 +160,7 @@ const FileSelectionModal = ({
       const uploadedFile = response.data;
       toast.success(response?.message || "File uploaded successfully!");
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      if (onFileUploaded) {
+      if (onFileUploaded && uploadedFile) {
         onFileUploaded(uploadedFile);
       }
       // Auto-select uploaded file if single mode

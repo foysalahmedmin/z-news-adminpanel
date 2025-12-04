@@ -4,7 +4,7 @@ import DataTable from "@/components/ui/DataTable";
 import { cn } from "@/lib/utils";
 import type { TFile } from "@/types/file.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
-import { Edit, Eye, Trash, Image, Video, File, FileText } from "lucide-react";
+import { Edit, Eye, Trash, Image, Video, Music, File, FileText } from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
 
@@ -34,6 +34,8 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
         return Image;
       case "video":
         return Video;
+      case "audio":
+        return Music;
       case "pdf":
       case "doc":
       case "txt":

@@ -2,16 +2,16 @@ import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { useState, useEffect } from "react";
 
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import FileSelectionModal from "@/components/ui/FileSelectionModal";
-import { fetchFile } from "@/services/file.service";
 import useSetting from "@/hooks/states/useSetting";
 import type { NewsFormData } from "@/pages/(common)/NewsArticlesEditPage";
-import { Image, Video, File } from "lucide-react";
+import { createFile, fetchFile } from "@/services/file.service";
+import { File, Image, Video } from "lucide-react";
 
 const ContentEditor = () => {
   const {
@@ -23,7 +23,9 @@ const ContentEditor = () => {
 
   const contentValue = watch("content");
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-  const [fileModalType, setFileModalType] = useState<"image" | "video" | "all">("all");
+  const [fileModalType, setFileModalType] = useState<"image" | "video" | "all">(
+    "all",
+  );
 
   const blockNoteEditor = useCreateBlockNote({
     initialContent: [
@@ -37,10 +39,29 @@ const ContentEditor = () => {
         style: "min-height: 350px; padding-top: 1rem; padding-bottom: 1rem;",
       },
     },
-    // Disable default file upload - we'll use FileSelectionModal instead
-    uploadFile: async () => {
-      // Return empty string to prevent default upload
-      return "";
+    // Upload file to backend and return URL
+    uploadFile: async (file: File): Promise<string> => {
+      try {
+        // Create FormData with the file
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        // Add category based on file type
+        formData.append("category", "news-content");
+        
+        // Upload file to backend
+        const response = await createFile(formData);
+        
+        // Return the file URL
+        if (response.data?.url) {
+          return response.data.url;
+        }
+        
+        throw new Error("File upload failed: No URL returned");
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        throw error;
+      }
     },
   });
 
@@ -147,7 +168,7 @@ const ContentEditor = () => {
                 setIsFileModalOpen(true);
               }}
             >
-              <Image className="h-4 w-4 mr-2" />
+              <Image className="mr-2 h-4 w-4" />
               Insert Image
             </Button>
             <Button
@@ -159,7 +180,7 @@ const ContentEditor = () => {
                 setIsFileModalOpen(true);
               }}
             >
-              <Video className="h-4 w-4 mr-2" />
+              <Video className="mr-2 h-4 w-4" />
               Insert Video
             </Button>
             <Button
@@ -171,7 +192,7 @@ const ContentEditor = () => {
                 setIsFileModalOpen(true);
               }}
             >
-              <File className="h-4 w-4 mr-2" />
+              <File className="mr-2 h-4 w-4" />
               Insert File
             </Button>
           </div>
