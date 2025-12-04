@@ -197,69 +197,152 @@ const ContentEditor = () => {
   });
 
   const handleFileSelect = async (fileId: string | string[] | null) => {
-    if (!fileId || Array.isArray(fileId)) return;
+    if (!fileId || Array.isArray(fileId)) {
+      // If cancelled, remove any fileSelect placeholder blocks
+      const blocks = blockNoteEditor.document;
+      const fileSelectBlocks = blocks.filter(
+        (block) => block.type === "fileSelect",
+      );
+      if (fileSelectBlocks.length > 0) {
+        const lastFileSelect = fileSelectBlocks[fileSelectBlocks.length - 1];
+        blockNoteEditor.removeBlocks([lastFileSelect]);
+      }
+      setIsFileModalOpen(false);
+      return;
+    }
 
     try {
       const { data: fileData } = await fetchFile(fileId);
-      if (!fileData) return;
+      if (!fileData) {
+        setIsFileModalOpen(false);
+        return;
+      }
 
       const file = fileData;
       const fileUrl = file.url;
 
-      // Get the current block (where cursor is)
-      const currentBlock = blockNoteEditor.getTextCursorPosition().block;
+      // Find and replace fileSelect placeholder blocks
+      const blocks = blockNoteEditor.document;
+      const fileSelectBlocks = blocks.filter(
+        (block) => block.type === "fileSelect",
+      );
 
-      // Insert image or video block based on file type
-      if (file.type === "image") {
-        blockNoteEditor.insertBlocks(
-          [
-            {
-              type: "image",
-              props: {
-                url: fileUrl,
-                caption: file.caption || "",
+      if (fileSelectBlocks.length > 0) {
+        // Replace the last fileSelect block
+        const lastFileSelect = fileSelectBlocks[fileSelectBlocks.length - 1];
+
+        // Replace fileSelect block with actual content
+        blockNoteEditor.removeBlocks([lastFileSelect]);
+
+        // Insert image or video block based on file type
+        if (file.type === "image") {
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "image",
+                props: {
+                  url: fileUrl,
+                  caption: file.caption || "",
+                },
               },
-            },
-          ],
-          currentBlock.id,
-          "after",
-        );
-      } else if (file.type === "video") {
-        // BlockNote doesn't have a native video block, so we'll insert an HTML block
-        blockNoteEditor.insertBlocks(
-          [
-            {
-              type: "paragraph",
-              content: "",
-            },
-          ],
-          currentBlock.id,
-          "after",
-        );
-        // Then convert to HTML and insert video tag
-        const videoHtml = `<video controls src="${fileUrl}" style="max-width: 100%; height: auto;"></video>`;
-        const blocks = await blockNoteEditor.tryParseHTMLToBlocks(videoHtml);
-        if (blocks.length > 0) {
-          blockNoteEditor.insertBlocks(blocks, currentBlock.id, "after");
+            ],
+            lastFileSelect.id,
+            "after",
+          );
+        } else if (file.type === "video") {
+          // BlockNote doesn't have a native video block, so we'll insert an HTML block
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "paragraph",
+                content: "",
+              },
+            ],
+            lastFileSelect.id,
+            "after",
+          );
+          // Then convert to HTML and insert video tag
+          const videoHtml = `<video controls src="${fileUrl}" style="max-width: 100%; height: auto;"></video>`;
+          const htmlBlocks = await blockNoteEditor.tryParseHTMLToBlocks(
+            videoHtml,
+          );
+          if (htmlBlocks.length > 0) {
+            blockNoteEditor.insertBlocks(htmlBlocks, lastFileSelect.id, "after");
+          }
+        } else {
+          // For other file types, insert a link
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "link",
+                    href: fileUrl,
+                    content: file.name,
+                  },
+                ],
+              },
+            ],
+            lastFileSelect.id,
+            "after",
+          );
         }
       } else {
-        // For other file types, insert a link
-        blockNoteEditor.insertBlocks(
-          [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "link",
-                  href: fileUrl,
-                  content: file.name,
+        // No placeholder found, insert at cursor position
+        const currentBlock = blockNoteEditor.getTextCursorPosition().block;
+
+        // Insert image or video block based on file type
+        if (file.type === "image") {
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "image",
+                props: {
+                  url: fileUrl,
+                  caption: file.caption || "",
                 },
-              ],
-            },
-          ],
-          currentBlock.id,
-          "after",
-        );
+              },
+            ],
+            currentBlock.id,
+            "after",
+          );
+        } else if (file.type === "video") {
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "paragraph",
+                content: "",
+              },
+            ],
+            currentBlock.id,
+            "after",
+          );
+          const videoHtml = `<video controls src="${fileUrl}" style="max-width: 100%; height: auto;"></video>`;
+          const htmlBlocks = await blockNoteEditor.tryParseHTMLToBlocks(
+            videoHtml,
+          );
+          if (htmlBlocks.length > 0) {
+            blockNoteEditor.insertBlocks(htmlBlocks, currentBlock.id, "after");
+          }
+        } else {
+          blockNoteEditor.insertBlocks(
+            [
+              {
+                type: "paragraph",
+                content: [
+                  {
+                    type: "link",
+                    href: fileUrl,
+                    content: file.name,
+                  },
+                ],
+              },
+            ],
+            currentBlock.id,
+            "after",
+          );
+        }
       }
 
       setIsFileModalOpen(false);
@@ -270,6 +353,17 @@ const ContentEditor = () => {
 
   const handleYoutubeEmbed = () => {
     if (!youtubeUrl.trim()) {
+      // If empty, remove placeholder blocks
+      const blocks = blockNoteEditor.document;
+      const youtubeBlocks = blocks.filter(
+        (block) => block.type === "youtubeEmbed" && !(block.props as { url: string }).url,
+      );
+      if (youtubeBlocks.length > 0) {
+        const lastYoutube = youtubeBlocks[youtubeBlocks.length - 1];
+        blockNoteEditor.removeBlocks([lastYoutube]);
+      }
+      setIsYoutubeModalOpen(false);
+      setYoutubeUrl("");
       return;
     }
 
@@ -279,22 +373,36 @@ const ContentEditor = () => {
       return;
     }
 
-    // Get the current block (where cursor is)
-    const currentBlock = blockNoteEditor.getTextCursorPosition().block;
-
-    // Insert YouTube embed block
-    blockNoteEditor.insertBlocks(
-      [
-        {
-          type: "youtubeEmbed",
-          props: {
-            url: youtubeUrl.trim(),
-          },
-        },
-      ],
-      currentBlock.id,
-      "after",
+    // Find and replace youtubeEmbed placeholder blocks
+    const blocks = blockNoteEditor.document;
+    const youtubeBlocks = blocks.filter(
+      (block) => block.type === "youtubeEmbed" && !(block.props as { url: string }).url,
     );
+
+    if (youtubeBlocks.length > 0) {
+      // Replace the last placeholder block
+      const lastYoutube = youtubeBlocks[youtubeBlocks.length - 1];
+      blockNoteEditor.updateBlock(lastYoutube, {
+        props: {
+          url: youtubeUrl.trim(),
+        },
+      });
+    } else {
+      // No placeholder found, insert at cursor position
+      const currentBlock = blockNoteEditor.getTextCursorPosition().block;
+      blockNoteEditor.insertBlocks(
+        [
+          {
+            type: "youtubeEmbed",
+            props: {
+              url: youtubeUrl.trim(),
+            },
+          },
+        ],
+        currentBlock.id,
+        "after",
+      );
+    }
 
     // Reset and close
     setYoutubeUrl("");
@@ -316,6 +424,42 @@ const ContentEditor = () => {
         });
     }
   }, [contentValue, blockNoteEditor]);
+
+  // Listen for block changes to detect fileSelect or youtubeEmbed blocks
+  useEffect(() => {
+    const handleChange = () => {
+      const blocks = blockNoteEditor.document;
+      
+      // Check for fileSelect blocks with empty fileId
+      const emptyFileSelectBlocks = blocks.filter(
+        (block) =>
+          block.type === "fileSelect" &&
+          !(block.props as { fileId: string }).fileId,
+      );
+      if (emptyFileSelectBlocks.length > 0 && !isFileModalOpen) {
+        setFileModalType("all");
+        setIsFileModalOpen(true);
+      }
+
+      // Check for youtubeEmbed blocks with empty url
+      const emptyYoutubeBlocks = blocks.filter(
+        (block) =>
+          block.type === "youtubeEmbed" &&
+          !(block.props as { url: string }).url,
+      );
+      if (emptyYoutubeBlocks.length > 0 && !isYoutubeModalOpen) {
+        setIsYoutubeModalOpen(true);
+      }
+    };
+
+    // Subscribe to editor changes if onChange exists
+    if (blockNoteEditor.onChange) {
+      const unsubscribe = blockNoteEditor.onChange(handleChange);
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+  }, [blockNoteEditor, isFileModalOpen, isYoutubeModalOpen]);
 
   return (
     <Card>
