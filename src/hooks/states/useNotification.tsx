@@ -1,4 +1,7 @@
 import {
+  bulkUpdateNotifications as bulkUpdateNotificationsSlice,
+  removeNotification as removeNotificationSlice,
+  resetNotifications as resetNotificationsSlice,
   setIsConnected as setIsConnectedSlice,
   setNotification as setNotificationSlice,
   setTotal as setTotalSlice,
@@ -19,14 +22,28 @@ const useNotification = () => {
   const setNotification = (notification: TNotificationRecipient) =>
     dispatch(setNotificationSlice(notification));
 
-  const updateNotification = (payload: { _id: string; read_at: string }) =>
-    dispatch(updateNotificationSlice(payload));
+  const updateNotification = (payload: {
+    _id: string;
+    read_at?: string;
+    is_read?: boolean;
+  }) => dispatch(updateNotificationSlice(payload));
+
+  const bulkUpdateNotifications = (payload: {
+    count: number;
+    action: string;
+  }) => dispatch(bulkUpdateNotificationsSlice(payload));
+
+  const removeNotification = (id: string) =>
+    dispatch(removeNotificationSlice(id));
 
   const setUnread = (count: number) => dispatch(setUnreadSlice(count));
+
   const setTotal = (count: number) => dispatch(setTotalSlice(count));
 
   const setIsConnected = (status: boolean) =>
     dispatch(setIsConnectedSlice(status));
+
+  const resetNotifications = () => dispatch(resetNotificationsSlice());
 
   return {
     // State
@@ -38,9 +55,12 @@ const useNotification = () => {
     // Actions
     setNotification,
     updateNotification,
+    bulkUpdateNotifications,
+    removeNotification,
     setUnread,
     setTotal,
     setIsConnected,
+    resetNotifications,
   };
 };
 
