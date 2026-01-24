@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import useUser from "@/hooks/states/useUser";
-import { signIn } from "@/services/auth.service"; // <-- You should create this API call
+import { googleSignIn, signIn } from "@/services/auth.service";
 import type { SignInPayload } from "@/types/auth.type";
+import type { CredentialResponse } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { Eye, EyeOff } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,14 +24,34 @@ const SigninForm: React.FC = () => {
 
   const onSubmit = async (data: SignInPayload) => {
     try {
-      const response = await signIn(data); // API call
+      const response = await signIn(data);
       if (response?.data?.token && response?.data?.info) {
-        setUser({ ...response.data, is_authenticated: true }); // store user in redux
+        setUser({ ...response.data, is_authenticated: true });
         toast.success("Login successful!");
         navigate("/");
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Login failed");
+    } catch (error) {
+      const message = (error as any)?.response?.data?.message || "Login failed";
+      toast.error(message);
+    }
+  };
+
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse,
+  ) => {
+    try {
+      if (credentialResponse.credential) {
+        const response = await googleSignIn(credentialResponse.credential);
+        if (response?.data?.token && response?.data?.info) {
+          setUser({ ...response.data, is_authenticated: true });
+          toast.success("Google Login successful!");
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      const message =
+        (error as any)?.response?.data?.message || "Google Login failed";
+      toast.error(message);
     }
   };
 
@@ -43,6 +65,31 @@ const SigninForm: React.FC = () => {
             <p className="text-muted-foreground text-balance">
               Sign in to your z-news account
             </p>
+          </div>
+
+          {/* Google Login */}
+          <div className="flex justify-center border-b pb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                toast.error("Google Login Failed");
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              width="100%"
+            />
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background text-muted-foreground px-2">
+                Or continue with email
+              </span>
+            </div>
           </div>
 
           {/* Email */}

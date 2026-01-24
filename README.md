@@ -73,18 +73,18 @@ A failsafe layer for preventing accidental data loss.
 
 ## Tech Stack
 
-| Category             | Technology                                      |
-| :------------------- | :---------------------------------------------- |
-| Runtime Environment  | Node.js (v20+)                                  |
-| Core Framework       | React 19 (Modern Concurrent Rendering)          |
-| Programming Language | TypeScript (Strict Mode)                        |
-| Build Tool           | Vite (ESM-based HMR)                            |
-| Styling              | Tailwind CSS 4 & CVA (Utility-first)            |
-| State Management     | Redux Toolkit & TanStack Query v5               |
-| Real-time Signaling  | Socket.io Client                                |
-| Content Editing      | BlockNote (Block-based Rich Text)               |
-| Data Visualization   | Recharts                                        |
-| Security Architecture| JWT, Zod Validation, RBAC Higher Order Wrappers |
+| Category              | Technology                                      |
+| :-------------------- | :---------------------------------------------- |
+| Runtime Environment   | Node.js (v20+)                                  |
+| Core Framework        | React 19 (Modern Concurrent Rendering)          |
+| Programming Language  | TypeScript (Strict Mode)                        |
+| Build Tool            | Vite (ESM-based HMR)                            |
+| Styling               | Tailwind CSS 4 & CVA (Utility-first)            |
+| State Management      | Redux Toolkit & TanStack Query v5               |
+| Real-time Signaling   | Socket.io Client                                |
+| Content Editing       | BlockNote (Block-based Rich Text)               |
+| Data Visualization    | Recharts                                        |
+| Security Architecture | JWT, Zod Validation, RBAC Higher Order Wrappers |
 
 ---
 
@@ -98,7 +98,7 @@ A failsafe layer for preventing accidental data loss.
 graph TD
     User[Admin/Editor/Author] -->|HTTPS| Vercel[Frontend Cloud - Vercel]
     Vercel -->|React SPA| Browser[Client Browser]
-    
+
     subgraph "Application State"
         Redux[Redux Toolkit - Client State]
         Query[React Query - Server Cache]
@@ -126,7 +126,7 @@ graph LR
     User[User Session] -->|Verify Role| Router[RouteMenu Builder]
     Router -->|Filter| Sidebar[Dynamic Navigation]
     Router -->|Validate| Guard[AuthWrapper Guard]
-    
+
     Guard -->|Pass| Page[Target Page View]
     Guard -->|Fail| Redirect[Unauthorized Redirect]
 ```
@@ -191,21 +191,25 @@ This project deviates from off-the-shelf libraries by using a **highly optimized
 ### Installation & Execution
 
 1.  **Clone and Navigate**:
+
     ```bash
     git clone <project-url>
     cd z-news-adminpanel
     ```
 
 2.  **Install Dependencies**:
+
     ```bash
     pnpm install
     ```
 
 3.  **Environment Provisioning**:
     Create a `.env` file in the root and configure the backend targets:
+
     ```env
     VITE_API_URL=http://your-api-url
     VITE_SOCKET_URL=http://your-socket-url
+    VITE_GOOGLE_CLIENT_ID=your-google-client-id
     ```
 
 4.  **Launch Local Instance**:
@@ -231,10 +235,10 @@ sequenceDiagram
     Author->>API: POST /news (Save as Draft)
     Author->>API: PATCH /news (Submit for Review)
     Note over Author,API: Status set to 'pending'
-    
+
     Editor->>API: GET /news/pending
     Editor->>API: PATCH /news (Approve & Publish)
-    
+
     API->>CDN: Trigger Edge Revalidation
     API->>API: Invalidate Redis Cache Patterns
     Note right of API: Article is now 'published'
@@ -255,6 +259,7 @@ sequenceDiagram
 ### Distribution
 
 Build the production-ready optimized SPA:
+
 ```bash
 pnpm build
 ```

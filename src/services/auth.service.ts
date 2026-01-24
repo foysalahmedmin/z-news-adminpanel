@@ -17,6 +17,19 @@ export async function signIn(payload: SignInPayload): Promise<AuthResponse> {
   return response.data as AuthResponse;
 }
 
+// POST - Google Sign In
+export async function googleSignIn(id_token: string): Promise<AuthResponse> {
+  const response = await api.post(
+    "/api/auth/google-login",
+    { id_token },
+    {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    },
+  );
+  return response.data as AuthResponse;
+}
+
 // POST - Sign Up
 export async function signUp(payload: SignUpPayload): Promise<AuthResponse> {
   const formData = new FormData();
