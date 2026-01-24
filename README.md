@@ -1,369 +1,272 @@
-# Z-NEWS ADMINPANEL (<a href="https://admin.z-news.com/">LIVE</a>)
+# Z-News Admin Panel
 
-A modern, feature-rich admin panel for managing news articles, categories, users, and content for the Z-News platform. Built with React, TypeScript, and modern web technologies.
+A modern, enterprise-grade administration engine for managing the Z-News ecosystem. Built with **React 19**, **TypeScript**, and **Modern Web Technologies**, this system provides centralized orchestration for editorial workflows, media assets, hierarchical taxonomies, and real-time user engagement. It serves as the command center for the Z-News platform, featuring granular role-based security, live analytics, and a modular architecture.
 
-## 🚀 Features
+---
 
-### 📊 Dashboard
+## Table of Contents
 
-- Comprehensive analytics and statistics
-- Real-time data visualization with charts
-- Quick access to key metrics and insights
+- [Core Modules and Features](#core-modules-and-features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project Directory Map](#project-directory-map)
+- [Standard Operation Patterns](#standard-operation-patterns)
+- [Custom Infrastructure](#custom-infrastructure)
+- [Getting Started](#getting-started)
+- [Workflow Diagrams](#workflow-diagrams)
+- [Development and Deployment](#development-and-deployment)
 
-### 📰 News Management
+---
 
-- **Article Management**: Create, edit, and manage news articles
-- **Rich Text Editor**: Powered by BlockNote for advanced content editing
-- **Media Support**: Upload and manage images, videos, and files
-- **SEO Optimization**: Built-in SEO fields for better search visibility
-- **Status Management**: Draft, pending, published, and archived states
-- **Content Layouts**: Multiple layout options (default, standard, featured, minimal)
-- **YouTube Integration**: Embed YouTube videos directly in articles
-<!-- - **Bulk Operations**: Mass update, delete, and restore articles -->
+## Core Modules and Features
 
-### 🏷️ Category Management
+### Dashboard & Analytics
 
-- Hierarchical category structure
-- Category icons and thumbnails
-- Featured category support
-- Status management (active/inactive)
-- Drag-and-drop ordering
+The nerve center of the platform, providing real-time visibility into the ecosystem's health.
 
-### 👥 User Management
+- **Intelligent Statistics**: Real-time cards showing article counts, user growth, active comments, and media storage status.
+- **Data Visualization**: Interactive Recharts integration for visualizing editorial trends, category distribution, and user engagement metrics.
+- **Activity Streams**: Live tracking of system-wide actions with role-based visibility.
+- **Real-time Sync**: Dashboard state updates instantly via Socket.io without page refreshes.
 
-- Role-based access control (Super Admin, Admin, Editor, Author, Contributor, Subscriber, User)
-- User profile management
-- Status tracking (in-progress, blocked)
-- Email verification system
+### Editorial Content Engine
 
-### 💬 Engagement Features
+Comprehensive management of the platform's primary value driver—news content.
 
-- **Comments System**: Manage user comments and interactions
-- **Reactions**: Track user reactions to content
-- **Real-time Notifications**: Live notification system with Socket.io integration
-- **Live Updates**: Real-time data synchronization across all connected clients
+- **State-of-the-Art Editor**: Integration with **BlockNote** for a Notion-like, block-based rich text editing experience.
+- **Lifecycle Management**: Precise control over article states (`Draft`, `Pending`, `Published`, `Archived`).
+- **Specialized Segments**: Dedicated workflows for managing `Breaking News`, `Headline Stories`, and `Featured Articles`.
+- **Engagement Monitoring**: Integrated view of comments and reactions directly within article detail pages.
 
-### 🔧 Advanced Features
+### Taxonomy & Event Orchestration
 
-- **Real-time Updates**: Socket.io integration for live updates
-- **File Management**: Upload and manage various file types
-- **Search & Filtering**: Advanced search and filtering capabilities
-- **Data Tables**: Sortable, searchable, and paginated data tables
-- **Responsive Design**: Mobile-first, fully responsive interface
-- **Dark/Light Theme**: Theme switching capability
-- **Internationalization**: Multi-language support ready
+A flexible system for organizing and categorizing content.
 
-## 🛠️ Technology Stack
+- **Recursive Categories**: Hierarchical category management supporting infinite nesting with parent-child relationships.
+- **Sequence Control**: Drag-and-drop or index-based ordering for category and event prioritization.
+- **Event Linking**: Specialized module for managing time-sensitive events and linking them to editorial content.
 
-### Core Framework
+### Media & Asset Management
 
-- **React 19** - Latest React with concurrent features
-- **TypeScript** - Type-safe development
-- **Vite** - Fast build tool and development server
+A robust interface for handling high-volume media traffic.
 
-### Styling & UI
+- **Cloud Storage Interface**: Seamless integration with Google Cloud Storage for scalable asset hosting.
+- **Media Library**: Centralized view for all uploaded files with advanced filtering by type and metadata.
+- **Asset Preservation**: Automatic filename sanitization and unique suffix generation to prevent collisions.
 
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Custom Component Library** - **Most components are custom-built** with minimal third-party dependencies
-- **Lucide React** - Icon library (only major UI dependency)
+### User & Security Administration
 
-### State Management
+Granular control over the system's human resources.
 
-- **Redux Toolkit** - Predictable state management
-- **React Query (TanStack Query)** - Server state management and caching
+- **Multi-Role RBAC**: Strict permission enforcement across `supper-admin`, `admin`, `editor`, `author`, `contributor`, and `user`.
+- **Identity Control**: Account verification, status management (active/blocked), and detailed session tracking.
+- **Secure Profile Management**: Dedicated `/self` endpoints for users to manage their own presence securely.
 
-### Routing & Navigation
+### System Integrity (Recycle Bin)
 
-- **React Router 7** - Client-side routing
-- **Custom AppRoute Class** - Dynamic route generation with role-based access control
+A failsafe layer for preventing accidental data loss.
 
-### Form Management
+- **Soft-Delete Recovery**: Centralized interface for viewing all logically deleted items across all modules.
+- **Granular Restoration**: One-click restoration or permanent byte-level eradication of system assets.
 
-- **React Hook Form** - Performant forms with easy validation
-- **Zod** - TypeScript-first schema validation
-- **Hookform Resolvers** - Validation integration
+---
 
-### Rich Text Editing
+## Tech Stack
 
-- **BlockNote** - Modern block-based editor
-- **Mantine Integration** - Enhanced editor components
+| Category             | Technology                                      |
+| :------------------- | :---------------------------------------------- |
+| Runtime Environment  | Node.js (v20+)                                  |
+| Core Framework       | React 19 (Modern Concurrent Rendering)          |
+| Programming Language | TypeScript (Strict Mode)                        |
+| Build Tool           | Vite (ESM-based HMR)                            |
+| Styling              | Tailwind CSS 4 & CVA (Utility-first)            |
+| State Management     | Redux Toolkit & TanStack Query v5               |
+| Real-time Signaling  | Socket.io Client                                |
+| Content Editing      | BlockNote (Block-based Rich Text)               |
+| Data Visualization   | Recharts                                        |
+| Security Architecture| JWT, Zod Validation, RBAC Higher Order Wrappers |
 
-### Data Visualization
+---
 
-- **Recharts** - Charts and data visualization
+## Architecture
 
-### Additional Libraries
+### System Architecture Diagram
 
-- **Axios** - HTTP client for API requests
-- **Socket.io Client** - Real-time communication
-- **React Toastify** - Toast notifications
-- **Date-fns** - Date manipulation utilities
-- **Class Variance Authority** - Component variant management
-- **Embla Carousel** - Touch-friendly carousel component
+<div align="center">
 
-## 📁 Project Structure
+```mermaid
+graph TD
+    User[Admin/Editor/Author] -->|HTTPS| Vercel[Frontend Cloud - Vercel]
+    Vercel -->|React SPA| Browser[Client Browser]
+    
+    subgraph "Application State"
+        Redux[Redux Toolkit - Client State]
+        Query[React Query - Server Cache]
+        Socket[Socket.io - Realtime]
+    end
 
+    Browser --> Redux
+    Browser --> Query
+    Browser --> Socket
+
+    Query <-->|REST API| Backend[Node.js Backend]
+    Socket <-->|WS Signaling| Relay[Socket Relay]
+    Backend <-->|Persistence| DB[(MongoDB)]
+    Backend <-->|Storage| GCS[Google Cloud Storage]
 ```
+
+</div>
+
+### Navigation & Permission Architecture
+
+<div align="center">
+
+```mermaid
+graph LR
+    User[User Session] -->|Verify Role| Router[RouteMenu Builder]
+    Router -->|Filter| Sidebar[Dynamic Navigation]
+    Router -->|Validate| Guard[AuthWrapper Guard]
+    
+    Guard -->|Pass| Page[Target Page View]
+    Guard -->|Fail| Redirect[Unauthorized Redirect]
+```
+
+</div>
+
+---
+
+## Project Directory Map
+
+```text
 src/
-├── components/           # Reusable UI components
-│   ├── (auth)/         # Authentication components
-│   ├── (common)/       # Common page components
-│   ├── (user)/         # User-specific components
-│   ├── appliers/       # State appliers and providers
-│   ├── cards/          # Card components
-│   ├── modals/         # Modal dialogs
-│   ├── partials/       # Layout partials (Header, Sidebar, etc.)
-│   ├── sections/       # Page sections
-│   ├── ui/             # Base UI components
-│   └── wrappers/       # Component wrappers
-├── config/             # Configuration files
-│   ├── constants/      # App constants
-│   ├── endpoints/      # API endpoints
-│   ├── env/           # Environment variables
-│   ├── project/       # Project metadata
-│   ├── seo/           # SEO configuration
-│   ├── settings/      # App settings
-│   └── urls/          # URL configuration
-├── hooks/              # Custom React hooks
-│   ├── observers/     # Intersection and mutation observers
-│   ├── states/        # State management hooks
-│   ├── ui/            # UI-related hooks
-│   └── utils/         # Utility hooks
-├── layouts/            # Page layouts
-├── pages/              # Page components
-│   ├── (auth)/        # Authentication pages
-│   ├── (common)/      # Common pages
-│   ├── (partial)/     # Partial pages (Error, 404, etc.)
-│   └── (user)/        # User-specific pages
-├── redux/              # Redux store and slices
-├── services/           # API service functions
-├── types/              # TypeScript type definitions
-└── utils/              # Utility functions
+├── assets/          # Static assets and centralized navigation data
+├── builder/         # Core utility classes (RouteMenu, FormBuilder)
+├── components/      # UI Layer
+│   ├── (auth)/     # Authentication specific views
+│   ├── (common)/   # Feature-specific page components (Admin/Editor)
+│   ├── ui/         # Pure, custom-built UI primitives (Button, Table, etc.)
+│   └── wrappers/   # Permission and Auth HOCs (AuthWrapper)
+├── config/          # Environment and project constants
+├── hooks/           # Domain-specific React hooks (observers, states)
+├── layouts/         # High-level architecture layouts (Common, Auth, User)
+├── lib/             # API clients and core library configurations
+├── pages/           # Routed page components
+├── redux/           # Global client-side state management
+├── services/        # Backend API service contracts
+├── types/           # Global TypeScript interfaces
+└── utils/           # Shared helper functions
 ```
 
-## 🎯 Custom Architecture & Key Features
+---
 
-### Custom-Built Components
+## Standard Operation Patterns
 
-This project emphasizes **custom-built components** with minimal third-party dependencies. Most UI components, including data tables, forms, modals, and layout components, are built from scratch to ensure:
+To ensure consistency across the massive modular surface, the project follows strict interface patterns:
 
-- **Performance optimization** tailored to specific use cases
-- **Consistent design system** across the application
-- **Full control** over component behavior and styling
-- **Reduced bundle size** by avoiding unnecessary third-party code
+- **Data Tables**: All listings use a custom `DataTable` component with server-side pagination, search, and CSV export capabilities.
+- **Mutations**: Create/Update actions are handled via standardized Modals or specialized Mutation Pages with automatic cache invalidation.
+- **State Flow**: Server data always flows through TanStack Query, while UI toggles (sidebar, modals) are orchestrated by Redux.
 
-### Major Third-Party Packages
+---
 
-The project uses only essential third-party packages:
+## Custom Infrastructure
 
-- **React 19** - Core framework
-- **TypeScript** - Type safety
-- **Tailwind CSS 4** - Styling framework
-- **Redux Toolkit** - State management
-- **React Query** - Server state management
-- **React Hook Form + Zod** - Form handling and validation
-- **BlockNote** - Rich text editor
-- **Axios** - HTTP client
-- **Socket.io Client** - Real-time communication
-- **Recharts** - Data visualization
-- **Lucide React** - Icon library
+### RouteMenu Engine
 
-### AppRoute Class
+The `RouteMenu` class is a proprietary routing layer that centralizes navigation definitions and permission logic. It automatically generates the application sidebar, breadcrumbs, and route protection based on the user's JWT roles.
 
-The **AppRoute class** is a custom routing solution that provides:
+### Custom-Built UI System
 
-- **Dynamic route generation** based on user roles and permissions
-- **Role-based access control** for different user types
-- **Nested routing structure** with automatic layout application
-- **Menu integration** with route definitions
-- **Type-safe routing** with TypeScript support
+This project deviates from off-the-shelf libraries by using a **highly optimized, custom-built UI component system**. Every primitive—from the `DataTable` to the `RichTextEditor`—is tuned for the specific editorial needs of the Z-News platform, resulting in minimal bundle overhead and maximal responsiveness.
 
-This custom routing system allows for flexible navigation management and ensures that users only see routes they have permission to access.
+---
 
-## ⚡ Real-time Features & Socket.io Integration
-
-### Live Notification System
-
-The admin panel features a comprehensive **real-time notification system** powered by Socket.io:
-
-- **Instant Notifications**: Real-time alerts for new comments, reactions, and system events
-- **Live Data Updates**: Automatic synchronization of data across all connected clients
-- **User Activity Tracking**: Real-time monitoring of user actions and system events
-- **Notification Management**: Custom notification center with read/unread status
-- **Broadcast System**: System-wide announcements and updates
-
-### Socket.io Implementation
-
-- **Bidirectional Communication**: Real-time data flow between client and server
-- **Event-driven Architecture**: Custom event handlers for different notification types
-- **Connection Management**: Automatic reconnection and connection state handling
-- **Room-based Notifications**: Targeted notifications based on user roles and permissions
-- **Performance Optimized**: Efficient event handling and minimal data transfer
-
-### Real-time Features Include:
-
-- **Live Dashboard Updates**: Statistics and metrics update in real-time
-- **Collaborative Editing**: Multiple users can work on content simultaneously
-- **Live Comment System**: Real-time comment updates and moderation
-- **System Status Updates**: Live system health and performance monitoring
-- **User Presence**: See which users are currently active
-- **Live Chat Integration**: Real-time communication between admin users
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** (v18 or higher)
-- **pnpm** (recommended) or npm
-- **Git**
+- **Node.js** (v18.0.0+)
+- **pnpm** (Recommended package manager)
 
-### Installation
+### Installation & Execution
 
-1. **Clone the repository**
+1.  **Clone and Navigate**:
+    ```bash
+    git clone <project-url>
+    cd z-news-adminpanel
+    ```
 
-   ```bash
-   git clone <repository-url>
-   cd z-news-adminpanel
-   ```
+2.  **Install Dependencies**:
+    ```bash
+    pnpm install
+    ```
 
-2. **Install dependencies**
+3.  **Environment Provisioning**:
+    Create a `.env` file in the root and configure the backend targets:
+    ```env
+    VITE_API_URL=http://your-api-url
+    VITE_SOCKET_URL=http://your-socket-url
+    ```
 
-   ```bash
-   pnpm install
-   # or
-   npm install
-   ```
-
-3. **Environment Setup**
-   Create a `.env` file in the root directory:
-
-   ```env
-   VITE_API_URL=https://your-api-url.com
-   VITE_APP_URL=http://localhost:8080
-   ```
-
-4. **Start development server**
-
-   ```bash
-   pnpm dev
-   # or
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:8080`
-
-### Build for Production
-
-```bash
-pnpm build
-# or
-npm run build
-```
-
-### Preview Production Build
-
-```bash
-pnpm preview
-# or
-npm run preview
-```
-
-## 🔧 Available Scripts
-
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm preview` - Preview production build
-- `pnpm lint` - Run ESLint
-- `pnpm lint:fix` - Fix ESLint errors automatically
-
-## 🎨 Custom UI Components
-
-The project features a **comprehensive custom-built component library** with minimal third-party dependencies:
-
-- **DataTable** - Advanced custom data table with sorting, filtering, and pagination
-- **Form Controls** - Custom input, select, textarea, and other form elements
-- **Modals** - Custom modal dialogs for various use cases
-- **Cards** - Custom content cards and statistic cards
-- **Charts** - Data visualization components (using Recharts)
-- **Navigation** - Custom breadcrumbs, pagination, and navigation elements
-- **Feedback** - Custom loading states, alerts, and notifications
-- **Layout Components** - Custom header, sidebar, and layout wrappers
-- **Utility Components** - Custom badges, buttons, dropdowns, and more
-
-All components are built with **TypeScript**, **Tailwind CSS**, and follow consistent design patterns for optimal performance and maintainability.
-
-## 🔐 Authentication & Authorization
-
-The admin panel implements a robust role-based access control system:
-
-- **Super Admin**: Full system access
-- **Admin**: User and content management
-- **Editor**: Content editing and publishing
-- **Author**: Content creation and self-management
-- **Contributor**: Limited content contribution
-- **Subscriber**: Basic access
-- **User**: Public user access
-
-## 📡 API Integration
-
-The application integrates with a RESTful API for:
-
-- User authentication and management
-- News article CRUD operations
-- Category management
-- File uploads and media management
-- Comments and reactions
-- Notifications and real-time updates
-
-## 🎯 Key Features in Detail
-
-### News Article Management
-
-- **Rich Content Editor**: BlockNote-powered editor with advanced formatting
-- **Media Handling**: Support for images, videos, and file uploads
-- **SEO Tools**: Meta titles, descriptions, and keyword management
-- **Publishing Workflow**: Draft → Pending → Published → Archived
-- **Bulk Operations**: Mass actions for efficiency
-
-### User Experience
-
-- **Responsive Design**: Works seamlessly on all device sizes
-- **Real-time Updates**: Live notifications, data synchronization, and instant updates via Socket.io
-- **Intuitive Navigation**: Clean, organized interface with custom routing
-- **Live Collaboration**: Real-time collaborative features for team workflows
-- **Accessibility**: Built with accessibility best practices
-
-### Performance
-
-- **Code Splitting**: Optimized bundle loading
-- **Caching**: Intelligent data caching with React Query
-- **Lazy Loading**: Components loaded on demand
-- **Optimized Images**: Efficient image handling and optimization
-
-<!-- ## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request -->
-
-<!-- ## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. -->
-
-## 🆘 Support
-
-For support and questions:
-
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
-
-<!-- ## 🔄 Version History
-
-- **v1.0.0** - Initial release with core features
-- **v0.0.0** - Development version -->
+4.  **Launch Local Instance**:
+    ```bash
+    pnpm dev
+    ```
 
 ---
+
+## Workflow Diagrams
+
+### Content Publication Workflow
+
+<div align="center">
+
+```mermaid
+sequenceDiagram
+    participant Author
+    participant Editor
+    participant API
+    participant CDN
+
+    Author->>API: POST /news (Save as Draft)
+    Author->>API: PATCH /news (Submit for Review)
+    Note over Author,API: Status set to 'pending'
+    
+    Editor->>API: GET /news/pending
+    Editor->>API: PATCH /news (Approve & Publish)
+    
+    API->>CDN: Trigger Edge Revalidation
+    API->>API: Invalidate Redis Cache Patterns
+    Note right of API: Article is now 'published'
+```
+
+</div>
+
+---
+
+## Development and Deployment
+
+### Code Standards
+
+- **Strict TypeScript**: No implicitly `any` types allowed.
+- **Linting**: Continuous enforcement via ESLint with Prettier integration.
+- **Component Design**: Functional components only, utilizing the Atomic Design pattern for primitives.
+
+### Distribution
+
+Build the production-ready optimized SPA:
+```bash
+pnpm build
+```
+
+The resulting assets in `/dist` are ready for deployment on enterprise static hosting providers (Vercel, AWS S3/CloudFront, or Nginx).
+
+---
+
+## Support & License
+
+Proprietary and Confidential. Unauthorized distribution or reproduction is strictly prohibited.
+
+---
+
+**Crafted with excellence using React 19, TypeScript, and Tailwind CSS.**
