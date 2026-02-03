@@ -16,18 +16,18 @@ type TagsInputProps = {
 const TagsInput = ({ name, label, placeholder }: TagsInputProps) => {
   const { setValue, watch } = useFormContext<NewsFormData>();
   const [inputValue, setInputValue] = useState("");
-  const tags = (watch(name as "tags" | "seo.keywords") as string[]) || [];
+  const tags = (watch(name as any) as string[]) || [];
 
   const addTag = () => {
     if (inputValue.trim() && !tags.includes(inputValue.trim())) {
-      setValue(name as "tags" | "seo.keywords", [...tags, inputValue.trim()]);
+      setValue(name as any, [...tags, inputValue.trim()]);
       setInputValue("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
     setValue(
-      name as "tags" | "seo.keywords",
+      name as any,
       tags.filter((tag) => tag !== tagToRemove),
     );
   };

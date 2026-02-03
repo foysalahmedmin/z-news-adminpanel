@@ -37,7 +37,7 @@ const PublishSettings = () => {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_headline">
+              <FormControl.Label htmlFor="is_news_headline">
                 Headline
               </FormControl.Label>
               <p className="text-muted-foreground text-sm">
@@ -45,13 +45,13 @@ const PublishSettings = () => {
               </p>
             </div>
             <Switch
-              id="is_headline"
-              checked={watch("is_headline") || false}
-              onChange={(checked) => setValue("is_headline", checked)}
+              id="is_news_headline"
+              checked={watch("is_news_headline") || false}
+              onChange={(checked) => setValue("is_news_headline", checked)}
             />
           </div>
 
-          {watch("is_headline") && (
+          {watch("is_news_headline") && (
             <div className="ml-4 space-y-3 border-l-2 pl-4">
               <div className="grid grid-cols-1 gap-4">
                 <div>
@@ -115,23 +115,27 @@ const PublishSettings = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <FormControl.Label htmlFor="is_break">Break</FormControl.Label>
+              <FormControl.Label htmlFor="is_news_break">
+                Break
+              </FormControl.Label>
               <p className="text-muted-foreground text-sm">
                 Display as news break
               </p>
             </div>
             <Switch
-              id="is_break"
-              checked={watch("is_break") || false}
-              onChange={(checked) => setValue("is_break", checked)}
+              id="is_news_break"
+              checked={watch("is_news_break") || false}
+              onChange={(checked) => setValue("is_news_break", checked)}
             />
           </div>
 
-          {watch("is_break") && (
+          {watch("is_news_break") && (
             <div className="ml-4 space-y-3 border-l-2 pl-4">
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <FormControl.Label htmlFor="break_status">Status</FormControl.Label>
+                  <FormControl.Label htmlFor="break_status">
+                    Status
+                  </FormControl.Label>
                   <FormControl
                     as="select"
                     id="break_status"
@@ -252,20 +256,22 @@ const PublishSettings = () => {
         <div>
           <FormControl.Label htmlFor="status">Status</FormControl.Label>
           <div className="mt-2 grid grid-cols-4 gap-2">
-            {["draft", "pending", "published", "archived"].map((statusOption) => (
-              <div
-                key={statusOption}
-                className={cn(
-                  "cursor-pointer rounded-md border p-2 text-center",
-                  status === statusOption
-                    ? "border-primary bg-primary/10"
-                    : "border-muted",
-                )}
-                onClick={() => setValue("status", statusOption as any)}
-              >
-                <div className="font-medium capitalize">{statusOption}</div>
-              </div>
-            ))}
+            {["draft", "pending", "published", "archived"].map(
+              (statusOption) => (
+                <div
+                  key={statusOption}
+                  className={cn(
+                    "cursor-pointer rounded-md border p-2 text-center",
+                    status === statusOption
+                      ? "border-primary bg-primary/10"
+                      : "border-muted",
+                  )}
+                  onClick={() => setValue("status", statusOption as any)}
+                >
+                  <div className="font-medium capitalize">{statusOption}</div>
+                </div>
+              ),
+            )}
           </div>
         </div>
       </Card.Content>

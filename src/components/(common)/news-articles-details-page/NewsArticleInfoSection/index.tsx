@@ -3,7 +3,6 @@ import type { TNews, TStatus } from "@/types/news.type";
 import { getThumbnail } from "@/utils/getThumbnail";
 import {
   Calendar,
-  Crown,
   Earth,
   Edit2,
   Eye,
@@ -52,7 +51,7 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
       {/* Thumbnail */}
       <Link to={ENV.app_url + "/news/" + news?.slug} className="flex-shrink-0">
         <img
-          src={getThumbnail(news?.thumbnail, news?.youtube)}
+          src={getThumbnail(news?.thumbnail?.url, news?.youtube)}
           alt={news?.title}
           className="size-32 rounded-md object-cover"
         />
@@ -72,12 +71,6 @@ const NewsArticleInfoSection: React.FC<NewsInfoSectionProps> = ({ news }) => {
             <div className="flex items-center gap-1 rounded-full bg-yellow-500/15 px-2 py-0.5 text-xs font-medium text-yellow-600">
               <Star className="size-4 fill-current" />
               Featured
-            </div>
-          )}
-          {news?.is_premium && (
-            <div className="flex items-center gap-1 rounded-full bg-purple-500/15 px-2 py-0.5 text-xs font-medium text-purple-600">
-              <Crown className="size-4 fill-current" />
-              Premium
             </div>
           )}
         </div>

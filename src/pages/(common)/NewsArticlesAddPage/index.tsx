@@ -12,15 +12,9 @@ import PublishSettings from "@/components/(common)/news-articles-mutation-page/P
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
-import {
-  createNews,
-} from "@/services/news.service";
-import {
-  createNewsHeadline,
-} from "@/services/news-headline.service";
-import {
-  createNewsBreak,
-} from "@/services/news-break.service";
+import { createNewsBreak } from "@/services/news-break.service";
+import { createNewsHeadline } from "@/services/news-headline.service";
+import { createNews } from "@/services/news.service";
 import type { TCreateNewsPayload } from "@/types/news.type";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -46,12 +40,16 @@ const newsSchema = z.object({
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
   // Headline and Break fields (for separate collections)
-  is_headline: z.coerce.boolean().optional(),
-  is_break: z.coerce.boolean().optional(),
-  headline_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  is_news_headline: z.coerce.boolean().optional(),
+  is_news_break: z.coerce.boolean().optional(),
+  headline_status: z
+    .enum(["draft", "pending", "published", "archived"])
+    .optional(),
   headline_published_at: z.date().optional(),
   headline_expired_at: z.date().optional(),
-  break_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  break_status: z
+    .enum(["draft", "pending", "published", "archived"])
+    .optional(),
   break_published_at: z.date().optional(),
   break_expired_at: z.date().optional(),
 });
@@ -82,8 +80,8 @@ const NewsArticlesAddPage = () => {
       tags: [],
       thumbnail: null,
       video: null,
-      is_headline: false,
-      is_break: false,
+      is_news_headline: false,
+      is_news_break: false,
     },
   });
 
@@ -99,7 +97,7 @@ const NewsArticlesAddPage = () => {
       }
 
       // Handle headline creation
-      if (data.is_headline) {
+      if (data.is_news_headline) {
         try {
           await createNewsHeadline({
             news: newsId,
@@ -107,14 +105,13 @@ const NewsArticlesAddPage = () => {
             published_at: data.headline_published_at,
             expired_at: data.headline_expired_at,
           });
-        } catch (error) {
-          console.error("Error creating headline:", error);
+        } catch {
           toast.error("News created but failed to create headline");
         }
       }
 
       // Handle break creation
-      if (data.is_break) {
+      if (data.is_news_break) {
         try {
           await createNewsBreak({
             news: newsId,
@@ -122,8 +119,7 @@ const NewsArticlesAddPage = () => {
             published_at: data.break_published_at,
             expired_at: data.break_expired_at,
           });
-        } catch (error) {
-          console.error("Error creating break:", error);
+        } catch {
           toast.error("News created but failed to create break");
         }
       }
@@ -138,8 +134,7 @@ const NewsArticlesAddPage = () => {
           : `/news-articles`,
       );
     },
-    onError: (error) => {
-      console.error("Error creating news:", error);
+    onError: () => {
       toast.error("Failed to create news article");
     },
   });
@@ -148,8 +143,8 @@ const NewsArticlesAddPage = () => {
     try {
       // Extract headline/break data before creating payload
       const {
-        is_headline,
-        is_break,
+        is_news_headline,
+        is_news_break,
         headline_status,
         headline_published_at,
         headline_expired_at,
@@ -160,8 +155,8 @@ const NewsArticlesAddPage = () => {
       } = data;
 
       const payload: TCreateNewsPayload & {
-        is_headline?: boolean;
-        is_break?: boolean;
+        is_news_headline?: boolean;
+        is_news_break?: boolean;
         headline_status?: string;
         headline_published_at?: Date;
         headline_expired_at?: Date;
@@ -170,8 +165,8 @@ const NewsArticlesAddPage = () => {
         break_expired_at?: Date;
       } = {
         ...newsPayload,
-        is_headline,
-        is_break,
+        is_news_headline,
+        is_news_break,
         headline_status,
         headline_published_at,
         headline_expired_at,
@@ -181,8 +176,7 @@ const NewsArticlesAddPage = () => {
       };
 
       createNewsMutation.mutate(payload);
-    } catch (error) {
-      console.error("Error creating news:", error);
+    } catch {
       toast.error("Failed to create news article");
     }
   };

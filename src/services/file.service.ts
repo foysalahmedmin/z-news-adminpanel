@@ -2,9 +2,8 @@ import api from "@/lib/api";
 import type {
   TFileResponse,
   TFilesResponse,
-  TFileCreatePayload,
-  TFileUpdatePayload,
   TFileStatus,
+  TFileUpdatePayload,
 } from "@/types/file.type";
 
 // ========================= GET =========================
@@ -34,9 +33,7 @@ export async function fetchFile(id: string): Promise<TFileResponse> {
 // ========================= POST =========================
 
 // Create File
-export async function createFile(
-  payload: FormData,
-): Promise<TFileResponse> {
+export async function createFile(payload: FormData): Promise<TFileResponse> {
   const response = await api.post("/api/file", payload, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -108,10 +105,7 @@ export async function deleteFile(id: string): Promise<TFileResponse> {
 }
 
 // Delete Single Permanent File (Admin)
-export async function deleteFilePermanent(
-  id: string,
-): Promise<TFileResponse> {
+export async function deleteFilePermanent(id: string): Promise<TFileResponse> {
   const response = await api.delete(`/api/file/${id}/permanent`);
   return response.data as TFileResponse;
 }
-

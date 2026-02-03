@@ -1,6 +1,5 @@
-import { URLS } from "@/config";
 import type { TNews } from "@/types/news.type";
-import { Eye, Image, Youtube } from "lucide-react";
+import { Eye, Image, Play, Youtube } from "lucide-react";
 import React from "react";
 
 // Media Section
@@ -31,10 +30,10 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
           Thumbnail Image
         </h3>
         <div className="bg-muted rounded-lg p-4">
-          {news?.thumbnail ? (
+          {news?.thumbnail?.url ? (
             <div className="space-y-3">
               <img
-                src={URLS.news.thumbnail + "/" + news.thumbnail}
+                src={news.thumbnail.url}
                 alt={news.title}
                 className="mx-auto h-auto w-full max-w-xl rounded-lg object-cover shadow-md"
               />
@@ -55,61 +54,21 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
         </div>
       </div>
 
-      {/* Gallery Images */}
+      {/* Video */}
       <div>
         <h3 className="text-foreground mb-3 flex items-center text-lg font-semibold">
-          <Image className="mr-2 h-5 w-5" />
-          Gallery Images
-          {news?.images && news.images.length > 0 && (
-            <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-sm">
-              {news.images.length}
-            </span>
-          )}
-        </h3>
-        <div className="bg-muted rounded-lg p-4">
-          {news?.images && news.images.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {news.images.map((image, index) => (
-                <div key={index} className="space-y-2">
-                  <img
-                    src={URLS.news.image + "/" + image}
-                    alt={`Gallery image ${index + 1}`}
-                    className="h-32 w-full rounded-lg object-cover shadow-sm"
-                  />
-                  <div className="text-muted-foreground text-center text-xs">
-                    Image {index + 1}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="border-border flex h-32 items-center justify-center rounded-lg border-2 border-dashed">
-              <div className="text-center">
-                <Image className="text-muted-foreground mx-auto h-8 w-8" />
-                <p className="text-muted-foreground mt-2 text-sm">
-                  No gallery images
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Video */}
-      {/* <div>
-        <h3 className="text-foreground mb-3 flex items-center text-lg font-semibold">
-          <Video className="mr-2 h-5 w-5" />
+          <Play className="mr-2 h-5 w-5" />
           Video Content
         </h3>
         <div className="bg-muted rounded-lg p-4">
-          {news?.video ? (
+          {news?.video?.url ? (
             <div className="space-y-3">
               <video
                 controls
                 className="mx-auto w-full max-w-2xl rounded-lg shadow-md"
-                poster={URLS.news.video + "/" + news.thumbnail}
+                poster={news?.thumbnail?.url}
               >
-                <source src={news.video} type="video/mp4" />
+                <source src={news.video.url} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
               <div className="text-muted-foreground text-center text-xs">
@@ -127,7 +86,7 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
             </div>
           )}
         </div>
-      </div> */}
+      </div>
 
       {/* YouTube Video */}
       <div>
@@ -194,18 +153,12 @@ const NewsArticleMediaSection: React.FC<TNewsArticleMediaSectionProps> = ({
           <Eye className="mr-2 h-5 w-5" />
           Media Summary
         </h3>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           <div className="bg-muted rounded-lg p-4 text-center">
             <div className="text-primary text-2xl font-bold">
               {news?.thumbnail ? 1 : 0}
             </div>
             <div className="text-muted-foreground text-sm">Thumbnail</div>
-          </div>
-          <div className="bg-muted rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {news?.images?.length || 0}
-            </div>
-            <div className="text-muted-foreground text-sm">Images</div>
           </div>
           <div className="bg-muted rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">

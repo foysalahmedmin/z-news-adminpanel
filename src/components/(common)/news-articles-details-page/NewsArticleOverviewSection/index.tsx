@@ -34,19 +34,6 @@ const NewsArticleOverviewSection: React.FC<
         </div>
       )}
 
-      {/* Caption */}
-      {news?.caption && (
-        <div>
-          <h3 className="text-foreground mb-3 flex items-center text-lg font-semibold">
-            <FileText className="mr-2 h-5 w-5" />
-            Caption
-          </h3>
-          <p className="text-muted-foreground leading-relaxed italic">
-            {news.caption}
-          </p>
-        </div>
-      )}
-
       {/* Article Details */}
       <div>
         <h3 className="text-foreground mb-4 text-lg font-semibold">
@@ -219,18 +206,6 @@ const NewsArticleOverviewSection: React.FC<
                   }`}
                 >
                   {news?.is_featured ? "Yes" : "No"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Premium Content</span>
-                <span
-                  className={`rounded-full px-2 py-1 text-xs ${
-                    news?.is_premium
-                      ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {news?.is_premium ? "Yes" : "No"}
                 </span>
               </div>
               <div className="flex items-center justify-between">

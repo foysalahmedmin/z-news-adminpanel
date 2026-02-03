@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
 import { fetchFile, updateFile } from "@/services/file.service";
-import type { TFile, TFileUpdatePayload } from "@/types/file.type";
+import type { TFileUpdatePayload } from "@/types/file.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { ArrowLeft, Eye, File } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 
@@ -44,8 +44,7 @@ const FilesEditPage = () => {
   }, [file]);
 
   const updateFileMutation = useMutation({
-    mutationFn: (payload: TFileUpdatePayload) =>
-      updateFile(id!, payload),
+    mutationFn: (payload: TFileUpdatePayload) => updateFile(id!, payload),
     onSuccess: (data) => {
       toast.success(data?.message || "File updated successfully!");
       queryClient.invalidateQueries({ queryKey: ["files"] });
@@ -103,10 +102,7 @@ const FilesEditPage = () => {
     <main className="space-y-6">
       <PageHeader
         name="Edit File"
-        breadcrumbs={[
-          { name: "Files", path: "/files" },
-          { name: "Edit File" },
-        ]}
+        breadcrumbs={[{ name: "Files", path: "/files" }, { name: "Edit File" }]}
         slot={
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate(-1)}>
@@ -131,16 +127,16 @@ const FilesEditPage = () => {
             <h3 className="mb-4 font-semibold">File Preview</h3>
             <div className="space-y-4">
               {file.type === "image" ? (
-                <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
                   <img
                     src={file.url}
                     alt={file.name}
-                    className="w-full h-full object-contain"
+                    className="h-full w-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="flex items-center justify-center aspect-video rounded-lg bg-muted">
-                  <File className="h-16 w-16 text-muted-foreground" />
+                <div className="bg-muted flex aspect-video items-center justify-center rounded-lg">
+                  <File className="text-muted-foreground h-16 w-16" />
                 </div>
               )}
               <div className="space-y-2 text-sm">
@@ -188,7 +184,9 @@ const FilesEditPage = () => {
 
               {/* Category */}
               <div>
-                <FormControl.Label htmlFor="category">Category</FormControl.Label>
+                <FormControl.Label htmlFor="category">
+                  Category
+                </FormControl.Label>
                 <FormControl
                   id="category"
                   type="text"
@@ -283,4 +281,3 @@ const FilesEditPage = () => {
 };
 
 export default FilesEditPage;
-

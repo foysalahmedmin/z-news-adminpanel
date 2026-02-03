@@ -10,6 +10,13 @@ export type TFile = {
   file_name: string;
   type: string;
   caption?: string;
+  size?: number;
+  author?: {
+    _id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
 };
 
 export type TNews = {
@@ -66,6 +73,12 @@ export type TNews = {
     published_at?: Date;
     expired_at?: Date;
   };
+  is_news_headline?: boolean;
+  is_news_break?: boolean;
+  views?: number;
+  likes?: number;
+  dislikes?: number;
+  comments?: number;
 };
 
 export type TCreateNewsPayload = {
@@ -74,8 +87,8 @@ export type TCreateNewsPayload = {
   slug: string;
   description?: string;
   content: string; // html string
-  thumbnail?: string; // File ObjectId
-  video?: string; // File ObjectId
+  thumbnail?: string | null; // File ObjectId
+  video?: string | null; // File ObjectId
   youtube?: string;
   tags?: string[];
   event?: string;
@@ -87,6 +100,14 @@ export type TCreateNewsPayload = {
   is_featured?: boolean;
   published_at?: Date;
   expired_at?: Date;
+  is_news_headline?: boolean;
+  is_news_break?: boolean;
+  headline_status?: TStatus;
+  headline_published_at?: Date;
+  headline_expired_at?: Date;
+  break_status?: TStatus;
+  break_published_at?: Date;
+  break_expired_at?: Date;
 };
 
 export type TUpdateNewsPayload = {

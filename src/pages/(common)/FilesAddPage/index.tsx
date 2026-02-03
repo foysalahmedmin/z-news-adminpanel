@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormControl } from "@/components/ui/FormControl";
 import { createFile } from "@/services/file.service";
-import type { TFileCreatePayload } from "@/types/file.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -33,9 +32,7 @@ const FilesAddPage = () => {
       navigate("/files");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      toast.error(
-        error.response?.data?.message || "Failed to upload file",
-      );
+      toast.error(error.response?.data?.message || "Failed to upload file");
       console.error("Create File Error:", error);
     },
   });
@@ -73,10 +70,7 @@ const FilesAddPage = () => {
     <main className="space-y-6">
       <PageHeader
         name="Add File"
-        breadcrumbs={[
-          { name: "Files", path: "/files" },
-          { name: "Add File" },
-        ]}
+        breadcrumbs={[{ name: "Files", path: "/files" }, { name: "Add File" }]}
         slot={
           <Button variant="outline" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
@@ -94,13 +88,13 @@ const FilesAddPage = () => {
               <div className="mt-2">
                 <label
                   htmlFor="file"
-                  className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground p-8 transition-colors hover:border-primary"
+                  className="border-muted-foreground hover:border-primary flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors"
                 >
-                  <Upload className="mb-2 h-12 w-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
+                  <Upload className="text-muted-foreground mb-2 h-12 w-12" />
+                  <p className="text-muted-foreground text-sm">
                     Click to upload or drag and drop
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     {file
                       ? `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`
                       : "Select a file"}
@@ -227,4 +221,3 @@ const FilesAddPage = () => {
 };
 
 export default FilesAddPage;
-

@@ -1,4 +1,3 @@
-import { FormDataConverterFactory } from "@/builder/ObjectFormData";
 import api from "@/lib/api";
 import type {
   TBulkNewsResponse,
@@ -10,7 +9,7 @@ import type {
 } from "@/types/news.type";
 
 // Create converter instance
-const formDataConverter = FormDataConverterFactory.createObjectToFormData();
+// const formDataConverter = FormDataConverterFactory.createObjectToFormData();
 
 // ========================= GET =========================
 export async function fetchSelfBulkNews(

@@ -20,15 +20,8 @@ const FilesStatisticsSection: React.FC<FilesStatisticsSectionProps> = ({
 
   const {
     active: totalActive,
-    inactive: totalInactive,
-    archived: totalArchived,
     image: totalImages,
     video: totalVideos,
-    audio: totalAudio,
-    pdf: totalPdf,
-    doc: totalDoc,
-    txt: totalTxt,
-    file: totalFiles,
   } = dataStatistics || {};
 
   const statistics: TStatistic[] = [
@@ -72,4 +65,3 @@ const FilesStatisticsSection: React.FC<FilesStatisticsSectionProps> = ({
 };
 
 export default FilesStatisticsSection;
-

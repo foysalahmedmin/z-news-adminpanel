@@ -24,8 +24,8 @@ const SEOSection = () => {
               <FormControl
                 id="seo-title"
                 placeholder="SEO Title"
-                value={watch("seo.title")}
-                onChange={(e) => setValue("seo.title", e.target.value)}
+                value={watch("seo.title" as any)}
+                onChange={(e) => setValue("seo.title" as any, e.target.value)}
               />
             </div>
 
@@ -38,8 +38,10 @@ const SEOSection = () => {
                 placeholder="SEO Description"
                 as="textarea"
                 id="seo-description"
-                value={watch("seo.description")}
-                onChange={(e) => setValue("seo.description", e.target.value)}
+                value={watch("seo.description" as any)}
+                onChange={(e) =>
+                  setValue("seo.description" as any, e.target.value)
+                }
               />
             </div>
 

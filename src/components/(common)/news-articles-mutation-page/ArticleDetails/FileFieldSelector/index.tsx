@@ -27,7 +27,6 @@ const FileFieldSelector = ({
   type = "all",
   category,
   isMultiple = false,
-  accept,
 }: FileFieldSelectorProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

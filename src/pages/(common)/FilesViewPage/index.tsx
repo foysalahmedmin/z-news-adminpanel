@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/Card";
 import { Tabs } from "@/components/ui/Tabs";
 import useAlert from "@/hooks/ui/useAlert";
 import { deleteFile, fetchFile } from "@/services/file.service";
-import type { TFile } from "@/types/file.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -150,11 +149,11 @@ const FilesViewPage = () => {
             <h3 className="text-lg font-semibold">Preview</h3>
           </Card.Header>
           <Card.Content>
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+            <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
               <img
                 src={file.url}
                 alt={file.name}
-                className="w-full h-full object-contain"
+                className="h-full w-full object-contain"
               />
             </div>
           </Card.Content>
@@ -165,4 +164,3 @@ const FilesViewPage = () => {
 };
 
 export default FilesViewPage;
-

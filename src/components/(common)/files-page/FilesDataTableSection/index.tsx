@@ -4,7 +4,16 @@ import DataTable from "@/components/ui/DataTable";
 import { cn } from "@/lib/utils";
 import type { TFile } from "@/types/file.type";
 import type { TBreadcrumbs } from "@/types/route-menu.type";
-import { Edit, Eye, Trash, Image, Video, Music, File, FileText } from "lucide-react";
+import {
+  Edit,
+  Eye,
+  File,
+  FileText,
+  Image,
+  Music,
+  Trash,
+  Video,
+} from "lucide-react";
 import React from "react";
 import { Link } from "react-router";
 
@@ -63,11 +72,11 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
               <img
                 src={row.url}
                 alt={row.name}
-                className="w-10 h-10 object-cover rounded"
+                className="h-10 w-10 rounded object-cover"
               />
             ) : (
-              <div className="w-10 h-10 flex items-center justify-center bg-muted rounded">
-                <Icon className="h-5 w-5 text-muted-foreground" />
+              <div className="bg-muted flex h-10 w-10 items-center justify-center rounded">
+                <Icon className="text-muted-foreground h-5 w-5" />
               </div>
             )}
           </div>
@@ -80,21 +89,23 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
       field: "type",
       isSortable: true,
       cell: ({ cell }) => (
-        <span className="capitalize text-sm">{cell?.toString()}</span>
+        <span className="text-sm capitalize">{cell?.toString()}</span>
       ),
     },
     {
       name: "Size",
       field: "size",
       isSortable: true,
-      cell: ({ cell }) => <span className="text-sm">{formatFileSize(cell)}</span>,
+      cell: ({ cell }) => (
+        <span className="text-sm">{formatFileSize(cell as number)}</span>
+      ),
     },
     {
       name: "Extension",
       field: "extension",
       isSortable: true,
       cell: ({ cell }) => (
-        <span className="text-sm font-mono">{cell?.toString()}</span>
+        <span className="font-mono text-sm">{cell?.toString()}</span>
       ),
     },
     {
@@ -120,7 +131,7 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
       name: "Author",
       field: "author",
       cell: ({ cell }) => (
-        <span className="text-sm">{cell?.name || "N/A"}</span>
+        <span className="text-sm">{(cell as any)?.name || "N/A"}</span>
       ),
     },
     {
@@ -189,4 +200,3 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
 };
 
 export default FilesDataTableSection;
-

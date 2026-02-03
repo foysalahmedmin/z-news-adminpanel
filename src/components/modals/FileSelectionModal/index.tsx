@@ -94,7 +94,7 @@ const FileSelectionModal = ({
   const [limit] = useState(24); // Grid-friendly
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [, setUploadFiles] = useState<File[]>([]);
 
   // Initialize selected files from value prop
   useEffect(() => {

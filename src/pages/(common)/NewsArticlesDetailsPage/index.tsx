@@ -4,7 +4,6 @@ import { ArrowLeft, Edit } from "lucide-react";
 import NewsArticleInfoSection from "@/components/(common)/news-articles-details-page/NewsArticleInfoSection";
 import NewsArticleMediaSection from "@/components/(common)/news-articles-details-page/NewsArticleMediaSection";
 import NewsArticleOverviewSection from "@/components/(common)/news-articles-details-page/NewsArticleOverviewSection";
-import NewsArticleSEOSection from "@/components/(common)/news-articles-details-page/NewsArticleSEOSection";
 import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -107,7 +106,6 @@ const NewsArticleDetailsPage = () => {
             <Tabs.List className="justify-start">
               <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
               <Tabs.Trigger value="media">Media</Tabs.Trigger>
-              <Tabs.Trigger value="seo">SEO</Tabs.Trigger>
             </Tabs.List>
           </Card.Header>
           <Card.Content>
@@ -117,9 +115,6 @@ const NewsArticleDetailsPage = () => {
               </Tabs.Item>
               <Tabs.Item value="media">
                 <NewsArticleMediaSection news={news || {}} />
-              </Tabs.Item>
-              <Tabs.Item value="seo">
-                <NewsArticleSEOSection news={news || {}} />
               </Tabs.Item>
             </Tabs.Content>
           </Card.Content>

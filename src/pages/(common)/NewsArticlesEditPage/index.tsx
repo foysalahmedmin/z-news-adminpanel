@@ -15,21 +15,17 @@ import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
 import {
-  fetchNews,
-  updateNews,
-  updateSelfNews,
-} from "@/services/news.service";
+  createNewsBreak,
+  deleteNewsBreak,
+  updateNewsBreak,
+} from "@/services/news-break.service";
 import {
   createNewsHeadline,
-  updateNewsHeadline,
   deleteNewsHeadline,
+  updateNewsHeadline,
 } from "@/services/news-headline.service";
-import {
-  createNewsBreak,
-  updateNewsBreak,
-  deleteNewsBreak,
-} from "@/services/news-break.service";
-import type { TUpdateNewsPayload } from "@/types/news.type";
+import { fetchNews, updateNews, updateSelfNews } from "@/services/news.service";
+import type { TStatus, TUpdateNewsPayload } from "@/types/news.type";
 import { ArrowLeft, Eye } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -55,12 +51,16 @@ const newsSchema = z.object({
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
   // Headline and Break fields (for separate collections)
-  is_headline: z.coerce.boolean().optional(),
-  is_break: z.coerce.boolean().optional(),
-  headline_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  is_news_headline: z.coerce.boolean().optional(),
+  is_news_break: z.coerce.boolean().optional(),
+  headline_status: z
+    .enum(["draft", "pending", "published", "archived"])
+    .optional(),
   headline_published_at: z.date().optional(),
   headline_expired_at: z.date().optional(),
-  break_status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  break_status: z
+    .enum(["draft", "pending", "published", "archived"])
+    .optional(),
   break_published_at: z.date().optional(),
   break_expired_at: z.date().optional(),
 });
@@ -86,8 +86,6 @@ const NewsArticlesUpdatePage = () => {
     enabled: !!id,
   });
 
-  console.log("newsData", newsData);
-
   const methods = useForm<NewsFormData>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
@@ -104,8 +102,8 @@ const NewsArticlesUpdatePage = () => {
       tags: [],
       thumbnail: null,
       video: null,
-      is_headline: false,
-      is_break: false,
+      is_news_headline: false,
+      is_news_break: false,
     },
   });
 
@@ -135,8 +133,8 @@ const NewsArticlesUpdatePage = () => {
           : undefined,
         expired_at: data?.expired_at ? new Date(data?.expired_at) : undefined,
         // Headline and Break data will be populated separately
-        is_headline: !!data?.news_headline,
-        is_break: !!data?.news_break,
+        is_news_headline: !!data?.news_headline,
+        is_news_break: !!data?.news_break,
         headline_status: data?.news_headline?.status,
         headline_published_at: data?.news_headline?.published_at
           ? new Date(data?.news_headline.published_at)
@@ -157,29 +155,30 @@ const NewsArticlesUpdatePage = () => {
 
   // TanStack Query mutation for update
   const updateNewsMutation = useMutation({
-    mutationFn: async (data: TUpdateNewsPayload & {
-      is_headline?: boolean;
-      is_break?: boolean;
-      headline_status?: string;
-      headline_published_at?: Date;
-      headline_expired_at?: Date;
-      break_status?: string;
-      break_published_at?: Date;
-      break_expired_at?: Date;
-    }) => {
+    mutationFn: async (
+      data: TUpdateNewsPayload & {
+        is_news_headline?: boolean;
+        is_news_break?: boolean;
+        headline_status?: string;
+        headline_published_at?: Date;
+        headline_expired_at?: Date;
+        break_status?: string;
+        break_published_at?: Date;
+        break_expired_at?: Date;
+      },
+    ) => {
       // Update news first
-      const newsResponse =
-        ["super-admin", "admin"].includes(info?.role || "")
-          ? await updateNews(id!, data)
-          : await updateSelfNews(id!, data);
+      const newsResponse = ["super-admin", "admin"].includes(info?.role || "")
+        ? await updateNews(id!, data)
+        : await updateSelfNews(id!, data);
 
       const existingHeadline = newsData?.data?.news_headline;
       const existingBreak = newsData?.data?.news_break;
 
       // Handle headline update/create/delete
-      if (data.is_headline) {
+      if (data.is_news_headline) {
         const headlinePayload = {
-          status: data.headline_status || "draft",
+          status: (data.headline_status as TStatus) || "draft",
           published_at: data.headline_published_at,
           expired_at: data.headline_expired_at,
         };
@@ -188,8 +187,7 @@ const NewsArticlesUpdatePage = () => {
           // Update existing headline
           try {
             await updateNewsHeadline(existingHeadline._id, headlinePayload);
-          } catch (error) {
-            console.error("Error updating headline:", error);
+          } catch {
             toast.error("News updated but failed to update headline");
           }
         } else {
@@ -199,8 +197,7 @@ const NewsArticlesUpdatePage = () => {
               news: id!,
               ...headlinePayload,
             });
-          } catch (error) {
-            console.error("Error creating headline:", error);
+          } catch {
             toast.error("News updated but failed to create headline");
           }
         }
@@ -208,16 +205,15 @@ const NewsArticlesUpdatePage = () => {
         // Delete headline if checkbox is unchecked
         try {
           await deleteNewsHeadline(existingHeadline._id);
-        } catch (error) {
-          console.error("Error deleting headline:", error);
+        } catch {
           toast.error("News updated but failed to delete headline");
         }
       }
 
       // Handle break update/create/delete
-      if (data.is_break) {
+      if (data.is_news_break) {
         const breakPayload = {
-          status: data.break_status || "draft",
+          status: (data.break_status as TStatus) || "draft",
           published_at: data.break_published_at,
           expired_at: data.break_expired_at,
         };
@@ -226,8 +222,7 @@ const NewsArticlesUpdatePage = () => {
           // Update existing break
           try {
             await updateNewsBreak(existingBreak._id, breakPayload);
-          } catch (error) {
-            console.error("Error updating break:", error);
+          } catch {
             toast.error("News updated but failed to update break");
           }
         } else {
@@ -237,8 +232,7 @@ const NewsArticlesUpdatePage = () => {
               news: id!,
               ...breakPayload,
             });
-          } catch (error) {
-            console.error("Error creating break:", error);
+          } catch {
             toast.error("News updated but failed to create break");
           }
         }
@@ -246,8 +240,7 @@ const NewsArticlesUpdatePage = () => {
         // Delete break if checkbox is unchecked
         try {
           await deleteNewsBreak(existingBreak._id);
-        } catch (error) {
-          console.error("Error deleting break:", error);
+        } catch {
           toast.error("News updated but failed to delete break");
         }
       }
@@ -259,8 +252,7 @@ const NewsArticlesUpdatePage = () => {
       queryClient.invalidateQueries({ queryKey: ["news", id] });
       navigate(`/news-articles/${id}`);
     },
-    onError: (error) => {
-      console.error("Error updating news:", error);
+    onError: () => {
       toast.error("Failed to update news article");
     },
   });
@@ -269,8 +261,8 @@ const NewsArticlesUpdatePage = () => {
     try {
       // Extract headline/break data
       const {
-        is_headline,
-        is_break,
+        is_news_headline,
+        is_news_break,
         headline_status,
         headline_published_at,
         headline_expired_at,
@@ -281,8 +273,8 @@ const NewsArticlesUpdatePage = () => {
       } = data;
 
       const payload: TUpdateNewsPayload & {
-        is_headline?: boolean;
-        is_break?: boolean;
+        is_news_headline?: boolean;
+        is_news_break?: boolean;
         headline_status?: string;
         headline_published_at?: Date;
         headline_expired_at?: Date;
@@ -291,8 +283,8 @@ const NewsArticlesUpdatePage = () => {
         break_expired_at?: Date;
       } = {
         ...newsPayload,
-        is_headline,
-        is_break,
+        is_news_headline,
+        is_news_break,
         headline_status,
         headline_published_at,
         headline_expired_at,
@@ -302,8 +294,7 @@ const NewsArticlesUpdatePage = () => {
       };
 
       updateNewsMutation.mutate(payload);
-    } catch (error) {
-      console.error("Error updating news:", error);
+    } catch {
       toast.error("Failed to update news article");
     }
   };
