@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/Button";
 import { FormControl } from "@/components/ui/FormControl";
 import useUser from "@/hooks/states/useUser";
-import { signUp } from "@/services/auth.service";
+import { googleSignIn, signUp } from "@/services/auth.service";
 import type { SignUpPayload } from "@/types/auth.type";
+import type { CredentialResponse } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { Eye, EyeOff, Plus, User } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,6 +60,25 @@ const SignupForm: React.FC = () => {
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Signup failed");
+    }
+  };
+
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse,
+  ) => {
+    try {
+      if (credentialResponse.credential) {
+        const response = await googleSignIn(credentialResponse.credential);
+        if (response?.data?.token && response?.data?.info) {
+          setUser({ ...response.data, is_authenticated: true });
+          toast.success("Google Login successful!");
+          navigate("/");
+        }
+      }
+    } catch (error) {
+      const message =
+        (error as any)?.response?.data?.message || "Google Login failed";
+      toast.error(message);
     }
   };
 
@@ -201,6 +222,31 @@ const SignupForm: React.FC = () => {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Creating account..." : "Sign Up"}
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background text-muted-foreground px-2">
+                Or continue with Google
+              </span>
+            </div>
+          </div>
+
+          {/* Google Login */}
+          <div className="flex justify-center pt-6 pb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                toast.error("Google Login Failed");
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              width="100%"
+            />
+          </div>
 
           {/* Signin link */}
           <div className="text-center text-sm">

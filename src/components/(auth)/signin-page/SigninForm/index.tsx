@@ -67,30 +67,7 @@ const SigninForm: React.FC = () => {
             </p>
           </div>
 
-          {/* Google Login */}
-          <div className="flex justify-center border-b pb-6">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => {
-                toast.error("Google Login Failed");
-              }}
-              useOneTap
-              theme="outline"
-              size="large"
-              width="100%"
-            />
-          </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background text-muted-foreground px-2">
-                Or continue with email
-              </span>
-            </div>
-          </div>
 
           {/* Email */}
           <div className="grid gap-3">
@@ -163,6 +140,31 @@ const SigninForm: React.FC = () => {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Logging in..." : "Login"}
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background text-muted-foreground px-2">
+                Or continue with Google
+              </span>
+            </div>
+          </div>
+
+          {/* Google Login */}
+          <div className="flex justify-center pt-6 pb-6">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                toast.error("Google Login Failed");
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              width="100%"
+            />
+          </div>
 
           {/* Signup link */}
           <div className="text-center text-sm">
