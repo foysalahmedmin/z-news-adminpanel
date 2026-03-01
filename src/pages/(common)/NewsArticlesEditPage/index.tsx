@@ -46,10 +46,24 @@ const newsSchema = z.object({
   categories: z.array(z.string()).optional(),
   writer: z.string().optional(),
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
-  status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  status: z
+    .enum(["draft", "pending", "scheduled", "published", "archived"])
+    .optional(),
   is_featured: z.boolean(),
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
+
+  // strategic fields
+  meta_title: z.string().optional(),
+  meta_description: z.string().optional(),
+  canonical_url: z.string().url().optional().or(z.literal("")),
+  content_type: z
+    .enum(["article", "video", "podcast", "live-blog", "photo-essay"])
+    .optional(),
+  sensitivity_level: z.enum(["public", "sensitive", "restricted"]).optional(),
+  fact_checked: z.boolean().optional(),
+  related_articles: z.array(z.string()).optional(),
+  series: z.string().optional(),
   // Headline and Break fields (for separate collections)
   is_news_headline: z.coerce.boolean().optional(),
   is_news_break: z.coerce.boolean().optional(),
@@ -132,17 +146,29 @@ const NewsArticlesUpdatePage = () => {
           ? new Date(data?.published_at)
           : undefined,
         expired_at: data?.expired_at ? new Date(data?.expired_at) : undefined,
+
+        // strategic fields
+        meta_title: data?.meta_title || "",
+        meta_description: data?.meta_description || "",
+        canonical_url: data?.canonical_url || "",
+        content_type: data?.content_type || "article",
+        sensitivity_level: data?.sensitivity_level || "public",
+        fact_checked: !!data?.fact_checked,
+        series: data?.series,
+        related_articles: data?.related_articles?.map((r: any) =>
+          typeof r === "string" ? r : r._id,
+        ),
         // Headline and Break data will be populated separately
         is_news_headline: !!data?.news_headline,
         is_news_break: !!data?.news_break,
-        headline_status: data?.news_headline?.status,
+        headline_status: data?.news_headline?.status as TStatus | undefined,
         headline_published_at: data?.news_headline?.published_at
           ? new Date(data?.news_headline.published_at)
           : undefined,
         headline_expired_at: data?.news_headline?.expired_at
           ? new Date(data?.news_headline.expired_at)
           : undefined,
-        break_status: data?.news_break?.status,
+        break_status: data?.news_break?.status as TStatus | undefined,
         break_published_at: data?.news_break?.published_at
           ? new Date(data?.news_break.published_at)
           : undefined,

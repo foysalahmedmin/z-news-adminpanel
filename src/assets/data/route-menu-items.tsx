@@ -3,6 +3,7 @@ import BinPage from "@/pages/(common)/BinPage";
 import CategoriesDetailsPage from "@/pages/(common)/CategoriesDetailsPage";
 import CategoriesPage from "@/pages/(common)/CategoriesPage";
 import CommentsPage from "@/pages/(common)/CommentsPage";
+import ContentTemplatesPage from "@/pages/(common)/ContentTemplatesPage";
 import Dashboard from "@/pages/(common)/Dashboard";
 import EventsPage from "@/pages/(common)/EventsPage";
 import FilesAddPage from "@/pages/(common)/FilesAddPage";
@@ -151,7 +152,9 @@ export const items: TItem[] = [
     routeType: "layout",
     menuType: "item-without-children",
     element: (
-      <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+      <AuthWrapper
+        roles={["supper-admin", "admin", "editor", "author", "contributor"]}
+      >
         <Outlet />
       </AuthWrapper>
     ),
@@ -160,7 +163,9 @@ export const items: TItem[] = [
         index: true,
         name: "Files",
         element: (
-          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+          <AuthWrapper
+            roles={["supper-admin", "admin", "editor", "author", "contributor"]}
+          >
             <FilesPage />
           </AuthWrapper>
         ),
@@ -170,7 +175,9 @@ export const items: TItem[] = [
         roles: ["supper-admin", "admin", "editor", "author", "contributor"],
         path: ":id",
         element: (
-          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+          <AuthWrapper
+            roles={["supper-admin", "admin", "editor", "author", "contributor"]}
+          >
             <FilesViewPage />
           </AuthWrapper>
         ),
@@ -180,7 +187,9 @@ export const items: TItem[] = [
         roles: ["supper-admin", "admin", "editor", "author", "contributor"],
         path: "add",
         element: (
-          <AuthWrapper roles={["supper-admin", "admin", "editor", "author", "contributor"]}>
+          <AuthWrapper
+            roles={["supper-admin", "admin", "editor", "author", "contributor"]}
+          >
             <FilesAddPage />
           </AuthWrapper>
         ),
@@ -257,6 +266,17 @@ export const items: TItem[] = [
         menuType: "invisible",
       },
     ],
+  },
+  {
+    roles: ["supper-admin", "admin"],
+    icon: "layout-template",
+    path: "content-templates",
+    name: "Article Templates",
+    element: (
+      <AuthWrapper roles={["supper-admin", "admin"]}>
+        <ContentTemplatesPage />
+      </AuthWrapper>
+    ),
   },
   {
     roles: ["supper-admin", "admin"],

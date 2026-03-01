@@ -1,6 +1,11 @@
 import type { Response } from "./response.type";
 
-export type TReactionType = "like" | "dislike";
+export type TReactionType =
+  | "like"
+  | "dislike"
+  | "insightful"
+  | "funny"
+  | "disagree";
 export type TReactionStatus = "pending" | "approved" | "rejected";
 
 export type TReaction = {

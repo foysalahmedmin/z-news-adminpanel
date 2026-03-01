@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Edit } from "lucide-react";
 
+import NewsArticleHistorySection from "@/components/(common)/news-articles-details-page/NewsArticleHistorySection";
 import NewsArticleInfoSection from "@/components/(common)/news-articles-details-page/NewsArticleInfoSection";
 import NewsArticleMediaSection from "@/components/(common)/news-articles-details-page/NewsArticleMediaSection";
 import NewsArticleOverviewSection from "@/components/(common)/news-articles-details-page/NewsArticleOverviewSection";
+import NewsArticleWorkflowSection from "@/components/(common)/news-articles-details-page/NewsArticleWorkflowSection";
 import Loader from "@/components/partials/Loader";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
@@ -106,6 +108,8 @@ const NewsArticleDetailsPage = () => {
             <Tabs.List className="justify-start">
               <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
               <Tabs.Trigger value="media">Media</Tabs.Trigger>
+              <Tabs.Trigger value="workflow">Workflow</Tabs.Trigger>
+              <Tabs.Trigger value="history">History</Tabs.Trigger>
             </Tabs.List>
           </Card.Header>
           <Card.Content>
@@ -115,6 +119,12 @@ const NewsArticleDetailsPage = () => {
               </Tabs.Item>
               <Tabs.Item value="media">
                 <NewsArticleMediaSection news={news || {}} />
+              </Tabs.Item>
+              <Tabs.Item value="workflow">
+                <NewsArticleWorkflowSection news={news as any} />
+              </Tabs.Item>
+              <Tabs.Item value="history">
+                <NewsArticleHistorySection news={news as any} />
               </Tabs.Item>
             </Tabs.Content>
           </Card.Content>

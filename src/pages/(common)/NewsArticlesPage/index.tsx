@@ -1,6 +1,8 @@
+import NewsArticlesCalendarSection from "@/components/(common)/news-articles-page/NewsArticlesCalendarSection";
 import NewsArticlesDataTableSection from "@/components/(common)/news-articles-page/NewsArticlesDataTableSection";
 import NewsArticlesFilterSection from "@/components/(common)/news-articles-page/NewsArticlesFilterSection";
 import NewsArticlesStatisticsSection from "@/components/(common)/news-articles-page/NewsArticlesStatisticsSection";
+import NewsArticlesWorkflowKanbanSection from "@/components/(common)/news-articles-page/NewsArticlesWorkflowKanbanSection";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -21,7 +23,12 @@ import type { TNews, TUpdateNewsPayload } from "@/types/news.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { Plus } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  LayoutDashboard,
+  Plus,
+  Table,
+} from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "react-toastify";
@@ -46,6 +53,9 @@ const NewsArticlesPage = () => {
   const [featured, setFeatured] = useState("");
   const [publishedAtGte, setPublishedAtGte] = useState("");
   const [publishedAtLte, setPublishedAtLte] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "calendar" | "kanban">(
+    "table",
+  );
 
   // API mutations
   const updateMutation = useMutation({
@@ -155,12 +165,12 @@ const NewsArticlesPage = () => {
         const payload: TUpdateNewsPayload = {
           is_featured: !news.is_featured,
         };
-        
+
         // Only include thumbnail if it exists
         if (news.thumbnail?._id) {
           payload.thumbnail = news.thumbnail._id;
         }
-        
+
         updateMutation.mutate({
           id: news._id,
           payload,
@@ -193,68 +203,111 @@ const NewsArticlesPage = () => {
       <PageHeader
         name="News Articles"
         slot={
-          ["admin", "author"].includes(info?.role || "") && (
-            <Button asChild>
-              <Link
-                className="flex h-full items-center"
-                to="/news-articles/add"
+          <div className="flex gap-2">
+            <div className="bg-muted/20 mr-4 flex rounded-md border">
+              <Button
+                variant={viewMode === "table" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("table")}
+                title="Table View"
               >
-                <Plus className="h-4 w-4" />
-                Add New
-              </Link>
-            </Button>
-          )
+                <Table className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("calendar")}
+                title="Calendar View"
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "kanban" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("kanban")}
+                title="Kanban Board"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {["admin", "author"].includes(info?.role || "") && (
+              <Button asChild>
+                <Link
+                  className="flex h-full items-center"
+                  to="/news-articles/add"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add New
+                </Link>
+              </Button>
+            )}
+          </div>
         }
       />
 
       <NewsArticlesStatisticsSection meta={newsQuery.data?.meta} />
 
-      <Card>
-        <Card.Content>
-          <NewsArticlesFilterSection
-            state={{
-              category,
-              setCategory,
-              author,
-              setAuthor,
-              status,
-              setStatus,
-              featured,
-              setFeatured,
-              publishedAtGte,
-              setPublishedAtGte,
-              publishedAtLte,
-              setPublishedAtLte,
-              categories: categoriesResponse?.data || [],
-              users: usersResponse?.data || [],
-            }}
-          />
-        </Card.Content>
-      </Card>
+      {viewMode === "table" && (
+        <>
+          <Card>
+            <Card.Content>
+              <NewsArticlesFilterSection
+                state={{
+                  category,
+                  setCategory,
+                  author,
+                  setAuthor,
+                  status,
+                  setStatus,
+                  featured,
+                  setFeatured,
+                  publishedAtGte,
+                  setPublishedAtGte,
+                  publishedAtLte,
+                  setPublishedAtLte,
+                  categories: categoriesResponse?.data || [],
+                  users: usersResponse?.data || [],
+                }}
+              />
+            </Card.Content>
+          </Card>
 
-      <Card>
-        <Card.Content>
-          <NewsArticlesDataTableSection
-            data={newsQuery.data?.data || []}
-            breadcrumbs={activeBreadcrumbs || []}
-            isLoading={newsQuery.isLoading}
-            isError={newsQuery.isError}
-            onDelete={handleDelete}
-            onToggleFeatured={handleToggleFeatured}
-            state={{
-              total: newsQuery.data?.meta?.total || 0,
-              page,
-              setPage,
-              limit,
-              setLimit,
-              search,
-              setSearch,
-              sort,
-              setSort,
-            }}
-          />
-        </Card.Content>
-      </Card>
+          <Card>
+            <Card.Content>
+              <NewsArticlesDataTableSection
+                data={newsQuery.data?.data || []}
+                breadcrumbs={activeBreadcrumbs || []}
+                isLoading={newsQuery.isLoading}
+                isError={newsQuery.isError}
+                onDelete={handleDelete}
+                onToggleFeatured={handleToggleFeatured}
+                state={{
+                  total: newsQuery.data?.meta?.total || 0,
+                  page,
+                  setPage,
+                  limit,
+                  setLimit,
+                  search,
+                  setSearch,
+                  sort,
+                  setSort,
+                }}
+              />
+            </Card.Content>
+          </Card>
+        </>
+      )}
+
+      {viewMode === "calendar" && (
+        <Card>
+          <Card.Content className="pt-6">
+            <NewsArticlesCalendarSection />
+          </Card.Content>
+        </Card>
+      )}
+
+      {viewMode === "kanban" && <NewsArticlesWorkflowKanbanSection />}
     </main>
   );
 };

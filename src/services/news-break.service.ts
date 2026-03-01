@@ -2,6 +2,7 @@ import api from "@/lib/api";
 import type {
   TNewsBreakResponse,
   TNewsBreaksResponse,
+  TStatus,
 } from "@/types/news-break.type";
 
 // ========================= GET =========================
@@ -41,7 +42,7 @@ export async function fetchNewsBreak(id: string): Promise<TNewsBreakResponse> {
 // Create News Break
 export async function createNewsBreak(payload: {
   news: string;
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
   published_at?: string | Date;
   expired_at?: string | Date;
 }): Promise<TNewsBreakResponse> {
@@ -86,7 +87,7 @@ export async function restoreNewsBreak(
 // Update Bulk Self News Breaks
 export async function updateSelfNewsBreaks(payload: {
   ids: string[];
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
 }): Promise<TNewsBreaksResponse> {
   const response = await api.patch("/api/news-break/bulk/self", payload);
   return response.data as TNewsBreaksResponse;
@@ -97,7 +98,7 @@ export async function updateSelfNewsBreak(
   id: string,
   payload: {
     news?: string;
-    status?: "draft" | "pending" | "published" | "archived";
+    status?: TStatus;
     published_at?: string | Date;
     expired_at?: string | Date;
   },
@@ -109,7 +110,7 @@ export async function updateSelfNewsBreak(
 // Update Bulk News Breaks (Admin)
 export async function updateNewsBreaks(payload: {
   ids: string[];
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
 }): Promise<TNewsBreaksResponse> {
   const response = await api.patch("/api/news-break/bulk", payload);
   return response.data as TNewsBreaksResponse;
@@ -120,7 +121,7 @@ export async function updateNewsBreak(
   id: string,
   payload: {
     news?: string;
-    status?: "draft" | "pending" | "published" | "archived";
+    status?: TStatus;
     published_at?: string | Date;
     expired_at?: string | Date;
   },

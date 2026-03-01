@@ -7,12 +7,21 @@ import { cn } from "@/lib/utils";
 import {
   deleteComment,
   fetchComments,
+  pinComment,
+  unpinComment,
   updateComment,
 } from "@/services/comment.service";
 import type { TComment } from "@/types/comment.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCheck, FileText, Trash2 } from "lucide-react";
+import {
+  CheckCheck,
+  FileText,
+  Pin,
+  PinOff,
+  ShieldAlert,
+  Trash2,
+} from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -24,7 +33,7 @@ const CommentsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [filter, setFilter] = useState<
-    "all" | "pending" | "approved" | "rejected"
+    "all" | "pending" | "approved" | "rejected" | "flagged"
   >("all");
 
   const queryParams = useMemo(() => {
@@ -159,6 +168,17 @@ const CommentsPage: React.FC = () => {
               >
                 Rejected
               </button>
+              <button
+                className={cn(
+                  "cursor-pointer px-3 py-1.5 text-sm",
+                  filter === "flagged"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card",
+                )}
+                onClick={() => setFilter("flagged")}
+              >
+                Flagged
+              </button>
             </div>
           </div>
         </div>
@@ -182,6 +202,7 @@ const CommentsPage: React.FC = () => {
                 const timeAgo = formatDistanceToNow(new Date(item.created_at), {
                   addSuffix: true,
                 });
+                const isFlagged = item.flagged_count && item.flagged_count > 0;
 
                 return (
                   <div
@@ -207,12 +228,28 @@ const CommentsPage: React.FC = () => {
                           </p>
                           <span
                             className={cn(
-                              "rounded-full border px-2 py-1 text-xs font-medium",
-                              getStatusColor(item.status),
+                              "w-fit rounded-full border px-2 py-1 text-xs font-bold",
+                              item.status === "approved"
+                                ? "border-green-200 bg-green-100 text-green-700"
+                                : item.status === "rejected"
+                                  ? "border-red-200 bg-red-100 text-red-700"
+                                  : "border-yellow-200 bg-yellow-100 text-yellow-700",
                             )}
                           >
                             {item.status || "pending"}
                           </span>
+                          {isFlagged && (
+                            <span className="flex items-center gap-1 rounded-full border border-red-200 bg-red-100 px-2 py-1 text-xs font-bold text-red-700">
+                              <ShieldAlert className="size-3" />
+                              {item.flagged_count} Reports
+                            </span>
+                          )}
+                          {item.is_pinned && (
+                            <span className="flex items-center gap-1 rounded-full border border-blue-200 bg-blue-100 px-2 py-1 text-xs font-bold text-blue-700">
+                              <Pin className="size-3" />
+                              Pinned
+                            </span>
+                          )}
                         </div>
                         <div className="mt-2 space-y-1">
                           <p className="text-muted-foreground text-sm">
@@ -229,6 +266,41 @@ const CommentsPage: React.FC = () => {
                       </div>
 
                       <div className="flex flex-shrink-0 items-center gap-2">
+                        {item.is_pinned ? (
+                          <Button
+                            onClick={() =>
+                              unpinComment(item._id).then(() =>
+                                queryClient.invalidateQueries({
+                                  queryKey: ["comments"],
+                                }),
+                              )
+                            }
+                            size={"sm"}
+                            variant="outline"
+                            className="[--accent:gray]"
+                            shape={"default"}
+                            title="Unpin from top"
+                          >
+                            <PinOff className="size-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() =>
+                              pinComment(item._id).then(() =>
+                                queryClient.invalidateQueries({
+                                  queryKey: ["comments"],
+                                }),
+                              )
+                            }
+                            size={"sm"}
+                            variant="outline"
+                            className="[--accent:blue]"
+                            shape={"default"}
+                            title="Pin to top"
+                          >
+                            <Pin className="size-4" />
+                          </Button>
+                        )}
                         <Button
                           onClick={() => handleViewNews(item.news._id)}
                           size={"sm"}

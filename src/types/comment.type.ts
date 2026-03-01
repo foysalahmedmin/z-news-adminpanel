@@ -24,6 +24,8 @@ export type TComment = {
   status?: TCommentStatus;
   is_edited?: boolean;
   edited_at?: Date;
+  is_pinned?: boolean;
+  flagged_count?: number;
   is_deleted?: boolean;
   created_at: string;
   updated_at?: string;

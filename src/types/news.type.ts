@@ -1,6 +1,20 @@
 import type { Response } from "./response.type";
 
-export type TStatus = "draft" | "pending" | "published" | "archived";
+export type TStatus =
+  | "draft"
+  | "pending"
+  | "scheduled"
+  | "published"
+  | "archived";
+
+export type TContentType =
+  | "article"
+  | "video"
+  | "podcast"
+  | "live-blog"
+  | "photo-essay";
+
+export type TSensitivityLevel = "public" | "sensitive" | "restricted";
 
 export type TFile = {
   _id: string;
@@ -61,6 +75,56 @@ export type TNews = {
   edited_at?: Date;
   created_at?: string;
   updated_at?: string;
+
+  // SEO Enhancement
+  meta_title?: string;
+  meta_description?: string;
+  canonical_url?: string;
+  structured_data?: Record<string, any>;
+
+  // Content Classification
+  content_type?: TContentType;
+  reading_time?: number;
+  word_count?: number;
+
+  // Editorial Metadata
+  sensitivity_level?: TSensitivityLevel;
+  fact_checked?: boolean;
+  fact_checker?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  sources?: { name: string; url?: string; credibility?: number }[];
+
+  // Engagement Optimization
+  push_notification_sent?: boolean;
+  newsletter_included?: boolean;
+  social_media_posts?: { platform: string; post_id: string; posted_at: Date }[];
+
+  // Geographic Targeting
+  geo_targeting?: {
+    countries?: string[];
+    regions?: string[];
+    cities?: string[];
+  };
+
+  // Multimedia
+  gallery?: TFile[];
+  audio?: TFile;
+  podcast_episode?: string;
+  infographics?: TFile[];
+
+  // Related Content
+  related_articles?: string[] | TNews[];
+  series?: string;
+
+  // Performance Metrics
+  avg_time_on_page?: number;
+  bounce_rate?: number;
+  scroll_depth?: number;
+  share_count?: number;
+
   news_headline?: {
     _id: string;
     status: TStatus;
@@ -79,6 +143,21 @@ export type TNews = {
   likes?: number;
   dislikes?: number;
   comments?: number;
+};
+
+export type TArticleVersion = {
+  _id: string;
+  news: string;
+  version_number: number;
+  content_snapshot: string;
+  metadata_snapshot: Record<string, any>;
+  changed_by: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  change_summary?: string;
+  created_at: string;
 };
 
 export type TCreateNewsPayload = {

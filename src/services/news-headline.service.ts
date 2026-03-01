@@ -2,6 +2,7 @@ import api from "@/lib/api";
 import type {
   TNewsHeadlineResponse,
   TNewsHeadlinesResponse,
+  TStatus,
 } from "@/types/news-headline.type";
 
 // ========================= GET =========================
@@ -43,7 +44,7 @@ export async function fetchNewsHeadline(
 // Create News Headline
 export async function createNewsHeadline(payload: {
   news: string;
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
   published_at?: string | Date;
   expired_at?: string | Date;
 }): Promise<TNewsHeadlineResponse> {
@@ -91,7 +92,7 @@ export async function restoreNewsHeadline(
 // Update Bulk Self News Headlines
 export async function updateSelfNewsHeadlines(payload: {
   ids: string[];
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
 }): Promise<TNewsHeadlinesResponse> {
   const response = await api.patch("/api/news-Headline/bulk/self", payload);
   return response.data as TNewsHeadlinesResponse;
@@ -102,7 +103,7 @@ export async function updateSelfNewsHeadline(
   id: string,
   payload: {
     news?: string;
-    status?: "draft" | "pending" | "published" | "archived";
+    status?: TStatus;
     published_at?: string | Date;
     expired_at?: string | Date;
   },
@@ -114,7 +115,7 @@ export async function updateSelfNewsHeadline(
 // Update Bulk News Headlines (Admin)
 export async function updateNewsHeadlines(payload: {
   ids: string[];
-  status?: "draft" | "pending" | "published" | "archived";
+  status?: TStatus;
 }): Promise<TNewsHeadlinesResponse> {
   const response = await api.patch("/api/news-Headline/bulk", payload);
   return response.data as TNewsHeadlinesResponse;
@@ -125,7 +126,7 @@ export async function updateNewsHeadline(
   id: string,
   payload: {
     news?: string;
-    status?: "draft" | "pending" | "published" | "archived";
+    status?: TStatus;
     published_at?: string | Date;
     expired_at?: string | Date;
   },

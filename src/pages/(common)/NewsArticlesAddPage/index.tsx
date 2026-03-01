@@ -9,6 +9,7 @@ import ArticleDetails from "@/components/(common)/news-articles-mutation-page/Ar
 import CategoriesAndTags from "@/components/(common)/news-articles-mutation-page/CategoriesAndTags";
 import ContentEditor from "@/components/(common)/news-articles-mutation-page/ContentEditor";
 import PublishSettings from "@/components/(common)/news-articles-mutation-page/PublishSettings";
+import TemplateSelector from "@/components/(common)/news-articles-mutation-page/TemplateSelector";
 import PageHeader from "@/components/sections/PageHeader";
 import { Button } from "@/components/ui/Button";
 import useUser from "@/hooks/states/useUser";
@@ -35,10 +36,24 @@ const newsSchema = z.object({
   categories: z.array(z.string()).optional(),
   writer: z.string().optional(),
   layout: z.enum(["default", "standard", "featured", "minimal"]).optional(),
-  status: z.enum(["draft", "pending", "published", "archived"]).optional(),
+  status: z
+    .enum(["draft", "pending", "scheduled", "published", "archived"])
+    .optional(),
   is_featured: z.boolean(),
   published_at: z.date().optional(),
   expired_at: z.date().optional(),
+
+  // strategic fields
+  meta_title: z.string().optional(),
+  meta_description: z.string().optional(),
+  canonical_url: z.string().url().optional().or(z.literal("")),
+  content_type: z
+    .enum(["article", "video", "podcast", "live-blog", "photo-essay"])
+    .optional(),
+  sensitivity_level: z.enum(["public", "sensitive", "restricted"]).optional(),
+  fact_checked: z.boolean().optional(),
+  related_articles: z.array(z.string()).optional(),
+  series: z.string().optional(),
   // Headline and Break fields (for separate collections)
   is_news_headline: z.coerce.boolean().optional(),
   is_news_break: z.coerce.boolean().optional(),
@@ -82,6 +97,12 @@ const NewsArticlesAddPage = () => {
       video: null,
       is_news_headline: false,
       is_news_break: false,
+      content_type: "article",
+      sensitivity_level: "public",
+      fact_checked: false,
+      meta_title: "",
+      meta_description: "",
+      canonical_url: "",
     },
   });
 
@@ -194,6 +215,7 @@ const NewsArticlesAddPage = () => {
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6">
+            <TemplateSelector />
             <ArticleDetails />
             <ContentEditor />
             <CategoriesAndTags />

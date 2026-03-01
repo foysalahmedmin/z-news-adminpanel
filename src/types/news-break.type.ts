@@ -1,6 +1,11 @@
 import type { Response } from "./response.type";
 
-export type TStatus = "draft" | "pending" | "published" | "archived";
+export type TStatus =
+  | "draft"
+  | "pending"
+  | "scheduled"
+  | "published"
+  | "archived";
 
 export type TNewsBreak = {
   _id: string;

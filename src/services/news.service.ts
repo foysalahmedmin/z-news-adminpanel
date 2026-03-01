@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import type {
+  TArticleVersion,
   TBulkNewsResponse,
   TBulkUpdatePayload,
   TCreateNewsPayload,
@@ -7,6 +8,7 @@ import type {
   TNewsResponse,
   TUpdateNewsPayload,
 } from "@/types/news.type";
+import type { Response } from "@/types/response.type";
 
 // Create converter instance
 // const formDataConverter = FormDataConverterFactory.createObjectToFormData();
@@ -161,5 +163,34 @@ export async function deleteNewsPermanent(id: string): Promise<TNewsResponse> {
 
 export async function deleteNews(id: string): Promise<TNewsResponse> {
   const response = await api.delete(`/api/news/${id}`);
+  return response.data;
+}
+
+// ========================= ARTICLE VERSIONING =========================
+export async function fetchNewsVersions(
+  newsId: string,
+): Promise<Response<TArticleVersion[]>> {
+  const response = await api.get(`/api/article-version/news/${newsId}`);
+  return response.data;
+}
+
+export async function compareNewsVersions(
+  newsId: string,
+  version1: number,
+  version2: number,
+): Promise<Response<any>> {
+  const response = await api.get(
+    `/api/article-version/news/${newsId}/compare`,
+    {
+      params: { version1, version2 },
+    },
+  );
+  return response.data;
+}
+
+export async function restoreNewsVersion(
+  versionId: string,
+): Promise<TNewsResponse> {
+  const response = await api.post(`/api/article-version/${versionId}/restore`);
   return response.data;
 }

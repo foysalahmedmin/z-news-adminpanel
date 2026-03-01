@@ -55,6 +55,16 @@ export async function fetchComment(id: string): Promise<TCommentResponse> {
   return response.data;
 }
 
+export async function fetchFlaggedComments(query?: {
+  min_flags?: number;
+}): Promise<TCommentsResponse> {
+  const response = await api.get("/api/comment-enhanced/flagged/list", {
+    params: query,
+    withCredentials: true,
+  });
+  return response.data;
+}
+
 // ========================= POST =========================
 export async function createComment(
   payload: TCreateCommentPayload,
@@ -143,6 +153,42 @@ export async function updateComment(
   const response = await api.patch(`/api/comment/${id}`, payload, {
     withCredentials: true,
   });
+  return response.data;
+}
+
+export async function moderateComment(
+  id: string,
+  payload: { status: "approved" | "rejected"; reason?: string },
+): Promise<TCommentResponse> {
+  const response = await api.patch(
+    `/api/comment-enhanced/${id}/moderate`,
+    payload,
+    {
+      withCredentials: true,
+    },
+  );
+  return response.data;
+}
+
+export async function pinComment(id: string): Promise<TCommentResponse> {
+  const response = await api.patch(
+    `/api/comment-enhanced/${id}/pin`,
+    {},
+    {
+      withCredentials: true,
+    },
+  );
+  return response.data;
+}
+
+export async function unpinComment(id: string): Promise<TCommentResponse> {
+  const response = await api.patch(
+    `/api/comment-enhanced/${id}/unpin`,
+    {},
+    {
+      withCredentials: true,
+    },
+  );
   return response.data;
 }
 

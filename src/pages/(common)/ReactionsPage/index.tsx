@@ -16,9 +16,11 @@ import {
   CheckCheck,
   FileText,
   Heart,
+  Smile,
   ThumbsDown,
   ThumbsUp,
   Trash2,
+  Zap,
 } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
@@ -31,14 +33,26 @@ const ReactionsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [filter, setFilter] = useState<
-    "all" | "like" | "dislike" | "pending" | "approved" | "rejected"
+    | "all"
+    | "like"
+    | "dislike"
+    | "insightful"
+    | "funny"
+    | "disagree"
+    | "pending"
+    | "approved"
+    | "rejected"
   >("all");
 
   const queryParams = useMemo(() => {
     return {
       page,
       limit,
-      type: filter === "like" || filter === "dislike" ? filter : undefined,
+      type: ["like", "dislike", "insightful", "funny", "disagree"].includes(
+        filter,
+      )
+        ? filter
+        : undefined,
       status:
         filter === "pending" || filter === "approved" || filter === "rejected"
           ? filter
@@ -120,6 +134,12 @@ const ReactionsPage: React.FC = () => {
         return <ThumbsUp className="size-4 text-green-600" />;
       case "dislike":
         return <ThumbsDown className="size-4 text-red-600" />;
+      case "insightful":
+        return <Zap className="size-4 text-amber-500" />;
+      case "funny":
+        return <Smile className="size-4 text-yellow-500" />;
+      case "disagree":
+        return <ThumbsDown className="size-4 scale-x-[-1] text-orange-600" />;
       default:
         return <Heart className="size-4 text-gray-600" />;
     }
@@ -131,6 +151,12 @@ const ReactionsPage: React.FC = () => {
         return "text-green-600 bg-green-50 border-green-200";
       case "dislike":
         return "text-red-600 bg-red-50 border-red-200";
+      case "insightful":
+        return "text-amber-600 bg-amber-50 border-amber-200";
+      case "funny":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "disagree":
+        return "text-orange-600 bg-orange-50 border-orange-200";
       default:
         return "text-gray-600 bg-gray-50 border-gray-200";
     }
@@ -180,6 +206,39 @@ const ReactionsPage: React.FC = () => {
                 onClick={() => setFilter("dislike")}
               >
                 Dislikes
+              </button>
+              <button
+                className={cn(
+                  "cursor-pointer px-3 py-1.5 text-sm",
+                  filter === "insightful"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card",
+                )}
+                onClick={() => setFilter("insightful")}
+              >
+                Insightful
+              </button>
+              <button
+                className={cn(
+                  "cursor-pointer px-3 py-1.5 text-sm",
+                  filter === "funny"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card",
+                )}
+                onClick={() => setFilter("funny")}
+              >
+                Funny
+              </button>
+              <button
+                className={cn(
+                  "cursor-pointer px-3 py-1.5 text-sm",
+                  filter === "disagree"
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-card",
+                )}
+                onClick={() => setFilter("disagree")}
+              >
+                Disagree
               </button>
               <button
                 className={cn(
