@@ -102,6 +102,11 @@ const NotificationApplier = () => {
     }
 
     try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const url = new URL(apiUrl);
+      const path =
+        url.pathname === "/" || !url.pathname ? "/socket.io" : url.pathname;
+
       const socket: Socket = io(import.meta.env.VITE_API_URL, {
         auth: { token: user.token },
         reconnection: true,
@@ -110,6 +115,7 @@ const NotificationApplier = () => {
         reconnectionAttempts: maxReconnectAttempts,
         timeout: 20000,
         transports: ["websocket", "polling"],
+        path,
       });
 
       socketRef.current = socket;
@@ -118,7 +124,7 @@ const NotificationApplier = () => {
         console.log("✅ Socket connected");
         setIsConnected(true);
         reconnectAttemptsRef.current = 0;
-        
+
         // Clear any pending reconnect timeout
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
@@ -149,9 +155,12 @@ const NotificationApplier = () => {
         reconnectAttemptsRef.current += 1;
 
         if (reconnectAttemptsRef.current < maxReconnectAttempts) {
-          const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current);
+          const delay =
+            baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current);
           reconnectTimeoutRef.current = setTimeout(() => {
-            console.log(`🔄 Attempting to reconnect (${reconnectAttemptsRef.current}/${maxReconnectAttempts})...`);
+            console.log(
+              `🔄 Attempting to reconnect (${reconnectAttemptsRef.current}/${maxReconnectAttempts})...`,
+            );
             connectSocket();
           }, delay);
         } else {
@@ -192,24 +201,21 @@ const NotificationApplier = () => {
         (data: { count: number; action: string }) => {
           console.log("📝 Bulk notification update:", data);
           bulkUpdateNotifications(data);
-          
+
           // Invalidate queries to refresh data
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           queryClient.invalidateQueries({ queryKey: ["notifications-count"] });
         },
       );
 
-      socket.on(
-        "notification-recipient-deleted",
-        (data: { _id: string }) => {
-          console.log("🗑️ Notification deleted:", data);
-          removeNotification(data._id);
-          
-          // Invalidate queries to refresh data
-          queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          queryClient.invalidateQueries({ queryKey: ["notifications-count"] });
-        },
-      );
+      socket.on("notification-recipient-deleted", (data: { _id: string }) => {
+        console.log("🗑️ Notification deleted:", data);
+        removeNotification(data._id);
+
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        queryClient.invalidateQueries({ queryKey: ["notifications-count"] });
+      });
     } catch (error) {
       console.error("❌ Failed to initialize socket:", error);
       setIsConnected(false);
