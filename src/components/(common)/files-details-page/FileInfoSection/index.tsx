@@ -1,14 +1,14 @@
 import type { TFile, TFileStatus } from "@/types/file.type";
 import {
+  Archive,
   Calendar,
   Eye,
   EyeOff,
   File,
-  Image,
-  Video,
-  Music,
   FileText,
-  Archive,
+  Image,
+  Music,
+  Video,
 } from "lucide-react";
 import React from "react";
 
@@ -70,7 +70,7 @@ const FileInfoSection: React.FC<FileInfoSectionProps> = ({ file }) => {
   return (
     <div className="flex items-start space-x-4">
       <div className="flex-shrink-0">
-        {file?.type === "image" && file?.url ? (
+        {file?.metadata?.file_type === "image" && file?.url ? (
           <img
             src={file.url}
             alt={file.name}
@@ -78,7 +78,7 @@ const FileInfoSection: React.FC<FileInfoSectionProps> = ({ file }) => {
           />
         ) : (
           <div className="bg-muted flex size-32 items-center justify-center rounded-md">
-            {getFileTypeIcon(file?.type)}
+            {getFileTypeIcon(file?.metadata?.file_type)}
           </div>
         )}
       </div>
@@ -91,10 +91,10 @@ const FileInfoSection: React.FC<FileInfoSectionProps> = ({ file }) => {
         <div className="text-muted-foreground flex items-center space-x-4 text-sm">
           <span className="flex items-center">
             <File className="mr-1 h-4 w-4" />
-            {file?.file_name}
+            {file?.filename}
           </span>
           <span>Size: {formatFileSize(file?.size)}</span>
-          <span className="capitalize">Type: {file?.type}</span>
+          <span className="capitalize">Type: {file?.metadata?.file_type}</span>
         </div>
         <div
           className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${getStatusColor(file?.status)}`}
@@ -113,4 +113,3 @@ const FileInfoSection: React.FC<FileInfoSectionProps> = ({ file }) => {
 };
 
 export default FileInfoSection;
-

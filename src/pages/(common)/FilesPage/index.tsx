@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import useMenu from "@/hooks/states/useMenu";
 import useAlert from "@/hooks/ui/useAlert";
-import {
-  deleteFile,
-  fetchFiles,
-} from "@/services/file.service";
+import { deleteFile, fetchFiles } from "@/services/file.service";
 import type { TFile } from "@/types/file.type";
 import type { ErrorResponse } from "@/types/response.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -71,7 +68,7 @@ const FilesPage = () => {
         search,
         page,
         limit,
-        type: typeFilter !== "all" ? typeFilter : undefined,
+        file_type: typeFilter !== "all" ? typeFilter : undefined,
         status: statusFilter !== "all" ? statusFilter : undefined,
       },
     ],
@@ -81,7 +78,7 @@ const FilesPage = () => {
         limit,
         sort: sort || "-created_at",
         ...(search && { search }),
-        ...(typeFilter !== "all" && { type: typeFilter }),
+        ...(typeFilter !== "all" && { file_type: typeFilter }),
         ...(statusFilter !== "all" && { status: statusFilter }),
       }),
   });
@@ -158,4 +155,3 @@ const FilesPage = () => {
 };
 
 export default FilesPage;
-

@@ -18,13 +18,21 @@ export type TSensitivityLevel = "public" | "sensitive" | "restricted";
 
 export type TFile = {
   _id: string;
-  url: string;
+
   name: string;
-  path: string;
-  file_name: string;
-  type: string;
+  originalname: string;
+  filename: string;
+  url: string;
+  mimetype: string;
+  size: number;
+  provider: "local" | "gcs";
   caption?: string;
-  size?: number;
+  metadata: {
+    path?: string;
+    bucket?: string;
+    extension?: string;
+    file_type?: string;
+  };
   author?: {
     _id: string;
     name: string;

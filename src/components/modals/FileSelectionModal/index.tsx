@@ -133,7 +133,7 @@ const FileSelectionModal = ({
       params.search = debouncedSearch;
     }
     if (typeFilter !== "all") {
-      params.type = typeFilter;
+      params.file_type = typeFilter;
     }
     if (categoryFilter) {
       params.category = categoryFilter;
@@ -196,6 +196,16 @@ const FileSelectionModal = ({
     },
   });
 
+  const handleToggleSelection = useCallback((fileId: string) => {
+    setSelectedFiles((prev) => {
+      if (prev.includes(fileId)) {
+        return prev.filter((id) => id !== fileId);
+      } else {
+        return [...prev, fileId];
+      }
+    });
+  }, []);
+
   // File selection handlers
   const handleSelectFile = useCallback(
     (fileId: string) => {
@@ -211,18 +221,8 @@ const FileSelectionModal = ({
         }
       }
     },
-    [isMultiple, selectedFiles, onChange, setIsOpen],
+    [isMultiple, selectedFiles, onChange, setIsOpen, handleToggleSelection],
   );
-
-  const handleToggleSelection = useCallback((fileId: string) => {
-    setSelectedFiles((prev) => {
-      if (prev.includes(fileId)) {
-        return prev.filter((id) => id !== fileId);
-      } else {
-        return [...prev, fileId];
-      }
-    });
-  }, []);
 
   // Handle file upload
   const handleFileUpload = useCallback(
@@ -293,7 +293,7 @@ const FileSelectionModal = ({
 
   // Get file preview
   const getFilePreview = (file: TFile) => {
-    if (file.type === "image") {
+    if (file.metadata?.file_type === "image") {
       return file.url;
     }
     return null;
@@ -479,7 +479,7 @@ const FileSelectionModal = ({
                         key={fileId}
                         className="group bg-background relative flex items-center gap-2 rounded border p-2"
                       >
-                        {file.type === "image" ? (
+                        {file.metadata?.file_type === "image" ? (
                           <img
                             src={file.url}
                             alt={file.name}
@@ -488,7 +488,9 @@ const FileSelectionModal = ({
                         ) : (
                           <div className="bg-muted flex h-12 w-12 items-center justify-center rounded">
                             {(() => {
-                              const Icon = getFileIcon(file.type);
+                              const Icon = getFileIcon(
+                                file.metadata?.file_type || "file",
+                              );
                               return <Icon className="h-6 w-6" />;
                             })()}
                           </div>
@@ -539,7 +541,9 @@ const FileSelectionModal = ({
               <>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {files.map((file) => {
-                    const Icon = getFileIcon(file.type);
+                    const Icon = getFileIcon(
+                      file.metadata?.file_type || "file",
+                    );
                     const preview = getFilePreview(file);
                     const isSelected = selectedFiles.includes(file._id);
 
@@ -590,7 +594,9 @@ const FileSelectionModal = ({
                         <div className="absolute right-0 bottom-0 left-0 bg-black/70 p-2 text-xs text-white">
                           <p className="truncate font-medium">{file.name}</p>
                           <div className="mt-1 flex items-center justify-between">
-                            <span className="capitalize">{file.type}</span>
+                            <span className="capitalize">
+                              {file.metadata?.file_type}
+                            </span>
                             <span>{formatFileSize(file.size)}</span>
                           </div>
                         </div>

@@ -143,7 +143,7 @@ const FilesViewPage = () => {
       </Card>
 
       {/* File Preview Section */}
-      {file.type === "image" && file.url && (
+      {file.metadata?.file_type === "image" && file.url && (
         <Card>
           <Card.Header>
             <h3 className="text-lg font-semibold">Preview</h3>

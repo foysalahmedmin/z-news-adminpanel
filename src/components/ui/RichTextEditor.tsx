@@ -235,7 +235,7 @@ const RichTextEditor = ({
           blockNoteEditor.removeBlocks([lastFileSelect]);
 
           // Insert image or video block based on file type
-          if (file.type === "image") {
+          if (file.metadata?.file_type === "image") {
             blockNoteEditor.insertBlocks(
               [
                 {
@@ -249,7 +249,7 @@ const RichTextEditor = ({
               lastFileSelect.id,
               "after",
             );
-          } else if (file.type === "video") {
+          } else if (file.metadata?.file_type === "video") {
             blockNoteEditor.insertBlocks(
               [
                 {
@@ -292,7 +292,7 @@ const RichTextEditor = ({
           // No placeholder found, insert at cursor position
           const currentBlock = blockNoteEditor.getTextCursorPosition().block;
 
-          if (file.type === "image") {
+          if (file.metadata?.file_type === "image") {
             blockNoteEditor.insertBlocks(
               [
                 {
@@ -306,7 +306,7 @@ const RichTextEditor = ({
               currentBlock.id,
               "after",
             );
-          } else if (file.type === "video") {
+          } else if (file.metadata?.file_type === "video") {
             blockNoteEditor.insertBlocks(
               [
                 {

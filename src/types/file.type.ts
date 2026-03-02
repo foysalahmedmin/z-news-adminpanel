@@ -1,28 +1,43 @@
 import type { Response } from "./response.type";
 
-export type TFileType = "image" | "video" | "audio" | "file" | "pdf" | "doc" | "txt";
+export type TFileType =
+  | "image"
+  | "video"
+  | "audio"
+  | "file"
+  | "pdf"
+  | "doc"
+  | "txt";
+
 export type TFileStatus = "active" | "inactive" | "archived";
+
+export type TFileProvider = "local" | "gcs";
 
 export type TFile = {
   _id: string;
-  file_name: string;
   name: string;
+  originalname: string;
+  filename: string;
   url: string;
-  path: string;
-  type: TFileType;
-  mime_type: string;
+  mimetype: string;
   size: number;
-  extension: string;
   author: {
     _id: string;
     name: string;
     email: string;
     image?: string;
   };
+  provider: TFileProvider;
   category?: string;
   description?: string;
   caption?: string;
   status: TFileStatus;
+  metadata?: {
+    path?: string;
+    bucket?: string;
+    extension?: string;
+    file_type?: TFileType;
+  };
   created_at?: string;
   updated_at?: string;
 };
@@ -46,4 +61,3 @@ export type TFileUpdatePayload = {
 
 export type TFileResponse = Response<TFile>;
 export type TFilesResponse = Response<TFile[]>;
-

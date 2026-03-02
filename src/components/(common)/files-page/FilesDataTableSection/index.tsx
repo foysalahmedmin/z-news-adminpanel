@@ -63,12 +63,12 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
   const columns: TColumn<TFile>[] = [
     {
       name: "Preview",
-      field: "type",
+      field: "metadata.file_type" as any,
       cell: ({ row }) => {
-        const Icon = getFileIcon(row.type);
+        const Icon = getFileIcon(row.metadata?.file_type || "file");
         return (
           <div className="flex items-center gap-2">
-            {row.type === "image" ? (
+            {row.metadata?.file_type === "image" ? (
               <img
                 src={row.url}
                 alt={row.name}
@@ -86,10 +86,12 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
     { name: "Name", field: "name", isSortable: true, isSearchable: true },
     {
       name: "Type",
-      field: "type",
+      field: "metadata.file_type" as any,
       isSortable: true,
-      cell: ({ cell }) => (
-        <span className="text-sm capitalize">{cell?.toString()}</span>
+      cell: ({ row }) => (
+        <span className="text-sm capitalize">
+          {row.metadata?.file_type || "N/A"}
+        </span>
       ),
     },
     {
@@ -102,10 +104,12 @@ const FilesDataTableSection: React.FC<FilesDataTableSectionProps> = ({
     },
     {
       name: "Extension",
-      field: "extension",
+      field: "metadata.extension" as any,
       isSortable: true,
-      cell: ({ cell }) => (
-        <span className="font-mono text-sm">{cell?.toString()}</span>
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.metadata?.extension || "N/A"}
+        </span>
       ),
     },
     {

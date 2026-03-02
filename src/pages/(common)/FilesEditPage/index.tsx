@@ -126,7 +126,7 @@ const FilesEditPage = () => {
           <Card.Content>
             <h3 className="mb-4 font-semibold">File Preview</h3>
             <div className="space-y-4">
-              {file.type === "image" ? (
+              {file.metadata?.file_type === "image" ? (
                 <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
                   <img
                     src={file.url}
@@ -142,7 +142,7 @@ const FilesEditPage = () => {
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="font-medium">Type:</span>{" "}
-                  <span className="capitalize">{file.type}</span>
+                  <span className="capitalize">{file.metadata?.file_type}</span>
                 </div>
                 <div>
                   <span className="font-medium">Size:</span>{" "}
@@ -150,11 +150,11 @@ const FilesEditPage = () => {
                 </div>
                 <div>
                   <span className="font-medium">Extension:</span>{" "}
-                  <span className="font-mono">{file.extension}</span>
+                  <span className="font-mono">{file.metadata?.extension}</span>
                 </div>
                 <div>
                   <span className="font-medium">MIME Type:</span>{" "}
-                  <span>{file.mime_type}</span>
+                  <span>{file.mimetype}</span>
                 </div>
                 <div>
                   <span className="font-medium">Author:</span>{" "}

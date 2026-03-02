@@ -1,5 +1,5 @@
 import type { TFile } from "@/types/file.type";
-import { FileText, Calendar, User, Tag, Link as LinkIcon } from "lucide-react";
+import { Calendar, FileText, Link as LinkIcon, Tag, User } from "lucide-react";
 
 const formatFileSize = (bytes?: number) => {
   if (!bytes) return "0 B";
@@ -53,66 +53,68 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">File ID</div>
+            <div className="text-foreground font-mono text-sm">{file?._id}</div>
+          </div>
+          <div className="bg-muted rounded-lg p-4">
             <div className="text-muted-foreground mb-1 text-sm">
-              File ID
+              Original Name
             </div>
-            <div className="text-foreground font-mono text-sm">
-              {file?._id}
+            <div
+              className="text-foreground truncate text-sm"
+              title={file?.originalname}
+            >
+              {file?.originalname || "N/A"}
+            </div>
+          </div>
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">Filename</div>
+            <div
+              className="text-foreground truncate text-sm"
+              title={file?.filename}
+            >
+              {file?.filename || "N/A"}
             </div>
           </div>
           <div className="bg-muted rounded-lg p-4">
             <div className="text-muted-foreground mb-1 text-sm">
-              File Name
+              Display Name
             </div>
-            <div className="text-foreground text-sm">
-              {file?.file_name || "N/A"}
+            <div className="text-foreground text-sm">{file?.name || "N/A"}</div>
+          </div>
+          <div className="bg-muted rounded-lg p-4">
+            <div className="text-muted-foreground mb-1 text-sm">File Type</div>
+            <div className="text-foreground text-sm capitalize">
+              {file?.metadata?.file_type || "N/A"}
             </div>
           </div>
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm">
-              File Type
-            </div>
-            <div className="text-foreground capitalize text-sm">
-              {file?.type || "N/A"}
-            </div>
-          </div>
-          <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm">
-              File Size
-            </div>
+            <div className="text-muted-foreground mb-1 text-sm">File Size</div>
             <div className="text-foreground text-sm">
               {formatFileSize(file?.size)}
             </div>
           </div>
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm">
-              Extension
-            </div>
+            <div className="text-muted-foreground mb-1 text-sm">Extension</div>
             <div className="text-foreground font-mono text-sm">
-              {file?.extension || "N/A"}
+              {file?.metadata?.extension || "N/A"}
             </div>
           </div>
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm">
-              MIME Type
-            </div>
+            <div className="text-muted-foreground mb-1 text-sm">MIME Type</div>
             <div className="text-foreground text-sm">
-              {file?.mime_type || "N/A"}
+              {file?.mimetype || "N/A"}
             </div>
           </div>
           {file?.category && (
             <div className="bg-muted rounded-lg p-4">
-              <div className="text-muted-foreground mb-1 text-sm">
-                Category
-              </div>
-              <div className="text-foreground text-sm">
-                {file.category}
-              </div>
+              <div className="text-muted-foreground mb-1 text-sm">Category</div>
+              <div className="text-foreground text-sm">{file.category}</div>
             </div>
           )}
           {file?.author && (
             <div className="bg-muted rounded-lg p-4">
-              <div className="text-muted-foreground mb-1 text-sm flex items-center">
+              <div className="text-muted-foreground mb-1 flex items-center text-sm">
                 <User className="mr-1 h-4 w-4" />
                 Author
               </div>
@@ -122,7 +124,7 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
             </div>
           )}
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm flex items-center">
+            <div className="text-muted-foreground mb-1 flex items-center text-sm">
               <Calendar className="mr-1 h-4 w-4" />
               Created At
             </div>
@@ -131,7 +133,7 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
             </div>
           </div>
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-muted-foreground mb-1 text-sm flex items-center">
+            <div className="text-muted-foreground mb-1 flex items-center text-sm">
               <Calendar className="mr-1 h-4 w-4" />
               Updated At
             </div>
@@ -141,7 +143,7 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
           </div>
           {file?.url && (
             <div className="bg-muted col-span-2 rounded-lg p-4">
-              <div className="text-muted-foreground mb-1 text-sm flex items-center">
+              <div className="text-muted-foreground mb-1 flex items-center text-sm">
                 <LinkIcon className="mr-1 h-4 w-4" />
                 File URL
               </div>
@@ -149,7 +151,7 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
                 href={file.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline text-sm break-all"
+                className="text-primary text-sm break-all hover:underline"
               >
                 {file.url}
               </a>
@@ -162,4 +164,3 @@ const FileOverviewSection: React.FC<TFileOverviewSectionProps> = ({ file }) => {
 };
 
 export default FileOverviewSection;
-

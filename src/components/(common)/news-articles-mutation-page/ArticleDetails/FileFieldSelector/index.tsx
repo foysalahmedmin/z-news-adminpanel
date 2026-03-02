@@ -93,7 +93,7 @@ const FileFieldSelector = ({
         {selectedFile ? (
           <div className="group relative rounded-lg border-2 border-dashed p-4">
             <div className="flex items-center gap-4">
-              {selectedFile.type === "image" ? (
+              {selectedFile.metadata?.file_type === "image" ? (
                 <img
                   src={selectedFile.url}
                   alt={selectedFile.name}
@@ -102,7 +102,9 @@ const FileFieldSelector = ({
               ) : (
                 <div className="bg-muted flex h-20 w-20 items-center justify-center rounded">
                   {(() => {
-                    const Icon = getFileIcon(selectedFile.type);
+                    const Icon = getFileIcon(
+                      selectedFile.metadata?.file_type || "file",
+                    );
                     return <Icon className="text-muted-foreground h-8 w-8" />;
                   })()}
                 </div>
@@ -110,8 +112,8 @@ const FileFieldSelector = ({
               <div className="flex-1">
                 <p className="font-medium">{selectedFile.name}</p>
                 <p className="text-muted-foreground text-sm">
-                  {selectedFile.type} • {(selectedFile.size / 1024).toFixed(2)}{" "}
-                  KB
+                  {selectedFile.metadata?.file_type} •{" "}
+                  {(selectedFile.size / 1024).toFixed(2)} KB
                 </p>
               </div>
               <Button
@@ -165,7 +167,7 @@ const FileFieldSelector = ({
           <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
             {selectedFileIds.map((fileId) => {
               const file = multipleFiles.find((f) => f._id === fileId);
-              const Icon = getFileIcon(file?.type);
+              const Icon = getFileIcon(file?.metadata?.file_type || "file");
 
               return (
                 <div
@@ -174,7 +176,7 @@ const FileFieldSelector = ({
                 >
                   {file ? (
                     <>
-                      {file.type === "image" ? (
+                      {file.metadata?.file_type === "image" ? (
                         <img
                           src={file.url}
                           alt={file.name}
